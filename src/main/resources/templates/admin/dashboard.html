@@ -75,8 +75,23 @@
                             <td class="px-4 py-3 text-sm text-slate-600" th:text="${lead.consultationMode}">WhatsApp</td>
                             <td class="px-4 py-3 text-sm text-slate-600"
                                 th:text="${lead.tipAmount != null ? #numbers.formatDecimal(lead.tipAmount, 1, 2) : '-'}">0.00</td>
-                            <td class="px-4 py-3 text-sm text-slate-600" th:text="${lead.paymentStatus}">PENDING</td>
-                            <td class="px-4 py-3 text-sm text-slate-600" th:text="${lead.leadStatus}">NEW</td>
+                            <td class="px-4 py-3 text-sm">
+                                <span th:switch="${lead.paymentStatus}" class="inline-flex px-2 py-0.5 rounded text-xs font-semibold">
+                                    <span th:case="'PAID'" class="bg-green-100 text-green-700 px-2 py-0.5 rounded">PAID</span>
+                                    <span th:case="'PENDING'" class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded">PENDING</span>
+                                    <span th:case="'SKIPPED'" class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded">SKIPPED</span>
+                                    <span th:case="*" th:text="${lead.paymentStatus}" class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded">-</span>
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                <select th:data-lead-id="${lead.id}"
+                                        onchange="updateLeadStatus(this)"
+                                        class="lead-status-select border border-slate-300 rounded-md px-2 py-1 text-xs font-medium bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                                    <option value="NEW" th:selected="${lead.leadStatus == 'NEW'}">NEW</option>
+                                    <option value="CONTACTED" th:selected="${lead.leadStatus == 'CONTACTED'}">CONTACTED</option>
+                                    <option value="CLOSED" th:selected="${lead.leadStatus == 'CLOSED'}">CLOSED</option>
+                                </select>
+                            </td>
                             <td class="px-4 py-3 text-sm">
                                 <a th:href="|https://wa.me/${lead.phoneNumber}|" target="_blank"
                                    class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-md text-xs font-semibold hover:bg-green-200 transition">
@@ -90,9 +105,62 @@
         </div>
 
         <p class="text-xs text-slate-400 mt-6 text-center">
-            Step 1 stub. Full admin workflows (filters, status updates, CSV export, product CRUD) arrive in Steps 3 and 4.
+            Filters, CSV export, and product CRUD arrive with Step 4.
         </p>
 
     </main>
+
+    <div id="status-toast"
+         class="fixed bottom-6 right-6 hidden items-center gap-2 rounded-lg bg-slate-900 text-white px-4 py-3 text-sm shadow-lg transition-opacity duration-200">
+        <i class="fa-solid fa-circle-check text-green-400"></i>
+        <span id="status-toast-msg">Status updated</span>
+    </div>
+
+    <script>
+        const toast = document.getElementById('status-toast');
+        const toastMsg = document.getElementById('status-toast-msg');
+        let toastTimer;
+
+        function showToast(message, ok) {
+            toastMsg.textContent = message;
+            toast.firstElementChild.className = ok
+                ? 'fa-solid fa-circle-check text-green-400'
+                : 'fa-solid fa-circle-exclamation text-red-400';
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 2500);
+        }
+
+        async function updateLeadStatus(selectEl) {
+            const leadId = selectEl.dataset.leadId;
+            const status = selectEl.value;
+            const previous = selectEl.dataset.previous || '';
+            selectEl.disabled = true;
+            try {
+                const body = new URLSearchParams({ status: status });
+                const res = await fetch('/admin/lead/' + leadId + '/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: body
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                selectEl.dataset.previous = status;
+                showToast('Lead #' + leadId + ' → ' + status, true);
+            } catch (err) {
+                if (previous) selectEl.value = previous;
+                showToast('Update failed — reverted', false);
+            } finally {
+                selectEl.disabled = false;
+            }
+        }
+
+        document.querySelectorAll('.lead-status-select').forEach(function (sel) {
+            sel.dataset.previous = sel.value;
+        });
+    </script>
 </body>
 </html>
