@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mock Payment - Muqmeen Group</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-10 rounded-2xl shadow-lg text-center max-w-md w-full border border-slate-200">
+        <img src="https://toyyibpay.com/assets/img/logo.png" alt="ToyyibPay" class="h-10 mx-auto mb-6 opacity-70">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+        <h3 class="text-xl font-bold text-slate-800 mb-2">Simulated ToyyibPay Gateway</h3>
+        <p class="text-slate-500 text-sm mb-4">Bill Code:
+            <span class="font-mono font-semibold text-slate-700" th:text="${billCode}">MGM-XXXXXXXX</span>
+        </p>
+        <p class="text-xs text-slate-400 mb-6">This is a simulated gateway for the prototype. Real ToyyibPay integration lands after Step 4.</p>
+
+        <div class="flex space-x-3">
+            <a th:href="@{/payment/callback(billcode=${billCode},status_id=1)}"
+               class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg shadow transition">
+                Confirm Payment
+            </a>
+            <a th:href="@{/payment/callback(billcode=${billCode},status_id=3)}"
+               class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-lg transition">
+                Cancel
+            </a>
+        </div>
+    </div>
+</body>
+</html>

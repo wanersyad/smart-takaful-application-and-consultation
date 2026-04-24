@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muqmeen Group - Smart Takaful System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .smooth-transition { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <nav class="bg-white shadow-sm z-50 sticky top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <a href="/" class="flex items-center">
+                    <i class="fa-solid fa-shield-halved text-red-600 text-2xl mr-2"></i>
+                    <span class="font-bold text-xl tracking-tight">Muqmeen<span class="text-red-600">Group</span></span>
+                </a>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-slate-600 hover:text-red-600 font-medium px-3 py-2 rounded-md text-sm">Home</a>
+                    <a href="/admin/dashboard" class="text-slate-600 hover:text-red-600 font-medium px-3 py-2 rounded-md text-sm">
+                        <i class="fa-solid fa-lock mr-1"></i> Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex flex-col relative overflow-y-auto">
+
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 pr-8">
+                    <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">Secure Your Family's Future with Islamic Wealth Management</h1>
+                    <p class="text-lg text-slate-300 mb-8">Expert PruBSN consultation tailored to your needs. Fast, transparent, and completely Shariah-compliant.</p>
+                    <div class="flex space-x-4">
+                        <a href="#products" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg smooth-transition">Explore Products</a>
+                    </div>
+                    <div class="flex items-center mt-10 space-x-6 text-sm font-medium text-slate-400">
+                        <div class="flex items-center"><i class="fa-solid fa-check-circle text-green-400 mr-2"></i> Authorized Agent</div>
+                        <div class="flex items-center"><i class="fa-solid fa-users text-blue-400 mr-2"></i> 500+ Clients</div>
+                    </div>
+                </div>
+                <div class="md:w-1/2 mt-10 md:mt-0 relative">
+                    <div class="absolute inset-0 bg-red-600 opacity-20 blur-3xl rounded-full"></div>
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800" alt="Professional Agent" class="rounded-2xl shadow-2xl relative z-10 border-4 border-white/10 object-cover h-96 w-full">
+                    <div class="absolute bottom-4 left-4 bg-white text-slate-800 p-4 rounded-xl shadow-xl z-20 flex items-center space-x-3">
+                        <div class="bg-green-100 p-2 rounded-full"><i class="fa-solid fa-star text-green-600"></i></div>
+                        <div>
+                            <p class="text-sm font-bold">Top Consultant 2023</p>
+                            <p class="text-xs text-slate-500">Muqmeen Group KB</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="products" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-slate-900">Select Your Takaful Interest</h2>
+                <p class="text-slate-500 mt-2">Choose a product below to schedule your personalized consultation.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl smooth-transition group flex flex-col">
+                    <div class="bg-blue-50 h-48 flex items-center justify-center relative overflow-hidden">
+                        <i class="fa-solid fa-heart-pulse text-6xl text-blue-500 group-hover:scale-110 smooth-transition"></i>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">PruBSN Medical</h3>
+                            <p class="text-slate-600 text-sm mb-4">Comprehensive medical coverage with unlimited lifetime limit and cashless hospital admission.</p>
+                        </div>
+                        <button type="button" onclick="openModal('PruBSN Medical')" class="w-full bg-slate-900 hover:bg-red-600 text-white font-medium py-3 rounded-lg smooth-transition">I'm Interested</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl smooth-transition group flex flex-col">
+                    <div class="bg-emerald-50 h-48 flex items-center justify-center relative overflow-hidden">
+                        <i class="fa-solid fa-hand-holding-dollar text-6xl text-emerald-500 group-hover:scale-110 smooth-transition"></i>
+                        <div class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">Popular</div>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Hibah Al-Wasiyyah</h3>
+                            <p class="text-slate-600 text-sm mb-4">Absolute gift to your loved ones. Ensure they are financially protected without inheritance complexites.</p>
+                        </div>
+                        <button type="button" onclick="openModal('Hibah Al-Wasiyyah')" class="w-full bg-slate-900 hover:bg-red-600 text-white font-medium py-3 rounded-lg smooth-transition">I'm Interested</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl smooth-transition group flex flex-col">
+                    <div class="bg-purple-50 h-48 flex items-center justify-center relative overflow-hidden">
+                        <i class="fa-solid fa-user-graduate text-6xl text-purple-500 group-hover:scale-110 smooth-transition"></i>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">PruBSN EduSmart</h3>
+                            <p class="text-slate-600 text-sm mb-4">Secure your child's education fund early with guaranteed savings and high potential returns.</p>
+                        </div>
+                        <button type="button" onclick="openModal('PruBSN EduSmart')" class="w-full bg-slate-900 hover:bg-red-600 text-white font-medium py-3 rounded-lg smooth-transition">I'm Interested</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="booking-modal" class="fixed inset-0 bg-slate-900/60 z-[100] hidden items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col relative">
+                <button type="button" onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-800">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+
+                <div class="p-6 border-b border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-900">Book Consultation</h2>
+                    <p class="text-sm text-slate-500">Selected: <span id="modal-product-name" class="font-semibold text-red-600">Product</span></p>
+                </div>
+
+                <div class="p-6 overflow-y-auto">
+                    <form id="consultation-form" th:action="@{/submit-lead}" th:object="${lead}" method="post">
+                        <input type="hidden" name="productType" id="productType" th:field="*{productType}">
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                                <input type="text" name="fullName" th:field="*{fullName}" required
+                                       class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">WhatsApp Number <span class="text-red-500">*</span></label>
+                                <div class="flex">
+                                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-50 text-slate-500 sm:text-sm">+60</span>
+                                    <input type="tel" name="phoneNumber" th:field="*{phoneNumber}" placeholder="123456789" required
+                                           pattern="^\+?[0-9]{10,13}$"
+                                           class="flex-1 min-w-0 block w-full px-4 py-2 rounded-none rounded-r-lg border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">Enter with country code, e.g. 60123456789.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Consultation Mode <span class="text-red-500">*</span></label>
+                                <select name="consultationMode" th:field="*{consultationMode}" required
+                                        class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                                    <option value="WhatsApp">WhatsApp Text (Quick)</option>
+                                    <option value="Voice/Video Call">Voice/Video Call</option>
+                                    <option value="Face-to-Face">Face-to-Face Meeting (Klang Valley)</option>
+                                </select>
+                            </div>
+
+                            <div class="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <label class="block text-sm font-bold text-slate-800 mb-2">
+                                    <i class="fa-solid fa-mug-hot text-amber-600 mr-2"></i>Support Agent's Coffee (Optional Tip)
+                                </label>
+                                <p class="text-xs text-slate-500 mb-3">Consultations are free. If you appreciate the value provided, you can leave an optional tip.</p>
+
+                                <div class="flex space-x-2 mb-3">
+                                    <button type="button" onclick="setTip(0)" data-val="0"
+                                            class="tip-btn flex-1 py-2 border border-slate-300 rounded bg-white text-sm hover:bg-slate-100">Skip (RM 0)</button>
+                                    <button type="button" onclick="setTip(5)" data-val="5"
+                                            class="tip-btn flex-1 py-2 border border-red-500 rounded bg-red-50 text-red-700 font-medium text-sm">RM 5</button>
+                                    <button type="button" onclick="setTip(10)" data-val="10"
+                                            class="tip-btn flex-1 py-2 border border-slate-300 rounded bg-white text-sm hover:bg-slate-100">RM 10</button>
+                                    <button type="button" onclick="setTip(50)" data-val="50"
+                                            class="tip-btn flex-1 py-2 border border-slate-300 rounded bg-white text-sm hover:bg-slate-100">RM 50</button>
+                                </div>
+                                <input type="hidden" name="tipAmount" th:field="*{tipAmount}" value="5">
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg shadow-md smooth-transition flex items-center justify-center">
+                                Proceed &amp; Submit <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-center text-xs py-4">
+        &copy; 2026 Muqmeen Group. Smart Takaful &amp; Consultation System.
+    </footer>
+
+    <script>
+        const modal = document.getElementById('booking-modal');
+        const productNameLabel = document.getElementById('modal-product-name');
+        const productTypeInput = document.getElementById('productType');
+        const tipInput = document.querySelector('input[name="tipAmount"]');
+
+        function openModal(productName) {
+            productNameLabel.textContent = productName;
+            productTypeInput.value = productName;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function setTip(amount) {
+            tipInput.value = amount;
+            document.querySelectorAll('.tip-btn').forEach(function (btn) {
+                const selected = parseInt(btn.dataset.val, 10) === amount;
+                btn.classList.toggle('border-red-500', selected);
+                btn.classList.toggle('bg-red-50', selected);
+                btn.classList.toggle('text-red-700', selected);
+                btn.classList.toggle('font-medium', selected);
+                btn.classList.toggle('border-slate-300', !selected);
+                btn.classList.toggle('bg-white', !selected);
+            });
+        }
+
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) closeModal();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+        });
+    </script>
+</body>
+</html>
