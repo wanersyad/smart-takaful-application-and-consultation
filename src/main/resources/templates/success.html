@@ -18,9 +18,34 @@
         <h3 class="text-2xl font-bold text-slate-800 mb-2">Request Submitted!</h3>
         <p class="text-slate-600 mb-6">Thank you. Your details have been saved and your assigned Takaful consultant will contact you shortly.</p>
 
-        <div class="bg-slate-50 p-4 rounded-lg mb-6 text-left border border-slate-200">
-            <p class="text-sm text-slate-500 mb-1">Status: <span class="font-medium text-green-600">Confirmed</span></p>
-            <p class="text-sm text-slate-500">Agent will contact you via your selected channel.</p>
+        <div class="bg-slate-50 p-4 rounded-lg mb-6 text-left border border-slate-200 space-y-2">
+            <p th:if="${lead != null}" class="text-xs text-slate-500 flex justify-between">
+                <span>Reference</span>
+                <span class="font-mono font-semibold text-slate-700" th:text="'#' + ${lead.id}">#42</span>
+            </p>
+            <p th:if="${lead != null}" class="text-xs text-slate-500 flex justify-between">
+                <span>Product</span>
+                <span class="font-medium text-slate-700" th:text="${lead.productType}">Product</span>
+            </p>
+            <p th:if="${lead != null}" class="text-xs text-slate-500 flex justify-between">
+                <span>Contact via</span>
+                <span class="font-medium text-slate-700" th:text="${lead.consultationMode}">WhatsApp</span>
+            </p>
+            <p th:if="${lead != null and lead.paymentStatus == 'PAID'}"
+               class="text-xs text-slate-500 flex justify-between">
+                <span>Tip</span>
+                <span class="font-semibold text-green-600">
+                    RM <span th:text="${#numbers.formatDecimal(lead.tipAmount, 1, 2)}">0.00</span> received
+                </span>
+            </p>
+            <p th:if="${lead != null and lead.paymentStatus == 'SKIPPED'}"
+               class="text-xs text-slate-400 flex justify-between">
+                <span>Status</span>
+                <span class="font-medium text-green-600">Confirmed</span>
+            </p>
+            <p th:if="${lead == null}" class="text-sm text-slate-500">
+                Status: <span class="font-medium text-green-600">Confirmed</span>
+            </p>
         </div>
 
         <a href="/" class="inline-block w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 rounded-lg transition">Return to Home</a>
