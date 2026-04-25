@@ -91,8 +91,8 @@
                                     <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
                                 </a>
                                 <form th:action="@{|/admin/products/${product.id}/delete|}" method="post" class="inline"
-                                      th:onsubmit="|return confirm('Delete \"' + this.dataset.name + '\"? This cannot be undone.');|"
-                                      th:data-name="${product.name}">
+                                      th:data-name="${product.name}"
+                                      onsubmit="return confirm('Delete ' + this.dataset.name + '? This cannot be undone.');">
                                     <button type="submit"
                                             class="inline-flex items-center px-3 py-1 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition">
                                         <i class="fa-solid fa-trash mr-1"></i> Delete
