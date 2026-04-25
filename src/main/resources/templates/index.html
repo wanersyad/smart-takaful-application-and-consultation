@@ -68,43 +68,31 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl smooth-transition group flex flex-col">
-                    <div class="bg-blue-50 h-48 flex items-center justify-center relative overflow-hidden">
-                        <i class="fa-solid fa-heart-pulse text-6xl text-blue-500 group-hover:scale-110 smooth-transition"></i>
-                    </div>
-                    <div class="p-6 flex-grow flex flex-col justify-between">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900 mb-2">PruBSN Medical</h3>
-                            <p class="text-slate-600 text-sm mb-4">Comprehensive medical coverage with unlimited lifetime limit and cashless hospital admission.</p>
-                        </div>
-                        <button type="button" onclick="openModal('PruBSN Medical')" class="w-full bg-slate-900 hover:bg-red-600 text-white font-medium py-3 rounded-lg smooth-transition">I'm Interested</button>
-                    </div>
+                <div th:if="${#lists.isEmpty(products)}"
+                     class="md:col-span-3 text-center py-16 text-slate-400">
+                    <i class="fa-regular fa-folder-open text-3xl mb-3 block"></i>
+                    No products available right now. Please check back soon.
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl smooth-transition group flex flex-col">
-                    <div class="bg-emerald-50 h-48 flex items-center justify-center relative overflow-hidden">
-                        <i class="fa-solid fa-hand-holding-dollar text-6xl text-emerald-500 group-hover:scale-110 smooth-transition"></i>
-                        <div class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">Popular</div>
+                <div th:each="product : ${products}"
+                     class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl smooth-transition group flex flex-col">
+                    <div th:classappend="${product.accentClass}"
+                         class="h-48 flex items-center justify-center relative overflow-hidden">
+                        <i th:class="|fa-solid ${product.iconClass} text-6xl group-hover:scale-110 smooth-transition|"></i>
+                        <div th:if="${product.featured}"
+                             class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">Popular</div>
                     </div>
                     <div class="p-6 flex-grow flex flex-col justify-between">
                         <div>
-                            <h3 class="text-xl font-bold text-slate-900 mb-2">Hibah Al-Wasiyyah</h3>
-                            <p class="text-slate-600 text-sm mb-4">Absolute gift to your loved ones. Ensure they are financially protected without inheritance complexites.</p>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2" th:text="${product.name}">Product</h3>
+                            <p class="text-slate-600 text-sm mb-4" th:text="${product.description}">Description</p>
                         </div>
-                        <button type="button" onclick="openModal('Hibah Al-Wasiyyah')" class="w-full bg-slate-900 hover:bg-red-600 text-white font-medium py-3 rounded-lg smooth-transition">I'm Interested</button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl smooth-transition group flex flex-col">
-                    <div class="bg-purple-50 h-48 flex items-center justify-center relative overflow-hidden">
-                        <i class="fa-solid fa-user-graduate text-6xl text-purple-500 group-hover:scale-110 smooth-transition"></i>
-                    </div>
-                    <div class="p-6 flex-grow flex flex-col justify-between">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900 mb-2">PruBSN EduSmart</h3>
-                            <p class="text-slate-600 text-sm mb-4">Secure your child's education fund early with guaranteed savings and high potential returns.</p>
-                        </div>
-                        <button type="button" onclick="openModal('PruBSN EduSmart')" class="w-full bg-slate-900 hover:bg-red-600 text-white font-medium py-3 rounded-lg smooth-transition">I'm Interested</button>
+                        <button type="button"
+                                th:data-product-name="${product.name}"
+                                onclick="openModalFromButton(this)"
+                                class="w-full bg-slate-900 hover:bg-red-600 text-white font-medium py-3 rounded-lg smooth-transition">
+                            I'm Interested
+                        </button>
                     </div>
                 </div>
             </div>
@@ -220,6 +208,10 @@
             productTypeInput.value = productName;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+        }
+
+        function openModalFromButton(btn) {
+            openModal(btn.dataset.productName || 'Consultation');
         }
 
         function closeModal() {

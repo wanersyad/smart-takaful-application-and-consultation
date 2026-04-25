@@ -1,6 +1,7 @@
 package com.muqmeen.takaful.web;
 
 import com.muqmeen.takaful.domain.Lead;
+import com.muqmeen.takaful.service.ProductService;
 import com.muqmeen.takaful.service.TakafulService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -20,14 +21,19 @@ import java.util.List;
 public class WebController {
 
     private final TakafulService takafulService;
+    private final ProductService productService;
 
-    public WebController(TakafulService takafulService) {
+    public WebController(TakafulService takafulService, ProductService productService) {
         this.takafulService = takafulService;
+        this.productService = productService;
     }
 
     @GetMapping("/")
     public String landingPage(Model model) {
-        model.addAttribute("lead", new Lead());
+        if (!model.containsAttribute("lead")) {
+            model.addAttribute("lead", new Lead());
+        }
+        model.addAttribute("products", productService.listActiveForLanding());
         return "index";
     }
 
@@ -37,6 +43,7 @@ public class WebController {
                              Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("formError", true);
+            model.addAttribute("products", productService.listActiveForLanding());
             return "index";
         }
 
