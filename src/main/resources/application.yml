@@ -10,3 +10,10 @@ spring:
 
 server:
   port: ${PORT:8080}
+
+gemini:
+  api-key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-2.0-flash}
+  base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta/models}
+  connect-timeout-ms: 3000
+  read-timeout-ms: 20000
