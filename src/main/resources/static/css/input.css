@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-zinc-50 text-zinc-900 antialiased;
+  }
+
+  [x-cloak] {
+    display: none !important;
+  }
+}
+
+@layer components {
+  .smooth-transition {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .brand-shell {
+    @apply border border-zinc-200 bg-white shadow-premium;
+  }
+}

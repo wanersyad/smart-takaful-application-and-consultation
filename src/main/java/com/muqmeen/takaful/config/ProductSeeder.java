@@ -30,17 +30,17 @@ public class ProductSeeder implements CommandLineRunner {
                 build("PruBSN Medical",
                         "Comprehensive medical coverage with unlimited lifetime limit and cashless hospital admission.",
                         "fa-heart-pulse",
-                        "bg-blue-50 text-blue-500",
+                        "bg-yellow-100 text-zinc-950",
                         false),
                 build("Hibah Al-Wasiyyah",
                         "Absolute gift to your loved ones. Ensure they are financially protected without inheritance complexities.",
                         "fa-hand-holding-dollar",
-                        "bg-emerald-50 text-emerald-500",
+                        "bg-zinc-950 text-yellow-300",
                         true),
                 build("PruBSN EduSmart",
                         "Secure your child's education fund early with guaranteed savings and high potential returns.",
                         "fa-user-graduate",
-                        "bg-purple-50 text-purple-500",
+                        "bg-amber-100 text-zinc-950",
                         false)
         );
 

@@ -24,3 +24,7 @@ spring:
             non_contextual_creation: true
   thymeleaf:
     cache: true
+
+admin:
+  username: ${ADMIN_USERNAME}
+  password: ${ADMIN_PASSWORD}
