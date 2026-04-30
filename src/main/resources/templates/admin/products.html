@@ -1,31 +1,30 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Manage Products - Muqmeen Group Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="text-slate-800 antialiased">
 
     <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
             <a href="/" class="flex items-center">
-                <i class="fa-solid fa-shield-halved text-red-600 text-2xl mr-2"></i>
-                <span class="font-bold text-xl tracking-tight">Muqmeen<span class="text-red-600">Group</span></span>
+                <i class="fa-solid fa-shield-halved text-yellow-500 text-2xl mr-2"></i>
+                <span class="font-bold text-xl tracking-tight">Muqmeen<span class="text-yellow-500">Group</span></span>
                 <span class="ml-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Admin</span>
             </a>
             <div class="flex items-center gap-4 text-sm font-medium">
-                <a href="/admin/dashboard" class="text-slate-600 hover:text-red-600">Leads</a>
-                <a href="/admin/products" class="text-red-600 font-semibold">Products</a>
-                <a href="/" class="text-slate-600 hover:text-red-600"><i class="fa-solid fa-arrow-left mr-1"></i> Back to site</a>
+                <a href="/admin/dashboard" class="text-slate-600 hover:text-yellow-500">Leads</a>
+                <a href="/admin/products" class="text-yellow-500 font-semibold">Products</a>
+                <a href="/" class="text-slate-600 hover:text-yellow-500"><i class="fa-solid fa-arrow-left mr-1"></i> Back to site</a>
                 <form th:action="@{/logout}" method="post" class="inline">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <button type="submit" class="text-slate-600 hover:text-red-600">
+                    <button type="submit" class="text-slate-600 hover:text-yellow-500">
                         <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
                     </button>
                 </form>
@@ -47,7 +46,7 @@
                 <p class="text-slate-500 text-sm">Add, edit, and retire the product cards shown on the landing page.</p>
             </div>
             <a href="/admin/products/new"
-               class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition">
+               class="inline-flex items-center justify-center bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold px-4 py-2 rounded-lg shadow-sm transition">
                 <i class="fa-solid fa-plus mr-2"></i> Add Product
             </a>
         </div>
@@ -101,7 +100,7 @@
                                       onsubmit="return confirm('Delete ' + this.dataset.name + '? This cannot be undone.');">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                     <button type="submit"
-                                            class="inline-flex items-center px-3 py-1 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition">
+                                            class="inline-flex items-center px-3 py-1 text-xs font-medium text-yellow-700 bg-yellow-50 hover:bg-yellow-100 rounded-md transition">
                                         <i class="fa-solid fa-trash mr-1"></i> Delete
                                     </button>
                                 </form>
