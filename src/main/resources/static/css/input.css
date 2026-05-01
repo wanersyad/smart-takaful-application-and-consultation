@@ -25,3 +25,124 @@
     @apply border border-zinc-200 bg-white shadow-premium;
   }
 }
+
+.font-black {
+  font-weight: 800;
+}
+
+.font-extrabold {
+  font-weight: 700;
+}
+
+.muqmeen-dark-site {
+  background: #050505;
+  color: #ffffff;
+}
+
+.muqmeen-dark-site main,
+.muqmeen-dark-site section {
+  background: #050505 !important;
+}
+
+.muqmeen-dark-site nav {
+  background: rgba(5, 5, 5, 0.94) !important;
+  border-color: rgba(250, 204, 21, 0.24) !important;
+}
+
+.muqmeen-dark-site .bg-white,
+.muqmeen-dark-site .bg-white\/90,
+.muqmeen-dark-site .bg-zinc-50,
+.muqmeen-dark-site .bg-zinc-100 {
+  background-color: #101010 !important;
+}
+
+.muqmeen-dark-site .bg-yellow-50,
+.muqmeen-dark-site .bg-yellow-100,
+.muqmeen-dark-site .bg-amber-100 {
+  background-color: rgba(250, 204, 21, 0.14) !important;
+}
+
+.muqmeen-dark-site .bg-zinc-950,
+.muqmeen-dark-site .bg-slate-900 {
+  background-color: #050505 !important;
+}
+
+.muqmeen-dark-site h1,
+.muqmeen-dark-site h2,
+.muqmeen-dark-site h3,
+.muqmeen-dark-site .text-zinc-950,
+.muqmeen-dark-site .text-zinc-900 {
+  color: #facc15 !important;
+}
+
+.muqmeen-dark-site p,
+.muqmeen-dark-site .text-zinc-800,
+.muqmeen-dark-site .text-zinc-700,
+.muqmeen-dark-site .text-zinc-600,
+.muqmeen-dark-site .text-zinc-500,
+.muqmeen-dark-site .text-zinc-400,
+.muqmeen-dark-site .text-zinc-300,
+.muqmeen-dark-site .text-slate-800,
+.muqmeen-dark-site .text-slate-700,
+.muqmeen-dark-site .text-slate-600,
+.muqmeen-dark-site .text-slate-500,
+.muqmeen-dark-site .text-slate-400,
+.muqmeen-dark-site .text-slate-300 {
+  color: rgba(255, 255, 255, 0.76) !important;
+}
+
+.muqmeen-dark-site .text-white,
+.muqmeen-dark-site footer p {
+  color: #ffffff !important;
+}
+
+.muqmeen-dark-site .text-yellow-300,
+.muqmeen-dark-site .text-yellow-400,
+.muqmeen-dark-site .text-yellow-500,
+.muqmeen-dark-site .text-yellow-600,
+.muqmeen-dark-site .text-yellow-700 {
+  color: #facc15 !important;
+}
+
+.muqmeen-dark-site .bg-yellow-400,
+.muqmeen-dark-site .bg-yellow-300,
+.muqmeen-dark-site .bg-yellow-400.text-zinc-950,
+.muqmeen-dark-site .bg-yellow-300.text-zinc-950 {
+  background-color: #facc15 !important;
+  color: #050505 !important;
+}
+
+.muqmeen-dark-site .bg-yellow-400 *,
+.muqmeen-dark-site .bg-yellow-300 * {
+  color: #050505 !important;
+}
+
+.muqmeen-dark-site .bg-zinc-950.text-white,
+.muqmeen-dark-site .bg-slate-900.text-white {
+  color: #ffffff !important;
+}
+
+.muqmeen-dark-site [class*="border-zinc"],
+.muqmeen-dark-site [class*="border-slate"],
+.muqmeen-dark-site [class*="border-white"] {
+  border-color: rgba(250, 204, 21, 0.22) !important;
+}
+
+.muqmeen-dark-site input,
+.muqmeen-dark-site select,
+.muqmeen-dark-site textarea {
+  background-color: #050505 !important;
+  border-color: rgba(250, 204, 21, 0.35) !important;
+  color: #ffffff !important;
+}
+
+.muqmeen-dark-site input::placeholder,
+.muqmeen-dark-site textarea::placeholder {
+  color: rgba(255, 255, 255, 0.46) !important;
+}
+
+.muqmeen-dark-site #chat-panel,
+.muqmeen-dark-site #booking-modal > div {
+  background-color: #101010 !important;
+  color: #ffffff !important;
+}
