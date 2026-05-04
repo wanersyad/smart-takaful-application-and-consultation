@@ -18,8 +18,11 @@
         </a>
 
         <section class="brand-shell rounded-xl p-8">
-            <h1 class="text-2xl font-semibold text-zinc-950">Welcome back</h1>
-            <p class="text-sm text-zinc-500 mt-1">Sign in to continue your Takaful consultation.</p>
+            <h1 class="text-2xl font-semibold text-zinc-950" th:text="${adminLogin} ? 'Admin sign in' : 'Welcome back'">Welcome back</h1>
+            <p class="text-sm text-zinc-500 mt-1"
+               th:text="${adminLogin} ? 'Sign in with the configured admin credentials.' : 'Sign in to continue your Takaful consultation.'">
+                Sign in to continue your Takaful consultation.
+            </p>
 
             <div th:if="${param.error}" class="mt-5 rounded-lg border border-amber-200 bg-yellow-50 p-3 text-sm text-yellow-800">
                 Invalid email or password.
@@ -50,7 +53,7 @@
                 </button>
             </form>
 
-            <p class="text-sm text-zinc-500 mt-6 text-center">
+            <p th:unless="${adminLogin}" class="text-sm text-zinc-500 mt-6 text-center">
                 New here?
                 <a th:href="@{/register(redirect=${redirect})}" class="font-semibold text-zinc-950 hover:text-yellow-600">Create an account</a>
             </p>

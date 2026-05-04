@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,8 +23,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.URI;
+
 @Controller
 public class AuthController {
+
+    private static final String SAVED_REQUEST_ATTRIBUTE = "SPRING_SECURITY_SAVED_REQUEST";
 
     private final CustomerService customerService;
     private final UserDetailsService userDetailsService;
@@ -34,8 +39,13 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String login(@RequestParam(value = "redirect", required = false) String redirect, Model model) {
-        model.addAttribute("redirect", safeRedirectOrDefault(redirect, "/account"));
+    public String login(@RequestParam(value = "redirect", required = false) String redirect,
+                        @RequestParam(value = "admin", defaultValue = "false") boolean admin,
+                        HttpServletRequest request,
+                        Model model) {
+        boolean adminLogin = admin || isAdminRedirect(redirect) || isSavedAdminRequest(request);
+        model.addAttribute("adminLogin", adminLogin);
+        model.addAttribute("redirect", safeRedirectOrDefault(redirect, adminLogin ? "/admin/dashboard" : "/account"));
         return "login";
     }
 
@@ -93,6 +103,32 @@ public class AuthController {
             return redirect;
         }
         return fallback;
+    }
+
+    private boolean isSavedAdminRequest(HttpServletRequest request) {
+        if (request.getSession(false) == null) {
+            return false;
+        }
+        Object saved = request.getSession(false).getAttribute(SAVED_REQUEST_ATTRIBUTE);
+        if (saved instanceof SavedRequest savedRequest) {
+            return isAdminRedirect(savedRequest.getRedirectUrl());
+        }
+        return false;
+    }
+
+    private boolean isAdminRedirect(String redirect) {
+        if (redirect == null || redirect.isBlank()) {
+            return false;
+        }
+        if (redirect.startsWith("/")) {
+            return "/admin".equals(redirect) || redirect.startsWith("/admin/");
+        }
+        try {
+            String path = URI.create(redirect).getPath();
+            return "/admin".equals(path) || path.startsWith("/admin/");
+        } catch (IllegalArgumentException ex) {
+            return false;
+        }
     }
 
     public static class RegisterForm {

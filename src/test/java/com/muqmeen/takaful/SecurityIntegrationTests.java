@@ -205,9 +205,23 @@ class SecurityIntegrationTests {
         mockMvc.perform(post("/login")
                         .with(csrf())
                         .param("username", "admin")
-                        .param("password", "password"))
+                        .param("password", "password")
+                        .param("redirect", "/account"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/dashboard"));
+    }
+
+    @Test
+    void adminLoginPageDoesNotOfferCustomerRegistration() throws Exception {
+        MvcResult result = mockMvc.perform(get("/admin"))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        MockHttpSession session = (MockHttpSession) result.getRequest().getSession(false);
+
+        mockMvc.perform(get("/login").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Admin sign in")))
+                .andExpect(content().string(not(containsString("Create an account"))));
     }
 
     @Test

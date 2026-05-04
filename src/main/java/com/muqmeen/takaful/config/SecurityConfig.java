@@ -84,20 +84,28 @@ public class SecurityConfig {
     AuthenticationSuccessHandler authenticationSuccessHandler() {
         HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
         return (request, response, authentication) -> {
+            boolean admin = authentication.getAuthorities().stream()
+                    .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
             String redirect = request.getParameter("redirect");
-            if (isSafeRedirect(redirect)) {
+            if (admin && isSafeAdminRedirect(redirect)) {
+                response.sendRedirect(redirect);
+                return;
+            }
+            if (!admin && isSafeUserRedirect(redirect)) {
                 response.sendRedirect(redirect);
                 return;
             }
 
             SavedRequest savedRequest = requestCache.getRequest(request, response);
-            if (savedRequest != null && isSafeRedirect(savedRequest.getRedirectUrl())) {
+            if (admin && savedRequest != null && isSafeAdminRedirect(savedRequest.getRedirectUrl())) {
+                response.sendRedirect(savedRequest.getRedirectUrl());
+                return;
+            }
+            if (!admin && savedRequest != null && isSafeUserRedirect(savedRequest.getRedirectUrl())) {
                 response.sendRedirect(savedRequest.getRedirectUrl());
                 return;
             }
 
-            boolean admin = authentication.getAuthorities().stream()
-                    .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
             response.sendRedirect(admin ? "/admin/dashboard" : "/account");
         };
     }
@@ -108,5 +116,13 @@ public class SecurityConfig {
 
     private boolean isSafeRedirect(String redirect) {
         return redirect != null && redirect.startsWith("/") && !redirect.startsWith("//");
+    }
+
+    private boolean isSafeAdminRedirect(String redirect) {
+        return isSafeRedirect(redirect) && ("/admin".equals(redirect) || redirect.startsWith("/admin/"));
+    }
+
+    private boolean isSafeUserRedirect(String redirect) {
+        return isSafeRedirect(redirect) && !"/admin".equals(redirect) && !redirect.startsWith("/admin/");
     }
 }
