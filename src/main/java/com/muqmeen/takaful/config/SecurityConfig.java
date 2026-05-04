@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import com.muqmeen.takaful.repository.CustomerRepository;
 
 @Configuration
@@ -47,6 +48,14 @@ public class SecurityConfig {
                             String path = request.getRequestURI().substring(request.getContextPath().length());
                             String loginPath = isAdminPath(path) ? "/admin/login" : "/login";
                             response.sendRedirect(request.getContextPath() + loginPath);
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            String path = request.getRequestURI().substring(request.getContextPath().length());
+                            if (HttpMethod.GET.matches(request.getMethod()) && isAdminPath(path)) {
+                                response.sendRedirect(request.getContextPath() + "/admin/login");
+                                return;
+                            }
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN);
                         })
                 )
                 .logout(logout -> logout

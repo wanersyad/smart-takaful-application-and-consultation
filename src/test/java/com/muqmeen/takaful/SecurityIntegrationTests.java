@@ -181,10 +181,12 @@ class SecurityIntegrationTests {
                 .andExpect(redirectedUrl("/admin/login"));
 
         mockMvc.perform(get("/admin").with(user(customer.getEmail()).roles("USER")))
-                .andExpect(status().isForbidden());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/login"));
 
         mockMvc.perform(get("/admin/products").with(user(customer.getEmail()).roles("USER")))
-                .andExpect(status().isForbidden());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/login"));
     }
 
     @Test
@@ -228,6 +230,35 @@ class SecurityIntegrationTests {
                         .param("redirect", "/admin/dashboard"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/login?error"));
+    }
+
+    @Test
+    void adminLoginCanReplaceExistingCustomerSession() throws Exception {
+        MvcResult customerLogin = mockMvc.perform(post("/register")
+                        .with(csrf())
+                        .param("fullName", "Session Customer")
+                        .param("email", "session.customer@example.com")
+                        .param("phoneNumber", "60130001111")
+                        .param("password", "password123"))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        MockHttpSession session = (MockHttpSession) customerLogin.getRequest().getSession(false);
+
+        mockMvc.perform(get("/admin").session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/login"));
+
+        mockMvc.perform(post("/login")
+                        .session(session)
+                        .with(csrf())
+                        .param("username", "admin")
+                        .param("password", "password")
+                        .param("redirect", "/admin/dashboard"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/dashboard"));
+
+        mockMvc.perform(get("/admin/dashboard").session(session))
+                .andExpect(status().isOk());
     }
 
     @Test
