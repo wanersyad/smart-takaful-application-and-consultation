@@ -218,6 +218,7 @@ class SecurityIntegrationTests {
         mockMvc.perform(get("/admin/login"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Admin sign in")))
+                .andExpect(content().string(containsString("Admin username")))
                 .andExpect(content().string(not(containsString("Create an account"))));
     }
 
@@ -271,8 +272,10 @@ class SecurityIntegrationTests {
         mockMvc.perform(get("/login").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Welcome back")))
+                .andExpect(content().string(containsString("Email address")))
                 .andExpect(content().string(containsString("Create an account")))
-                .andExpect(content().string(not(containsString("Admin sign in"))));
+                .andExpect(content().string(not(containsString("Admin sign in"))))
+                .andExpect(content().string(not(containsString("Admin username"))));
     }
 
     @Test
