@@ -28,6 +28,10 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
+    public Optional<Product> findByName(String name) {
+        return productRepository.findByName(name);
+    }
+
     public Optional<Product> findActiveById(Long id) {
         return productRepository.findById(id).filter(Product::isActive);
     }

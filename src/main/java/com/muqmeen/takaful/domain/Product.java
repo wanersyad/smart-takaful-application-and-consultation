@@ -38,6 +38,22 @@ public class Product {
     @Column(length = 60)
     private String accentClass;
 
+    @Size(max = 80)
+    @Column(length = 80)
+    private String categoryLabel;
+
+    @Size(max = 255)
+    @Column(length = 255)
+    private String brochureUrl;
+
+    @Size(max = 255)
+    @Column(length = 255)
+    private String altBrochureUrl;
+
+    @Size(max = 255)
+    @Column(length = 255)
+    private String imageUrl;
+
     @Column(nullable = false)
     private boolean featured;
 
@@ -76,6 +92,18 @@ public class Product {
 
     public String getAccentClass() { return accentClass; }
     public void setAccentClass(String accentClass) { this.accentClass = accentClass; }
+
+    public String getCategoryLabel() { return categoryLabel; }
+    public void setCategoryLabel(String categoryLabel) { this.categoryLabel = categoryLabel; }
+
+    public String getBrochureUrl() { return brochureUrl; }
+    public void setBrochureUrl(String brochureUrl) { this.brochureUrl = brochureUrl; }
+
+    public String getAltBrochureUrl() { return altBrochureUrl; }
+    public void setAltBrochureUrl(String altBrochureUrl) { this.altBrochureUrl = altBrochureUrl; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public boolean isFeatured() { return featured; }
     public void setFeatured(boolean featured) { this.featured = featured; }

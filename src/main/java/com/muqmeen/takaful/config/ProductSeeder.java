@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class ProductSeeder implements CommandLineRunner {
@@ -22,37 +23,99 @@ public class ProductSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (productService.count() > 0) return;
+        log.info("Syncing landing product catalogue from official brochure assets.");
 
-        log.info("Products table is empty — seeding the 3 default Takaful products.");
-
-        List<Product> defaults = List.of(
-                build("PruBSN Medical",
-                        "Comprehensive medical coverage with unlimited lifetime limit and cashless hospital admission.",
+        List<Product> brochureProducts = List.of(
+                build("PruBSN AnugerahMax",
+                        "Family takaful protection focused on long-term legacy planning, protection value, and flexible brochure review.",
+                        "Family Protection",
+                        "fa-shield-heart",
+                        "bg-yellow-100 text-zinc-950",
+                        "/brochures/anugerahmax-en.pdf",
+                        "/brochures/anugerahmax-bm.pdf",
+                        true),
+                build("PruBSN Anggun",
+                        "A women-focused takaful plan for protection, savings discipline, and life-stage planning support.",
+                        "Women & Family",
+                        "fa-person-dress",
+                        "bg-yellow-100 text-zinc-950",
+                        "/brochures/anggun-en.pdf",
+                        "/brochures/anggun-bm.pdf",
+                        false),
+                build("PruBSN Asas360",
+                        "Essential protection built for straightforward coverage conversations and a practical first review.",
+                        "Essential Cover",
+                        "fa-circle-nodes",
+                        "bg-yellow-100 text-zinc-950",
+                        "/brochures/asas360-en.pdf",
+                        null,
+                        false),
+                build("PruBSN Kritikal Care360",
+                        "Critical illness focused protection for income continuity, recovery support, and family preparedness.",
+                        "Critical Illness",
                         "fa-heart-pulse",
                         "bg-yellow-100 text-zinc-950",
+                        "/brochures/kritikal-care360-en.pdf",
+                        null,
                         false),
-                build("Hibah Al-Wasiyyah",
-                        "Absolute gift to your loved ones. Ensure they are financially protected without inheritance complexities.",
-                        "fa-hand-holding-dollar",
-                        "bg-zinc-950 text-yellow-300",
-                        true),
-                build("PruBSN EduSmart",
-                        "Secure your child's education fund early with guaranteed savings and high potential returns.",
-                        "fa-user-graduate",
-                        "bg-amber-100 text-zinc-950",
+                build("PruBSN WarisanGold",
+                        "Legacy and wealth transfer planning support for families who want clearer inheritance preparation.",
+                        "Legacy Planning",
+                        "fa-hand-holding-heart",
+                        "bg-yellow-100 text-zinc-950",
+                        "/brochures/warisan-gold-en.pdf",
+                        "/brochures/warisan-gold-bm.pdf",
+                        false),
+                build("PruBSN Aspirasi",
+                        "Savings-led takaful planning for future goals, education conversations, and structured family priorities.",
+                        "Savings Goals",
+                        "fa-seedling",
+                        "bg-yellow-100 text-zinc-950",
+                        "/brochures/aspirasi-bm.pdf",
+                        null,
                         false)
         );
 
-        defaults.forEach(productService::save);
+        brochureProducts.forEach(this::upsert);
+
+        Set<String> replacedPrototypeProducts = Set.of("Hibah Al-Wasiyyah", "PruBSN EduSmart", "PruBSN Medical");
+        replacedPrototypeProducts.forEach(name -> productService.findByName(name).ifPresent(product -> {
+            product.setActive(false);
+            productService.save(product);
+        }));
     }
 
-    private Product build(String name, String description, String iconClass, String accentClass, boolean featured) {
+    private void upsert(Product source) {
+        Product target = productService.findByName(source.getName()).orElseGet(Product::new);
+        target.setName(source.getName());
+        target.setDescription(source.getDescription());
+        target.setCategoryLabel(source.getCategoryLabel());
+        target.setIconClass(source.getIconClass());
+        target.setAccentClass(source.getAccentClass());
+        target.setBrochureUrl(source.getBrochureUrl());
+        target.setAltBrochureUrl(source.getAltBrochureUrl());
+        target.setImageUrl(source.getImageUrl());
+        target.setFeatured(source.isFeatured());
+        target.setActive(true);
+        productService.save(target);
+    }
+
+    private Product build(String name,
+                          String description,
+                          String categoryLabel,
+                          String iconClass,
+                          String accentClass,
+                          String brochureUrl,
+                          String altBrochureUrl,
+                          boolean featured) {
         Product p = new Product();
         p.setName(name);
         p.setDescription(description);
+        p.setCategoryLabel(categoryLabel);
         p.setIconClass(iconClass);
         p.setAccentClass(accentClass);
+        p.setBrochureUrl(brochureUrl);
+        p.setAltBrochureUrl(altBrochureUrl);
         p.setFeatured(featured);
         p.setActive(true);
         return p;
