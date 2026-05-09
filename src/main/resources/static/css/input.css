@@ -252,10 +252,33 @@ body .divide-zinc-200 > :not([hidden]) ~ :not([hidden]) {
   white-space: nowrap;
   text-overflow: ellipsis;
   border-right: 2px solid #facc15;
-  animation: question-typewriter-in 5.8s steps(38, end) both;
 }
 
-@keyframes question-typewriter-in {
+.question-prompt-type-a {
+  animation: question-typewriter-in-a 5.8s steps(38, end) both;
+}
+
+.question-prompt-type-b {
+  animation: question-typewriter-in-b 5.8s steps(38, end) both;
+}
+
+@keyframes question-typewriter-in-a {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  8% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 1;
+  }
+  46%,
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+@keyframes question-typewriter-in-b {
   0% {
     clip-path: inset(0 100% 0 0);
     opacity: 0;
