@@ -252,7 +252,7 @@ body .divide-zinc-200 > :not([hidden]) ~ :not([hidden]) {
   white-space: nowrap;
   text-overflow: ellipsis;
   border-right: 2px solid #facc15;
-  animation: question-typewriter-in 6.4s steps(68, end) both;
+  animation: question-typewriter-in 5.8s steps(38, end) both;
 }
 
 @keyframes question-typewriter-in {

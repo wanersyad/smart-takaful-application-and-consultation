@@ -75,20 +75,20 @@
                         Compare protection, Hibah, medical, and education planning with Muqmeen Group. Book a focused consultation and track every request from your account.
                     </p>
 
-                    <div class="mt-8 flex w-full max-w-2xl rounded-full border border-yellow-400/25 bg-zinc-950/80 p-2 shadow-[0_24px_80px_-48px_rgba(250,204,21,0.45)]">
+                    <div class="mt-8 inline-flex max-w-full rounded-full border border-yellow-400/25 bg-zinc-950/80 p-1.5 shadow-[0_24px_80px_-48px_rgba(250,204,21,0.45)]">
                         <a th:unless="${customerSignedIn}" href="/register"
-                           class="group flex min-h-14 flex-1 items-center gap-3 rounded-full px-5 py-3 text-left text-base font-semibold text-white transition duration-300 hover:bg-yellow-400/10 sm:text-lg">
-                            <span :key="questionKey" class="question-prompt-text flex-1" x-text="heroQuestion">How much coverage do I need?</span>
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 transition duration-300 group-hover:bg-yellow-300">
-                                <i class="fa-solid fa-paper-plane text-sm"></i>
+                           class="group flex min-h-12 max-w-full items-center gap-3 rounded-full px-4 py-2.5 text-left text-sm font-medium text-white transition duration-300 hover:bg-yellow-400/10 sm:text-base">
+                            <span :key="questionKey" class="question-prompt-text" x-text="heroQuestion">How much coverage do I need?</span>
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 transition duration-300 group-hover:bg-yellow-300">
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
                             </span>
                         </a>
                         <button th:if="${customerSignedIn}" type="button"
                                 @click="openBooking('General Takaful Consultation')"
-                                class="group flex min-h-14 flex-1 items-center gap-3 rounded-full px-5 py-3 text-left text-base font-semibold text-white transition duration-300 hover:bg-yellow-400/10 sm:text-lg">
-                            <span :key="questionKey" class="question-prompt-text flex-1" x-text="heroQuestion">How much coverage do I need?</span>
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 transition duration-300 group-hover:bg-yellow-300">
-                                <i class="fa-solid fa-paper-plane text-sm"></i>
+                                class="group flex min-h-12 max-w-full items-center gap-3 rounded-full px-4 py-2.5 text-left text-sm font-medium text-white transition duration-300 hover:bg-yellow-400/10 sm:text-base">
+                            <span :key="questionKey" class="question-prompt-text" x-text="heroQuestion">How much coverage do I need?</span>
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 transition duration-300 group-hover:bg-yellow-300">
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
                             </span>
                         </button>
                     </div>
@@ -658,18 +658,18 @@
                 selectedProduct: '',
                 selectedTip: '5',
                 questionKey: 0,
-                heroQuestion: 'If I already have a medical card, what protection gap should I review?',
+                heroQuestion: 'Do I have enough family protection?',
                 heroQuestions: [
-                    'If I already have a medical card, what protection gap should I review?',
-                    'How much monthly protection can my family sustain without pressure?',
-                    'If something happens to me, how quickly can my family access support?',
-                    'Is Hibah useful if I already named beneficiaries elsewhere?',
-                    'What should I prepare before comparing medical and income protection?',
-                    'How do I protect my parents without overcommitting my budget?',
-                    'Which Takaful option makes sense for a young family with one income?',
-                    'Can I review my existing policy before deciding anything new?',
-                    'What happens to my family plan if my income stops for six months?',
-                    'How do I balance Hibah, medical cover, and education planning?'
+                    'Do I have enough family protection?',
+                    'What gap does my medical card miss?',
+                    'How much cover fits my budget?',
+                    'Can Hibah help my family faster?',
+                    'Should I review my old policy first?',
+                    'How do I protect my parents wisely?',
+                    'What if my income stops suddenly?',
+                    'Which plan fits a young family?',
+                    'Do I need Hibah and medical cover?',
+                    'What should I prepare before booking?'
                 ],
                 initBooking() {
                     const productInput = document.getElementById('productType');
