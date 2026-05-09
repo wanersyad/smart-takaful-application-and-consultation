@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">PruBSN WarisanGold brochure cover</title>
+  <desc id="desc">Yellow and black brochure-style product image for PruBSN WarisanGold.</desc>
+  <rect width="800" height="520" fill="#101010"/>
+  <circle cx="120" cy="110" r="210" fill="#facc15"/>
+  <circle cx="700" cy="450" r="180" fill="#facc15" opacity=".16"/>
+  <path d="M514 104h178v292H514z" fill="#facc15"/>
+  <path d="M556 154h94M556 202h94M556 250h94M556 298h94" stroke="#101010" stroke-width="16" stroke-linecap="round"/>
+  <text x="70" y="160" font-family="Poppins, Arial, sans-serif" font-size="26" font-weight="600" fill="#101010">LEGACY PLANNING</text>
+  <text x="70" y="274" font-family="Poppins, Arial, sans-serif" font-size="68" font-weight="600" fill="#ffffff">Warisan</text>
+  <text x="70" y="344" font-family="Poppins, Arial, sans-serif" font-size="68" font-weight="600" fill="#facc15">Gold</text>
+  <text x="72" y="404" font-family="Poppins, Arial, sans-serif" font-size="24" font-weight="500" fill="#d4d4d8">Family inheritance preparation</text>
+</svg>

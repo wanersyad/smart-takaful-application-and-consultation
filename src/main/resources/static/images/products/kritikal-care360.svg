@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">PruBSN Kritikal Care360 brochure cover</title>
+  <desc id="desc">Yellow and black brochure-style product image for PruBSN Kritikal Care360.</desc>
+  <rect width="800" height="520" fill="#101010"/>
+  <path d="M0 0h800L612 520H0z" fill="#facc15"/>
+  <path d="M112 94h322v332H112z" fill="#101010" opacity=".12"/>
+  <text x="70" y="128" font-family="Poppins, Arial, sans-serif" font-size="26" font-weight="600" fill="#101010">CRITICAL ILLNESS</text>
+  <text x="70" y="232" font-family="Poppins, Arial, sans-serif" font-size="62" font-weight="600" fill="#101010">Kritikal</text>
+  <text x="70" y="300" font-family="Poppins, Arial, sans-serif" font-size="62" font-weight="600" fill="#101010">Care360</text>
+  <text x="72" y="364" font-family="Poppins, Arial, sans-serif" font-size="24" font-weight="500" fill="#101010">Recovery support planning</text>
+  <path d="M626 210c-58-70-166-22-166 64 0 86 166 170 166 170s166-84 166-170c0-86-108-134-166-64z" fill="#facc15"/>
+  <path d="M514 302h66l24-54 43 104 32-50h58" fill="none" stroke="#101010" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

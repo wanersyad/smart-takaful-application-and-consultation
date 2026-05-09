@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">PruBSN AnugerahMax brochure cover</title>
+  <desc id="desc">Yellow and black brochure-style product image for PruBSN AnugerahMax.</desc>
+  <rect width="800" height="520" fill="#101010"/>
+  <path d="M0 0h520c70 95 80 210 28 345L0 520z" fill="#facc15"/>
+  <circle cx="642" cy="118" r="86" fill="#facc15" opacity=".18"/>
+  <circle cx="684" cy="386" r="122" fill="#facc15" opacity=".10"/>
+  <rect x="70" y="70" width="240" height="58" rx="29" fill="#101010"/>
+  <text x="105" y="108" font-family="Poppins, Arial, sans-serif" font-size="28" font-weight="600" fill="#facc15">FAMILY</text>
+  <text x="70" y="230" font-family="Poppins, Arial, sans-serif" font-size="72" font-weight="600" fill="#101010">Anugerah</text>
+  <text x="70" y="306" font-family="Poppins, Arial, sans-serif" font-size="72" font-weight="600" fill="#101010">Max</text>
+  <text x="70" y="378" font-family="Poppins, Arial, sans-serif" font-size="24" font-weight="500" fill="#101010">Legacy protection review</text>
+  <path d="M602 192l52 36 52-36v150c0 64-42 95-104 116-62-21-104-52-104-116V192l52 36z" fill="#facc15"/>
+  <path d="M602 234l30 20 30-20v100c0 37-23 57-60 72-37-15-60-35-60-72V234l30 20z" fill="#101010"/>
+</svg>

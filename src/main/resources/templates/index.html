@@ -156,51 +156,44 @@
                              th:classappend="${product.featured} ? ' ring-2 ring-yellow-400/90' : ''">
                         <p th:if="${product.featured}" class="absolute right-5 top-5 z-20 rounded-full bg-yellow-400 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-zinc-950">Popular</p>
                         <div>
-                            <div class="relative overflow-hidden rounded-[1.5rem] border border-yellow-400/20 bg-[linear-gradient(135deg,#facc15_0%,#facc15_44%,#101010_44%,#101010_100%)] p-5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-                                <div class="absolute -right-8 -top-10 h-28 w-28 rounded-full bg-white/10"></div>
-                                <div class="absolute -bottom-12 left-8 h-28 w-28 rounded-full bg-black/20"></div>
-                                <div class="relative flex min-h-36 flex-col justify-between">
-                                    <div class="flex items-start justify-between gap-4">
-                                        <div>
-                                            <p class="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-zinc-950"
-                                               th:text="${product.categoryLabel != null && !#strings.isEmpty(product.categoryLabel) ? product.categoryLabel : 'Takaful Plan'}">Family Protection</p>
-                                            <p class="mt-2 max-w-[11rem] text-2xl font-semibold leading-tight text-zinc-950" th:text="${product.name}">PruBSN Product</p>
-                                        </div>
-                                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-zinc-950 text-yellow-400">
-                                            <i th:class="|fa-solid ${product.iconClass} text-xl|"></i>
-                                        </span>
-                                    </div>
-                                    <p class="text-xs font-medium uppercase tracking-[0.16em] text-white/75">Official brochure</p>
+                            <div class="relative overflow-hidden rounded-[1.5rem] border border-yellow-400/20 bg-zinc-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                                <img th:if="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}"
+                                     th:src="${product.imageUrl}"
+                                     th:alt="|${product.name} brochure image|"
+                                     class="h-52 w-full object-cover transition duration-500 group-hover:scale-[1.03]">
+                                <div th:unless="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}"
+                                     class="flex h-52 items-center justify-center bg-yellow-400 text-zinc-950">
+                                    <i th:class="|fa-solid ${product.iconClass} text-4xl|"></i>
                                 </div>
+                                <div class="absolute bottom-4 left-4 rounded-full bg-zinc-950/90 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-yellow-400"
+                                     th:text="${product.categoryLabel != null && !#strings.isEmpty(product.categoryLabel) ? product.categoryLabel : 'Takaful Plan'}">Family Protection</div>
                             </div>
                             <h3 class="mt-6 text-2xl font-semibold text-yellow-400" th:text="${product.name}">Product</h3>
                             <p class="mt-3 text-sm font-medium leading-6 text-white/70" th:text="${product.description}">Description</p>
                         </div>
-                        <div class="mt-7 flex flex-wrap items-center gap-3">
-                            <button th:if="${customerSignedIn}" type="button"
-                                    th:data-product-name="${product.name}"
-                                    @click="openBooking($el.dataset.productName || 'Consultation')"
-                                    class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                                Start Consultation <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                            <a th:unless="${customerSignedIn}"
-                               th:href="@{/login(redirect=${'/?productId=' + product.id})}"
-                               class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                                Get Guided Advice <i class="fa-solid fa-arrow-right"></i>
-                            </a>
+                        <div class="mt-7 grid grid-cols-2 gap-3">
                             <a th:if="${product.brochureUrl != null && !#strings.isEmpty(product.brochureUrl)}"
                                th:href="${product.brochureUrl}"
                                target="_blank"
                                rel="noopener"
-                               class="inline-flex items-center justify-center gap-2 rounded-full border border-yellow-400/25 px-4 py-3 text-sm font-semibold text-white hover:border-yellow-400 hover:bg-yellow-400/10">
-                                View Brochure <i class="fa-solid fa-file-pdf"></i>
+                               class="inline-flex items-center justify-center rounded-full border border-yellow-400/25 px-4 py-3 text-sm font-semibold text-white hover:border-yellow-400 hover:bg-yellow-400/10">
+                                View Details
                             </a>
-                            <a th:if="${product.altBrochureUrl != null && !#strings.isEmpty(product.altBrochureUrl)}"
-                               th:href="${product.altBrochureUrl}"
-                               target="_blank"
-                               rel="noopener"
-                               class="inline-flex items-center justify-center rounded-full border border-yellow-400/20 px-3 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white/70 hover:border-yellow-400 hover:text-yellow-400">
-                                BM
+                            <button th:unless="${product.brochureUrl != null && !#strings.isEmpty(product.brochureUrl)}"
+                                    type="button"
+                                    class="inline-flex items-center justify-center rounded-full border border-yellow-400/25 px-4 py-3 text-sm font-semibold text-white">
+                                View Details
+                            </button>
+                            <button th:if="${customerSignedIn}" type="button"
+                                    th:data-product-name="${product.name}"
+                                    @click="openBooking($el.dataset.productName || 'Consultation')"
+                                    class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
+                                Consult Agent <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <a th:unless="${customerSignedIn}"
+                               th:href="@{/login(redirect=${'/?productId=' + product.id})}"
+                               class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
+                                Consult Agent <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         </div>
                     </article>

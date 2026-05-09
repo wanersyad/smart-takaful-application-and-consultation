@@ -31,16 +31,18 @@ public class ProductSeeder implements CommandLineRunner {
                         "Family Protection",
                         "fa-shield-heart",
                         "bg-yellow-100 text-zinc-950",
-                        "/brochures/anugerahmax-en.pdf",
                         "/brochures/anugerahmax-bm.pdf",
+                        "/brochures/anugerahmax-en.pdf",
+                        "/images/products/anugerahmax.svg",
                         true),
                 build("PruBSN Anggun",
                         "A women-focused takaful plan for protection, savings discipline, and life-stage planning support.",
                         "Women & Family",
                         "fa-person-dress",
                         "bg-yellow-100 text-zinc-950",
-                        "/brochures/anggun-en.pdf",
                         "/brochures/anggun-bm.pdf",
+                        "/brochures/anggun-en.pdf",
+                        "/images/products/anggun.svg",
                         false),
                 build("PruBSN Asas360",
                         "Essential protection built for straightforward coverage conversations and a practical first review.",
@@ -49,6 +51,7 @@ public class ProductSeeder implements CommandLineRunner {
                         "bg-yellow-100 text-zinc-950",
                         "/brochures/asas360-en.pdf",
                         null,
+                        "/images/products/asas360.svg",
                         false),
                 build("PruBSN Kritikal Care360",
                         "Critical illness focused protection for income continuity, recovery support, and family preparedness.",
@@ -57,14 +60,16 @@ public class ProductSeeder implements CommandLineRunner {
                         "bg-yellow-100 text-zinc-950",
                         "/brochures/kritikal-care360-en.pdf",
                         null,
+                        "/images/products/kritikal-care360.svg",
                         false),
                 build("PruBSN WarisanGold",
                         "Legacy and wealth transfer planning support for families who want clearer inheritance preparation.",
                         "Legacy Planning",
                         "fa-hand-holding-heart",
                         "bg-yellow-100 text-zinc-950",
-                        "/brochures/warisan-gold-en.pdf",
                         "/brochures/warisan-gold-bm.pdf",
+                        "/brochures/warisan-gold-en.pdf",
+                        "/images/products/warisan-gold.svg",
                         false),
                 build("PruBSN Aspirasi",
                         "Savings-led takaful planning for future goals, education conversations, and structured family priorities.",
@@ -73,6 +78,7 @@ public class ProductSeeder implements CommandLineRunner {
                         "bg-yellow-100 text-zinc-950",
                         "/brochures/aspirasi-bm.pdf",
                         null,
+                        "/images/products/aspirasi.svg",
                         false)
         );
 
@@ -107,6 +113,7 @@ public class ProductSeeder implements CommandLineRunner {
                           String accentClass,
                           String brochureUrl,
                           String altBrochureUrl,
+                          String imageUrl,
                           boolean featured) {
         Product p = new Product();
         p.setName(name);
@@ -116,6 +123,7 @@ public class ProductSeeder implements CommandLineRunner {
         p.setAccentClass(accentClass);
         p.setBrochureUrl(brochureUrl);
         p.setAltBrochureUrl(altBrochureUrl);
+        p.setImageUrl(imageUrl);
         p.setFeatured(featured);
         p.setActive(true);
         return p;

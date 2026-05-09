@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">PruBSN Asas360 brochure cover</title>
+  <desc id="desc">Yellow and black brochure-style product image for PruBSN Asas360.</desc>
+  <rect width="800" height="520" fill="#101010"/>
+  <rect x="0" y="0" width="800" height="520" fill="url(#grid)" opacity=".32"/>
+  <defs>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0v48" fill="none" stroke="#facc15" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <path d="M0 330c170-80 321-68 454 36 98 77 214 91 346 42v112H0z" fill="#facc15"/>
+  <text x="70" y="146" font-family="Poppins, Arial, sans-serif" font-size="26" font-weight="600" fill="#facc15">ESSENTIAL COVER</text>
+  <text x="70" y="250" font-family="Poppins, Arial, sans-serif" font-size="78" font-weight="600" fill="#ffffff">Asas360</text>
+  <text x="72" y="310" font-family="Poppins, Arial, sans-serif" font-size="24" font-weight="500" fill="#d4d4d8">Practical first protection review</text>
+  <circle cx="624" cy="178" r="82" fill="#facc15"/>
+  <circle cx="624" cy="178" r="38" fill="#101010"/>
+  <path d="M624 96v-38M624 298v-38M542 178h-38M744 178h-38" stroke="#facc15" stroke-width="20" stroke-linecap="round"/>
+</svg>

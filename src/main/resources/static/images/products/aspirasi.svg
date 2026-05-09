@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">PruBSN Aspirasi brochure cover</title>
+  <desc id="desc">Yellow and black brochure-style product image for PruBSN Aspirasi.</desc>
+  <rect width="800" height="520" fill="#101010"/>
+  <path d="M0 0h800v520H456C522 377 509 250 417 139 339 45 204 9 0 31z" fill="#facc15"/>
+  <path d="M590 374c0-120 70-190 140-226 4 116-40 202-140 226z" fill="#101010"/>
+  <path d="M590 374c0-99-58-156-116-186-4 96 32 166 116 186z" fill="#101010" opacity=".74"/>
+  <path d="M590 406V258" stroke="#facc15" stroke-width="18" stroke-linecap="round"/>
+  <text x="70" y="134" font-family="Poppins, Arial, sans-serif" font-size="26" font-weight="600" fill="#101010">SAVINGS GOALS</text>
+  <text x="70" y="252" font-family="Poppins, Arial, sans-serif" font-size="76" font-weight="600" fill="#101010">Aspirasi</text>
+  <text x="72" y="316" font-family="Poppins, Arial, sans-serif" font-size="24" font-weight="500" fill="#101010">Structured future planning</text>
+</svg>

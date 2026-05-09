@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">PruBSN Anggun brochure cover</title>
+  <desc id="desc">Yellow and black brochure-style product image for PruBSN Anggun.</desc>
+  <rect width="800" height="520" fill="#101010"/>
+  <path d="M0 0h800v172C598 142 487 195 372 298 245 413 117 463 0 438z" fill="#facc15"/>
+  <circle cx="170" cy="150" r="96" fill="#101010" opacity=".14"/>
+  <circle cx="600" cy="376" r="130" fill="#facc15" opacity=".14"/>
+  <text x="70" y="112" font-family="Poppins, Arial, sans-serif" font-size="26" font-weight="600" fill="#101010">WOMEN &amp; FAMILY</text>
+  <text x="70" y="258" font-family="Poppins, Arial, sans-serif" font-size="76" font-weight="600" fill="#facc15">Anggun</text>
+  <text x="72" y="318" font-family="Poppins, Arial, sans-serif" font-size="24" font-weight="500" fill="#ffffff">Protection for life stages</text>
+  <path d="M620 172c-55 0-100 45-100 100 0 76 100 154 100 154s100-78 100-154c0-55-45-100-100-100z" fill="#facc15"/>
+  <circle cx="620" cy="268" r="42" fill="#101010"/>
+</svg>
