@@ -43,12 +43,11 @@ public class ChatKnowledgeBase {
             need, avoiding riba (interest), gharar (excessive uncertainty), and maysir
             (gambling). Surpluses can be shared back with participants.
 
-            HIBAH AL-WASIYYAH
-            Hibah is an absolute gift made during one's lifetime. In a Takaful context it
-            allows the participant to nominate beneficiaries who will receive the Takaful
-            benefit directly upon the participant's passing, bypassing the lengthy faraid
-            inheritance distribution process. This is one of Muqmeen Group's most popular
-            products.
+            PRODUCT FOCUS
+            Muqmeen Group currently guides customers through PruBSN brochure options such
+            as AnugerahMax, Anggun, Asas360, Kritikal Care360, WarisanGold, and Aspirasi.
+            Hibah remains part of the planning conversation where legacy and beneficiary
+            preparation are relevant.
 
             CONSULTATION MODES
             Customers can request a free consultation in three ways through the booking
@@ -62,7 +61,7 @@ public class ChatKnowledgeBase {
             affect the consultation.
 
             HOW TO BOOK
-            On the landing page, click the "I'm Interested" button on any product card.
+            On the landing page, click the consultation button on any product card.
             A modal opens to capture name, WhatsApp number, preferred consultation mode,
             and optional tip. After submission an agent will follow up via the chosen
             channel.""";

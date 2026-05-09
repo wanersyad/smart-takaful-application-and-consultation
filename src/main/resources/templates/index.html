@@ -136,74 +136,71 @@
             </div>
         </section>
 
-        <section class="bg-white pt-20">
-            <div class="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-10 text-center text-sm font-semibold uppercase tracking-[0.12em] text-zinc-300 sm:grid-cols-3 sm:px-6 lg:grid-cols-5 lg:px-8">
-                <div class="flex items-center justify-center gap-2"><i class="fa-solid fa-building"></i> Muqmeen</div>
-                <div class="flex items-center justify-center gap-2"><i class="fa-solid fa-moon"></i> Shariah</div>
-                <div class="flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp"></i> WhatsApp</div>
-                <div class="flex items-center justify-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> History</div>
-                <div class="col-span-2 flex items-center justify-center gap-2 sm:col-span-1"><i class="fa-solid fa-credit-card"></i> ToyyibPay</div>
-            </div>
-        </section>
-
-        <section id="products" class="relative bg-zinc-100 py-20">
+        <section id="products" class="relative bg-zinc-950 py-20">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="mx-auto mb-12 max-w-2xl text-center">
-                    <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-600">Our Takaful Package</p>
-                    <h2 class="mt-3 text-4xl font-semibold tracking-tight text-zinc-950">Protection plans built around your family</h2>
-                    <p class="mt-3 text-sm font-medium leading-6 text-zinc-500">Choose the product that matches your concern and start a guided consultation with Muqmeen Group.</p>
+                <div class="mx-auto mb-12 max-w-6xl text-center">
+                    <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-400">Official PruBSN Brochures</p>
+                    <h2 class="mt-3 text-4xl font-semibold tracking-tight text-yellow-400 lg:whitespace-nowrap xl:text-5xl">Protection plans built around your family</h2>
+                    <p class="mt-3 text-sm font-medium leading-6 text-white/70 lg:whitespace-nowrap">Choose the product that matches your concern and start a guided consultation with Muqmeen Group.</p>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                     <div th:if="${#lists.isEmpty(products)}"
-                         class="md:col-span-2 xl:col-span-4 rounded-[2rem] border border-dashed border-zinc-300 bg-white px-6 py-16 text-center text-zinc-400">
+                         class="md:col-span-2 xl:col-span-3 rounded-[2rem] border border-dashed border-yellow-400/30 bg-zinc-900 px-6 py-16 text-center text-white/60">
                         <i class="fa-regular fa-folder-open mb-3 block text-3xl"></i>
                         No products available right now. Please check back soon.
                     </div>
 
                     <article th:each="product, iter : ${products}"
-                             class="group flex min-h-[20rem] flex-col justify-between rounded-[2rem] border border-zinc-100 bg-white p-7 text-center shadow-[0_28px_70px_-58px_rgba(9,9,11,0.7)] transition duration-300 hover:-translate-y-1 hover:shadow-premium"
-                             th:classappend="${product.featured} ? ' ring-2 ring-yellow-400' : ''">
+                             class="group relative flex min-h-[25rem] flex-col justify-between overflow-hidden rounded-[2rem] border border-yellow-400/15 bg-[#111111] p-6 shadow-[0_28px_70px_-58px_rgba(250,204,21,0.55)] transition duration-300 hover:-translate-y-1 hover:border-yellow-400/45 hover:shadow-premium"
+                             th:classappend="${product.featured} ? ' ring-2 ring-yellow-400/90' : ''">
+                        <p th:if="${product.featured}" class="absolute right-5 top-5 z-20 rounded-full bg-yellow-400 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-zinc-950">Popular</p>
                         <div>
-                            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 text-zinc-950 group-hover:bg-yellow-400">
-                                <i th:class="|fa-solid ${product.iconClass} text-2xl|"></i>
+                            <div class="relative overflow-hidden rounded-[1.5rem] border border-yellow-400/20 bg-[linear-gradient(135deg,#facc15_0%,#facc15_44%,#101010_44%,#101010_100%)] p-5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                                <div class="absolute -right-8 -top-10 h-28 w-28 rounded-full bg-white/10"></div>
+                                <div class="absolute -bottom-12 left-8 h-28 w-28 rounded-full bg-black/20"></div>
+                                <div class="relative flex min-h-36 flex-col justify-between">
+                                    <div class="flex items-start justify-between gap-4">
+                                        <div>
+                                            <p class="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-zinc-950"
+                                               th:text="${product.categoryLabel != null && !#strings.isEmpty(product.categoryLabel) ? product.categoryLabel : 'Takaful Plan'}">Family Protection</p>
+                                            <p class="mt-2 max-w-[11rem] text-2xl font-semibold leading-tight text-zinc-950" th:text="${product.name}">PruBSN Product</p>
+                                        </div>
+                                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-zinc-950 text-yellow-400">
+                                            <i th:class="|fa-solid ${product.iconClass} text-xl|"></i>
+                                        </span>
+                                    </div>
+                                    <p class="text-xs font-medium uppercase tracking-[0.16em] text-white/75">Official brochure</p>
+                                </div>
                             </div>
-                            <p th:if="${product.featured}" class="mx-auto mt-5 w-fit rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-yellow-700">Popular</p>
-                            <h3 class="mt-5 text-xl font-semibold text-zinc-950" th:text="${product.name}">Product</h3>
-                            <p class="mt-3 text-sm font-medium leading-6 text-zinc-500" th:text="${product.description}">Description</p>
+                            <h3 class="mt-6 text-2xl font-semibold text-yellow-400" th:text="${product.name}">Product</h3>
+                            <p class="mt-3 text-sm font-medium leading-6 text-white/70" th:text="${product.description}">Description</p>
                         </div>
-                        <div class="mt-7">
+                        <div class="mt-7 flex flex-wrap items-center gap-3">
                             <button th:if="${customerSignedIn}" type="button"
                                     th:data-product-name="${product.name}"
                                     @click="openBooking($el.dataset.productName || 'Consultation')"
-                                    class="inline-flex items-center justify-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white hover:bg-yellow-400 hover:text-zinc-950">
-                                I'm Interested <i class="fa-solid fa-arrow-right"></i>
+                                    class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
+                                Start Consultation <i class="fa-solid fa-arrow-right"></i>
                             </button>
                             <a th:unless="${customerSignedIn}"
                                th:href="@{/login(redirect=${'/?productId=' + product.id})}"
-                               class="inline-flex items-center justify-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white hover:bg-yellow-400 hover:text-zinc-950">
-                                Sign in to Continue <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </article>
-
-                    <article class="flex min-h-[20rem] flex-col justify-between rounded-[2rem] border border-zinc-100 bg-white p-7 text-center shadow-[0_28px_70px_-58px_rgba(9,9,11,0.7)] transition duration-300 hover:-translate-y-1 hover:shadow-premium">
-                        <div>
-                            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-950 text-yellow-300">
-                                <i class="fa-solid fa-sliders text-2xl"></i>
-                            </div>
-                            <h3 class="mt-5 text-xl font-semibold text-zinc-950">Custom Family Review</h3>
-                            <p class="mt-3 text-sm font-medium leading-6 text-zinc-500">Build your own planning path around protection, Hibah, medical needs, and education goals.</p>
-                        </div>
-                        <div class="mt-7">
-                            <button th:if="${customerSignedIn}" type="button"
-                                    @click="openBooking('Custom Family Takaful Review')"
-                                    class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                                Learn More <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                            <a th:unless="${customerSignedIn}" href="/login"
                                class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                                Learn More <i class="fa-solid fa-arrow-right"></i>
+                                Get Guided Advice <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                            <a th:if="${product.brochureUrl != null && !#strings.isEmpty(product.brochureUrl)}"
+                               th:href="${product.brochureUrl}"
+                               target="_blank"
+                               rel="noopener"
+                               class="inline-flex items-center justify-center gap-2 rounded-full border border-yellow-400/25 px-4 py-3 text-sm font-semibold text-white hover:border-yellow-400 hover:bg-yellow-400/10">
+                                View Brochure <i class="fa-solid fa-file-pdf"></i>
+                            </a>
+                            <a th:if="${product.altBrochureUrl != null && !#strings.isEmpty(product.altBrochureUrl)}"
+                               th:href="${product.altBrochureUrl}"
+                               target="_blank"
+                               rel="noopener"
+                               class="inline-flex items-center justify-center rounded-full border border-yellow-400/20 px-3 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white/70 hover:border-yellow-400 hover:text-yellow-400">
+                                BM
                             </a>
                         </div>
                     </article>
@@ -551,7 +548,7 @@
                 panel.classList.remove('hidden');
                 panel.classList.add('flex');
                 if (!opened) {
-                    appendMessage('assistant', "Hi! I'm Muqmeen's Takaful assistant. Ask me about our products, Hibah Al-Wasiyyah, or how to book a consultation.");
+                    appendMessage('assistant', "Hi! I'm Muqmeen's Takaful assistant. Ask me about our PruBSN brochure products, Hibah planning, or how to book a consultation.");
                     opened = true;
                 }
                 setTimeout(function () { input.focus(); }, 50);

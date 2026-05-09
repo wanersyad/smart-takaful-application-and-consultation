@@ -65,7 +65,8 @@ class SecurityIntegrationTests {
     void anonymousUsersCanBrowsePublicRoutesAndSeeLoginContract() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Sign in to Continue")))
+                .andExpect(content().string(containsString("Get Guided Advice")))
+                .andExpect(content().string(containsString("PruBSN AnugerahMax")))
                 .andExpect(content().string(containsString("/login?redirect=")))
                 .andExpect(content().string(not(containsString("/admin"))));
 
