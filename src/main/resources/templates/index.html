@@ -77,15 +77,19 @@
 
                     <div class="mt-8 flex w-full max-w-xl rounded-full border border-yellow-400/25 bg-zinc-950/80 p-2 shadow-[0_24px_80px_-48px_rgba(250,204,21,0.45)]">
                         <a th:unless="${customerSignedIn}" href="/register"
-                           class="group flex min-h-14 flex-1 items-center rounded-full px-5 py-3 text-left text-sm font-semibold text-white transition duration-300 hover:bg-yellow-400/10">
-                            <i class="fa-regular fa-comment-dots mr-3 text-yellow-400"></i>
-                            <span :key="questionKey" class="question-typewriter" x-text="heroQuestion">How much coverage do I need?</span>
+                           class="group flex min-h-14 flex-1 items-center gap-3 rounded-full px-5 py-3 text-left text-sm font-semibold text-white transition duration-300 hover:bg-yellow-400/10">
+                            <span :key="questionKey" class="question-prompt-text flex-1" x-text="heroQuestion">How much coverage do I need?</span>
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 transition duration-300 group-hover:bg-yellow-300">
+                                <i class="fa-solid fa-paper-plane text-sm"></i>
+                            </span>
                         </a>
                         <button th:if="${customerSignedIn}" type="button"
                                 @click="openBooking('General Takaful Consultation')"
-                                class="group flex min-h-14 flex-1 items-center rounded-full px-5 py-3 text-left text-sm font-semibold text-white transition duration-300 hover:bg-yellow-400/10">
-                            <i class="fa-regular fa-comment-dots mr-3 text-yellow-400"></i>
-                            <span :key="questionKey" class="question-typewriter" x-text="heroQuestion">How much coverage do I need?</span>
+                                class="group flex min-h-14 flex-1 items-center gap-3 rounded-full px-5 py-3 text-left text-sm font-semibold text-white transition duration-300 hover:bg-yellow-400/10">
+                            <span :key="questionKey" class="question-prompt-text flex-1" x-text="heroQuestion">How much coverage do I need?</span>
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 transition duration-300 group-hover:bg-yellow-300">
+                                <i class="fa-solid fa-paper-plane text-sm"></i>
+                            </span>
                         </button>
                     </div>
 
@@ -114,21 +118,21 @@
                 </div>
             </div>
 
-            <div class="relative z-30 mx-auto -mb-8 max-w-5xl px-4">
-                <div class="grid grid-cols-2 gap-3 rounded-[2rem] border border-yellow-400/25 bg-zinc-950/90 p-3 shadow-premium backdrop-blur-xl md:grid-cols-4">
-                    <div class="rounded-[1.4rem] border border-yellow-400/15 bg-yellow-400/10 px-4 py-4 text-center">
+            <div class="relative z-30 mx-auto -mt-8 max-w-5xl px-4">
+                <div class="grid grid-cols-2 gap-3 rounded-[2rem] border border-yellow-400/20 bg-zinc-950/90 p-3 shadow-premium backdrop-blur-xl md:grid-cols-4">
+                    <div class="rounded-[1.4rem] bg-yellow-400/10 px-4 py-4 text-center">
                         <p class="text-3xl font-semibold leading-none text-yellow-400">30+</p>
                         <p class="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Clients Guided</p>
                     </div>
-                    <div class="rounded-[1.4rem] border border-yellow-400/15 bg-white/[0.03] px-4 py-4 text-center">
+                    <div class="rounded-[1.4rem] bg-white/[0.03] px-4 py-4 text-center">
                         <p class="text-3xl font-semibold leading-none text-yellow-400">70+</p>
                         <p class="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Consultations</p>
                     </div>
-                    <div class="rounded-[1.4rem] border border-yellow-400/15 bg-white/[0.03] px-4 py-4 text-center">
+                    <div class="rounded-[1.4rem] bg-white/[0.03] px-4 py-4 text-center">
                         <p class="text-3xl font-semibold leading-none text-yellow-400">25+</p>
                         <p class="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Hibah Reviews</p>
                     </div>
-                    <div class="rounded-[1.4rem] border border-yellow-400/15 bg-white/[0.03] px-4 py-4 text-center">
+                    <div class="rounded-[1.4rem] bg-white/[0.03] px-4 py-4 text-center">
                         <p class="text-3xl font-semibold leading-none text-yellow-400">24h</p>
                         <p class="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Follow-Up Target</p>
                     </div>
