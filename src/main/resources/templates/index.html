@@ -68,10 +68,6 @@
         <section id="home" class="relative bg-[radial-gradient(circle_at_12%_12%,#fff7cc_0,#fff7cc_18%,transparent_38%),linear-gradient(110deg,#f8fbff_0%,#fffaf1_100%)]">
             <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-16 pt-16 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8 lg:pb-24 lg:pt-20">
                 <div>
-                    <p class="mb-5 inline-flex items-center rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-600 shadow-sm">
-                        <i class="fa-solid fa-star-of-life mr-2 text-yellow-500"></i>
-                        Smart Takaful Consultation
-                    </p>
                     <h1 class="hero-title max-w-3xl text-5xl font-semibold leading-[0.95] tracking-tight text-zinc-950 sm:text-6xl lg:text-7xl">
                         Your Trusted Takaful Partner
                     </h1>
@@ -79,24 +75,17 @@
                         Compare protection, Hibah, medical, and education planning with Muqmeen Group. Book a focused consultation and track every request from your account.
                     </p>
 
-                    <div class="mt-8 flex w-full max-w-xl flex-col gap-3 rounded-full border border-zinc-200 bg-white p-2 shadow-[0_24px_80px_-48px_rgba(9,9,11,0.55)] sm:flex-row">
+                    <div class="mt-8 flex w-full max-w-xl rounded-full border border-yellow-400/25 bg-zinc-950/80 p-2 shadow-[0_24px_80px_-48px_rgba(250,204,21,0.45)]">
                         <a th:unless="${customerSignedIn}" href="/register"
-                           class="flex-1 rounded-full px-5 py-3 text-sm font-semibold text-zinc-500 hover:bg-zinc-50">
-                            Create your customer account
+                           class="group flex min-h-14 flex-1 items-center rounded-full px-5 py-3 text-left text-sm font-semibold text-white transition duration-300 hover:bg-yellow-400/10">
+                            <i class="fa-regular fa-comment-dots mr-3 text-yellow-400"></i>
+                            <span :key="questionKey" class="question-typewriter" x-text="heroQuestion">How much coverage do I need?</span>
                         </a>
                         <button th:if="${customerSignedIn}" type="button"
                                 @click="openBooking('General Takaful Consultation')"
-                                class="flex-1 rounded-full px-5 py-3 text-left text-sm font-semibold text-zinc-500 hover:bg-zinc-50">
-                            Continue as <span th:text="${currentCustomer.fullName}">Customer</span>
-                        </button>
-                        <a th:unless="${customerSignedIn}" href="/register"
-                           class="rounded-full bg-zinc-950 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-yellow-400 hover:text-zinc-950">
-                            Get A Quote
-                        </a>
-                        <button th:if="${customerSignedIn}" type="button"
-                                @click="openBooking('General Takaful Consultation')"
-                                class="rounded-full bg-zinc-950 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-yellow-400 hover:text-zinc-950">
-                            Get A Quote
+                                class="group flex min-h-14 flex-1 items-center rounded-full px-5 py-3 text-left text-sm font-semibold text-white transition duration-300 hover:bg-yellow-400/10">
+                            <i class="fa-regular fa-comment-dots mr-3 text-yellow-400"></i>
+                            <span :key="questionKey" class="question-typewriter" x-text="heroQuestion">How much coverage do I need?</span>
                         </button>
                     </div>
 
@@ -125,20 +114,24 @@
                 </div>
             </div>
 
-            <div class="relative z-30 mx-auto -mb-8 max-w-3xl px-4">
-                <div class="flex items-center justify-between gap-2 rounded-full border border-white/80 bg-white/90 p-2 shadow-premium backdrop-blur-xl">
-                    <a href="#home" class="flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-zinc-900">
-                        <i class="fa-solid fa-house"></i><span class="hidden sm:inline">Home</span>
-                    </a>
-                    <a href="#products" class="flex flex-1 items-center justify-center gap-2 rounded-full bg-yellow-400 px-4 py-3 text-sm font-semibold text-zinc-950 shadow-sm">
-                        <i class="fa-solid fa-shield-halved"></i><span class="hidden sm:inline">Takaful</span>
-                    </a>
-                    <a href="#products" class="flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-zinc-900">
-                        <i class="fa-solid fa-hand-holding-dollar"></i><span class="hidden sm:inline">Hibah</span>
-                    </a>
-                    <a href="#faq" class="flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-zinc-900">
-                        <i class="fa-solid fa-circle-question"></i><span class="hidden sm:inline">FAQ</span>
-                    </a>
+            <div class="relative z-30 mx-auto -mb-8 max-w-5xl px-4">
+                <div class="grid grid-cols-2 gap-3 rounded-[2rem] border border-yellow-400/25 bg-zinc-950/90 p-3 shadow-premium backdrop-blur-xl md:grid-cols-4">
+                    <div class="rounded-[1.4rem] border border-yellow-400/15 bg-yellow-400/10 px-4 py-4 text-center">
+                        <p class="text-3xl font-semibold leading-none text-yellow-400">30+</p>
+                        <p class="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Clients Guided</p>
+                    </div>
+                    <div class="rounded-[1.4rem] border border-yellow-400/15 bg-white/[0.03] px-4 py-4 text-center">
+                        <p class="text-3xl font-semibold leading-none text-yellow-400">70+</p>
+                        <p class="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Consultations</p>
+                    </div>
+                    <div class="rounded-[1.4rem] border border-yellow-400/15 bg-white/[0.03] px-4 py-4 text-center">
+                        <p class="text-3xl font-semibold leading-none text-yellow-400">25+</p>
+                        <p class="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Hibah Reviews</p>
+                    </div>
+                    <div class="rounded-[1.4rem] border border-yellow-400/15 bg-white/[0.03] px-4 py-4 text-center">
+                        <p class="text-3xl font-semibold leading-none text-yellow-400">24h</p>
+                        <p class="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Follow-Up Target</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -664,11 +657,27 @@
                 bookingOpen: false,
                 selectedProduct: '',
                 selectedTip: '5',
+                questionKey: 0,
+                heroQuestion: 'How much coverage do I need?',
+                heroQuestions: [
+                    'How much coverage do I need?',
+                    'Can Hibah protect my family?',
+                    'Which medical plan fits my budget?',
+                    'How do I compare Takaful options?',
+                    'What happens if income stops?',
+                    'Can I plan protection for my parents?',
+                    'How fast can an agent follow up?',
+                    'Do I need Hibah and medical cover?',
+                    'Can I track my consultation history?',
+                    'What should I prepare before booking?'
+                ],
                 initBooking() {
                     const productInput = document.getElementById('productType');
                     const tipInput = document.querySelector('input[name="tipAmount"]');
                     if (productInput && productInput.value) this.selectedProduct = productInput.value;
                     if (tipInput && tipInput.value) this.selectedTip = tipInput.value;
+                    this.rotateHeroQuestion();
+                    window.setInterval(() => this.rotateHeroQuestion(), 5000);
                     if (document.body.dataset.selectedProduct) {
                         this.selectedProduct = document.body.dataset.selectedProduct;
                         this.bookingOpen = true;
@@ -684,6 +693,15 @@
                 },
                 closeBooking() {
                     this.bookingOpen = false;
+                },
+                rotateHeroQuestion() {
+                    if (!this.heroQuestions.length) return;
+                    let next = this.heroQuestion;
+                    while (next === this.heroQuestion && this.heroQuestions.length > 1) {
+                        next = this.heroQuestions[Math.floor(Math.random() * this.heroQuestions.length)];
+                    }
+                    this.heroQuestion = next;
+                    this.questionKey++;
                 }
             };
         }
