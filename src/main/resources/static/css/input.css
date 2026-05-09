@@ -251,17 +251,41 @@ body .divide-zinc-200 > :not([hidden]) ~ :not([hidden]) {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  animation: question-prompt-in 0.42s ease-out both;
+  border-right: 2px solid #facc15;
+  animation: question-typewriter-in 6.4s steps(68, end) both;
 }
 
-@keyframes question-prompt-in {
+@keyframes question-typewriter-in {
   0% {
+    clip-path: inset(0 100% 0 0);
     opacity: 0;
-    transform: translateY(0.35rem);
   }
-  100% {
+  8% {
+    clip-path: inset(0 100% 0 0);
     opacity: 1;
-    transform: translateY(0);
+  }
+  46%,
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .question-prompt-text {
+    white-space: normal;
+    animation: question-prompt-mobile 0.38s ease-out both;
+  }
+
+  @keyframes question-prompt-mobile {
+    0% {
+      opacity: 0;
+      transform: translateY(0.25rem);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
