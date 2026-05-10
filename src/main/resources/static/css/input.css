@@ -230,6 +230,14 @@ body #booking-modal > div,
   color: #ffffff !important;
 }
 
+#chat-input {
+  scrollbar-width: none;
+}
+
+#chat-input::-webkit-scrollbar {
+  display: none;
+}
+
 body table,
 body thead,
 body tbody,

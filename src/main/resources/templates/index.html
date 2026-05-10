@@ -489,26 +489,28 @@
     </button>
 
     <div id="chat-panel"
-         class="fixed bottom-24 right-6 z-50 hidden h-[28rem] max-h-[calc(100vh-8rem)] w-80 max-w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-white shadow-2xl">
-        <div class="flex items-center justify-between bg-zinc-950 px-4 py-3 text-white">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-shield-halved text-yellow-300"></i>
+         class="fixed bottom-24 right-6 z-50 hidden h-[38rem] max-h-[calc(100vh-7rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[1.75rem] border border-yellow-400/25 bg-[#101010] shadow-2xl">
+        <div class="flex items-center justify-between border-b border-yellow-400/15 bg-zinc-950 px-5 py-4 text-white">
+            <div class="flex items-center gap-3">
+                <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-yellow-400 text-zinc-950">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </span>
                 <div>
-                    <p class="text-sm font-semibold leading-tight">Takaful Assistant</p>
-                    <p class="text-xs text-zinc-300 leading-tight">Ask about our products</p>
+                    <p class="text-base font-semibold leading-tight">Takaful Assistant</p>
+                    <p class="text-sm text-zinc-300 leading-tight">Ask about our products</p>
                 </div>
             </div>
-            <button type="button" id="chat-close" class="text-zinc-300 hover:text-white" aria-label="Close chat">
-                <i class="fa-solid fa-xmark"></i>
+            <button type="button" id="chat-close" class="flex h-10 w-10 items-center justify-center rounded-full text-zinc-300 hover:bg-yellow-400/10 hover:text-yellow-300" aria-label="Close chat">
+                <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
-        <div id="chat-messages" class="flex-1 space-y-3 overflow-y-auto bg-zinc-50 p-4 text-sm"></div>
-        <form id="chat-form" class="flex items-end gap-2 border-t border-zinc-200 bg-white p-3">
+        <div id="chat-messages" class="flex-1 space-y-4 overflow-y-auto bg-[#0d0d0d] p-5 text-sm leading-6"></div>
+        <form id="chat-form" class="flex items-end gap-3 border-t border-yellow-400/15 bg-[#080808] p-4">
             <textarea id="chat-input" rows="1" maxlength="500" required
                       placeholder="Ask about Takaful, Hibah, our products..."
-                      class="flex-1 resize-none rounded-xl border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400"></textarea>
+                      class="min-h-12 flex-1 resize-none overflow-hidden rounded-2xl border border-yellow-400/35 px-4 py-3 text-sm leading-6 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400"></textarea>
             <button id="chat-send" type="submit"
-                    class="rounded-xl bg-yellow-400 px-3 py-2 text-sm font-semibold text-zinc-950 hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50">
+                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-yellow-400 text-sm font-semibold text-zinc-950 hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50">
                 <i class="fa-solid fa-paper-plane"></i>
             </button>
         </form>
@@ -548,8 +550,8 @@
                 wrap.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
                 const bubble = document.createElement('div');
                 bubble.className = role === 'user'
-                    ? 'max-w-[80%] rounded-2xl rounded-br-sm bg-yellow-400 px-3 py-2 text-zinc-950 whitespace-pre-wrap break-words'
-                    : 'max-w-[80%] rounded-2xl rounded-bl-sm border border-zinc-200 bg-white px-3 py-2 text-zinc-800 whitespace-pre-wrap break-words';
+                    ? 'max-w-[84%] rounded-2xl rounded-br-sm bg-yellow-400 px-4 py-3 text-zinc-950 whitespace-pre-wrap break-words'
+                    : 'max-w-[86%] rounded-2xl rounded-bl-sm border border-yellow-400/25 bg-[#151515] px-4 py-3 text-zinc-200 whitespace-pre-wrap break-words';
                 bubble.textContent = text;
                 wrap.appendChild(bubble);
                 messages.appendChild(wrap);
@@ -562,7 +564,7 @@
                 wrap.className = 'flex justify-start';
                 wrap.id = 'chat-typing';
                 const bubble = document.createElement('div');
-                bubble.className = 'rounded-2xl rounded-bl-sm border border-zinc-200 bg-white px-3 py-2 text-zinc-400 italic';
+                bubble.className = 'rounded-2xl rounded-bl-sm border border-yellow-400/25 bg-[#151515] px-4 py-3 text-zinc-400 italic';
                 bubble.textContent = 'Typing...';
                 wrap.appendChild(bubble);
                 messages.appendChild(wrap);
@@ -577,6 +579,13 @@
                 if (panel.classList.contains('hidden')) openPanel(); else closePanel();
             });
             closeBtn.addEventListener('click', closePanel);
+
+            function resizeInput() {
+                input.style.height = 'auto';
+                input.style.height = Math.min(input.scrollHeight, 112) + 'px';
+            }
+
+            input.addEventListener('input', resizeInput);
 
             input.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -593,6 +602,7 @@
                 appendMessage('user', text);
                 history.push({ role: 'user', text: text });
                 input.value = '';
+                resizeInput();
                 input.disabled = true;
                 sendBtn.disabled = true;
                 appendTyping();
