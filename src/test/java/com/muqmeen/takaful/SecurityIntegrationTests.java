@@ -74,6 +74,9 @@ class SecurityIntegrationTests {
         mockMvc.perform(get("/success"))
                 .andExpect(status().isOk());
 
+        mockMvc.perform(get("/brochures/anugerahmax-bm.pdf"))
+                .andExpect(status().isOk());
+
         mockMvc.perform(get("/payment/mock/MGM-TEST"))
                 .andExpect(status().isOk());
     }
