@@ -5,6 +5,7 @@ import com.muqmeen.takaful.domain.Lead;
 import com.muqmeen.takaful.domain.Payment;
 import com.muqmeen.takaful.repository.LeadRepository;
 import com.muqmeen.takaful.repository.PaymentRepository;
+import com.muqmeen.takaful.service.ContactEmailService;
 import com.muqmeen.takaful.service.CustomerService;
 import com.muqmeen.takaful.service.PaymentService;
 import com.muqmeen.takaful.service.chat.ChatService;
@@ -23,8 +24,10 @@ import java.math.BigDecimal;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -61,6 +64,9 @@ class SecurityIntegrationTests {
     @MockitoBean
     private ChatService chatService;
 
+    @MockitoBean
+    private ContactEmailService contactEmailService;
+
     @Test
     void anonymousUsersCanBrowsePublicRoutesAndSeeLoginContract() throws Exception {
         mockMvc.perform(get("/"))
@@ -79,6 +85,21 @@ class SecurityIntegrationTests {
 
         mockMvc.perform(get("/payment/mock/MGM-TEST"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void anonymousContactFormSendsEmailWithCsrf() throws Exception {
+        mockMvc.perform(post("/contact")
+                        .with(csrf())
+                        .param("fullName", "Aminah")
+                        .param("email", "aminah@example.com")
+                        .param("phoneNumber", "60123456789")
+                        .param("subject", "PruBSN AnugerahMax")
+                        .param("message", "I want to compare AnugerahMax with WarisanGold."))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/#contact"));
+
+        verify(contactEmailService).send(any(ContactEmailService.ContactMessage.class));
     }
 
     @Test

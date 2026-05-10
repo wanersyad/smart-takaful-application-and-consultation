@@ -259,38 +259,38 @@
                 <div x-data="{ openFaq: 0 }" class="space-y-4">
                     <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 0 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
                         <button type="button" @click="openFaq = openFaq === 0 ? -1 : 0" class="flex w-full items-center justify-between gap-4 text-left text-sm font-semibold text-zinc-950">
-                            What types of Takaful consultation does Muqmeen offer?
+                            Which PruBSN products can I ask Muqmeen about?
                             <i class="fa-solid" :class="openFaq === 0 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                         </button>
                         <p x-show="openFaq === 0" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
-                            We focus on medical protection, Hibah planning, education protection, family income needs, and custom reviews that help you compare available products.
+                            You can ask about the current brochure products shown on this page, including AnugerahMax, Anggun, Asas360, Kritikal Care360, WarisanGold, and Aspirasi.
                         </p>
                     </article>
                     <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 1 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
                         <button type="button" @click="openFaq = openFaq === 1 ? -1 : 1" class="flex w-full items-center justify-between gap-4 text-left text-sm font-semibold text-zinc-950">
-                            Do I need an account to submit a consultation?
+                            Can I view brochure details before signing in?
                             <i class="fa-solid" :class="openFaq === 1 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                         </button>
                         <p x-show="openFaq === 1" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
-                            Yes. Browsing is public, but an account keeps your consultation history, payment status, and follow-up details private.
+                            Yes. Product brochure details are public. You only need to sign in when you want to consult an agent or save consultation history in your account.
                         </p>
                     </article>
                     <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 2 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
                         <button type="button" @click="openFaq = openFaq === 2 ? -1 : 2" class="flex w-full items-center justify-between gap-4 text-left text-sm font-semibold text-zinc-950">
-                            Are consultations free?
+                            Which product should I compare first?
                             <i class="fa-solid" :class="openFaq === 2 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                         </button>
                         <p x-show="openFaq === 2" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
-                            Yes. Consultations are free. Tips are optional and use ToyyibPay when you choose to support the advisor.
+                            It depends on your concern. AnugerahMax and WarisanGold fit legacy planning conversations, Kritikal Care360 focuses on critical illness, Asas360 is a practical starter review, Anggun is women-focused, and Aspirasi supports future savings goals.
                         </p>
                     </article>
                     <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 3 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
                         <button type="button" @click="openFaq = openFaq === 3 ? -1 : 3" class="flex w-full items-center justify-between gap-4 text-left text-sm font-semibold text-zinc-950">
-                            How fast will a consultant contact me?
+                            Are consultations free?
                             <i class="fa-solid" :class="openFaq === 3 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                         </button>
                         <p x-show="openFaq === 3" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
-                            The admin dashboard highlights new leads immediately, so an advisor can follow up by your selected mode as soon as possible.
+                            Yes. Consultations are free. Tips are optional and use ToyyibPay when you choose to support the advisor.
                         </p>
                     </article>
                     <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 4 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
@@ -306,57 +306,64 @@
             </div>
         </section>
 
-        <section id="contact" class="bg-white px-4 pb-0 pt-4 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-5xl translate-y-12 rounded-[2rem] bg-zinc-950 p-8 text-white shadow-[0_34px_110px_-58px_rgba(9,9,11,0.95)] sm:p-10">
+        <section id="contact" class="bg-zinc-950 px-4 py-20 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-5xl rounded-[2rem] border border-yellow-400/20 bg-[#111111] p-8 text-white shadow-[0_34px_110px_-58px_rgba(250,204,21,0.22)] sm:p-10">
                 <div class="mb-8 text-center">
                     <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl">Get A Free Consultation Now</h2>
-                    <p class="mt-2 text-sm font-medium text-zinc-300">Start your Muqmeen Group Takaful review with a simple, focused request.</p>
+                    <p class="mt-2 text-sm font-medium text-zinc-300">Send a focused product question and the Muqmeen team will follow up by email.</p>
                 </div>
 
-                <form th:if="${customerSignedIn}" th:action="@{/submit-lead}" method="post" class="grid gap-4 md:grid-cols-2">
+                <div th:if="${contactSent}" class="mb-5 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 px-5 py-4 text-sm font-semibold text-yellow-200">
+                    Message sent. The team will reply to your email as soon as possible.
+                </div>
+                <div th:if="${contactError}" class="mb-5 rounded-2xl border border-red-400/30 bg-red-400/10 px-5 py-4 text-sm font-semibold text-red-100" th:text="${contactError}">
+                    Please complete the contact form.
+                </div>
+
+                <form th:action="@{/contact}" method="post" class="grid gap-4 md:grid-cols-2">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <input type="hidden" name="productType" value="General Takaful Consultation">
-                    <input type="hidden" name="tipAmount" value="0">
                     <label class="text-sm font-semibold text-zinc-200">
                         Name
-                        <input type="text" name="fullName" required th:value="${currentCustomer.fullName}"
+                        <input type="text" name="fullName" required th:value="${currentCustomer != null ? currentCustomer.fullName : ''}" placeholder="Your name"
                                class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
                     </label>
                     <label class="text-sm font-semibold text-zinc-200">
-                        WhatsApp
-                        <input type="tel" name="phoneNumber" required th:value="${currentCustomer.phoneNumber}"
+                        Email
+                        <input type="email" name="email" required th:value="${currentCustomer != null ? currentCustomer.email : ''}" placeholder="you@example.com"
                                class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
                     </label>
                     <label class="text-sm font-semibold text-zinc-200">
-                        Mode
-                        <select name="consultationMode"
+                        Phone / WhatsApp
+                        <input type="tel" name="phoneNumber" th:value="${currentCustomer != null ? currentCustomer.phoneNumber : ''}" placeholder="60123456789"
+                               class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
+                    </label>
+                    <label class="text-sm font-semibold text-zinc-200">
+                        Interest
+                        <select name="subject" required
                                 class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
-                            <option value="WhatsApp">WhatsApp Text</option>
-                            <option value="Voice/Video Call">Voice/Video Call</option>
-                            <option value="Face-to-Face">Face-to-Face Meeting</option>
+                            <option value="PruBSN AnugerahMax">PruBSN AnugerahMax</option>
+                            <option value="PruBSN Anggun">PruBSN Anggun</option>
+                            <option value="PruBSN Asas360">PruBSN Asas360</option>
+                            <option value="PruBSN Kritikal Care360">PruBSN Kritikal Care360</option>
+                            <option value="PruBSN WarisanGold">PruBSN WarisanGold</option>
+                            <option value="PruBSN Aspirasi">PruBSN Aspirasi</option>
+                            <option value="General Takaful Consultation">General Takaful Consultation</option>
                         </select>
                     </label>
-                    <button type="submit" class="mt-7 rounded-full bg-yellow-400 px-6 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                        Submit Consultation
-                    </button>
-                </form>
-
-                <form th:unless="${customerSignedIn}" th:action="@{/register}" method="get" class="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
-                    <input type="hidden" name="redirect" value="/#products">
                     <label class="text-sm font-semibold text-zinc-200 md:col-span-2">
-                        Email
-                        <input type="email" name="email" placeholder="Enter your email"
-                               class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
+                        Message
+                        <textarea name="message" required rows="4" maxlength="1000" placeholder="Tell us what you want to compare or clarify."
+                                  class="mt-2 w-full resize-none rounded-[1.5rem] border-0 bg-white px-5 py-4 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300"></textarea>
                     </label>
-                    <button type="submit" class="rounded-full bg-yellow-400 px-8 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                        Start
+                    <button type="submit" class="rounded-full bg-yellow-400 px-8 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300 md:col-span-2">
+                        Send Message
                     </button>
                 </form>
             </div>
         </section>
     </main>
 
-    <footer class="bg-zinc-950 px-4 pb-8 pt-24 text-zinc-400 sm:px-6 lg:px-8">
+    <footer class="border-t border-yellow-400/10 bg-zinc-950 px-4 pb-8 pt-14 text-zinc-400 sm:px-6 lg:px-8">
         <div class="mx-auto grid max-w-7xl gap-10 border-b border-white/10 pb-10 md:grid-cols-[1.2fr_1fr_1fr]">
             <div>
                 <a href="/" class="flex items-center gap-3">

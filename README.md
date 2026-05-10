@@ -43,6 +43,7 @@ App starts on `http://localhost:8080`.
 | `POST /payment/callback` | ToyyibPay callback; hash-verified before payment status changes |
 | `GET /success` | Post-submission confirmation |
 | `POST /api/chat` | Public chatbot endpoint with CSRF and rate limiting |
+| `POST /contact` | Public contact form; sends product enquiries to the configured recipient |
 | `GET /admin/dashboard` | Protected leads table and total tips KPI |
 | `GET /admin/products` | Protected product CRUD |
 
@@ -60,6 +61,8 @@ Environment variables are listed in `.env.example`. Copy it to a local `.env` fi
 - `TOYYIBPAY_MODE` - `mock`, `sandbox`, or `live`
 - `TOYYIBPAY_SECRET_KEY` / `TOYYIBPAY_CATEGORY_CODE` - ToyyibPay bill credentials
 - `TOYYIBPAY_BASE_URL` - `https://dev.toyyibpay.com` for sandbox or `https://toyyibpay.com` for live
+- `CONTACT_RECIPIENT` - email address that receives landing-page contact form messages
+- `SPRING_MAIL_HOST` / `SPRING_MAIL_USERNAME` / `SPRING_MAIL_PASSWORD` - SMTP settings used by the contact form
 
 Spring Boot reads these env vars directly, so Railway env management works without committed secrets.
 
@@ -115,4 +118,4 @@ takaful-web-java/
 5. UI overhaul - complete
 6. Gemini chatbot - complete
 
-Spring Security protects `/admin/**` for admins and `/account` plus `/submit-lead` for signed-in customers. Public browsing, signup/login, payment return/callback routes, success pages, and chat remain accessible as needed.
+Spring Security protects `/admin/**` for admins and `/account` plus `/submit-lead` for signed-in customers. Public browsing, signup/login, payment return/callback routes, success pages, brochures, contact, and chat remain accessible as needed.
