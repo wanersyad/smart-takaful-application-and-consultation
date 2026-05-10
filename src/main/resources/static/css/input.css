@@ -42,6 +42,15 @@ body,
   color: #ffffff;
 }
 
+html:has(body.auth-page),
+body.auth-page {
+  background: #050505 !important;
+}
+
+body.auth-page main {
+  background: transparent !important;
+}
+
 .brand-shell,
 .muqmeen-dark-site .brand-shell {
   background-color: #101010 !important;
