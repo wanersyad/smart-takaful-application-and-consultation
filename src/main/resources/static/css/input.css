@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,6 +36,17 @@
 
 .hero-title {
   font-weight: 800 !important;
+}
+
+.logo-wordmark {
+  font-family: 'Michroma', 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.logo-wordmark-strong {
+  font-weight: 600;
+  letter-spacing: 0.14em;
 }
 
 body,
