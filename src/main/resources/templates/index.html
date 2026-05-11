@@ -161,7 +161,7 @@
                                      class="h-52 w-full object-cover transition duration-500 group-hover:scale-[1.03]">
                                 <div th:unless="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}"
                                      class="flex h-52 items-center justify-center bg-yellow-400 text-zinc-950">
-                                    <i th:class="|fa-solid ${product.iconClass} text-4xl|"></i>
+                                    <i th:class="|fa-solid ${product.iconClass != null && !#strings.isEmpty(product.iconClass) ? #strings.replace(product.iconClass, 'fa-solid ', '') : 'fa-shield-halved'} text-4xl|"></i>
                                 </div>
                                 <div class="absolute bottom-4 left-4 rounded-full bg-zinc-950/90 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-yellow-400"
                                      th:text="${product.categoryLabel != null && !#strings.isEmpty(product.categoryLabel) ? product.categoryLabel : 'Takaful Plan'}">Family Protection</div>

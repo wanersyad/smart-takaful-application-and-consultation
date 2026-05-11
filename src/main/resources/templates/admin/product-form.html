@@ -42,7 +42,7 @@
             </a>
             <h1 class="text-2xl font-semibold text-slate-900 mt-2"
                 th:text="${formMode == 'edit'} ? 'Edit Product' : 'Add Product'">Add Product</h1>
-            <p class="text-slate-500 text-sm">Fields marked <span class="text-yellow-500">*</span> are required.</p>
+            <p class="text-slate-500 text-sm">Fill in what visitors should see on the product card.</p>
         </div>
 
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-8">
@@ -54,7 +54,7 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1">
-                        Product Name <span class="text-yellow-500">*</span>
+                        Product name <span class="text-yellow-500">*</span>
                     </label>
                     <input type="text" th:field="*{name}" maxlength="120"
                            th:classappend="${#fields.hasErrors('name')} ? 'border-amber-400' : 'border-slate-300'"
@@ -63,64 +63,72 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Short product summary</label>
                     <textarea th:field="*{description}" rows="3" maxlength="500"
                               th:classappend="${#fields.hasErrors('description')} ? 'border-amber-400' : 'border-slate-300'"
                               class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none"></textarea>
                     <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-xs text-yellow-500 mt-1">Error</p>
-                    <p class="text-xs text-slate-400 mt-1">Up to 500 characters. Shown under the product name on the landing card.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Category Label</label>
-                        <input type="text" th:field="*{categoryLabel}" maxlength="80" placeholder="Family Protection"
-                               class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Brochure URL</label>
-                        <input type="text" th:field="*{brochureUrl}" maxlength="255" placeholder="/brochures/product.pdf"
-                               class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Alt Brochure URL</label>
-                        <input type="text" th:field="*{altBrochureUrl}" maxlength="255" placeholder="/brochures/product-bm.pdf"
-                               class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
-                    </div>
+                    <p class="text-xs text-slate-400 mt-1">A short visitor-friendly explanation shown under the product name.</p>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Product Image URL</label>
-                    <input type="text" th:field="*{imageUrl}" maxlength="255" placeholder="/images/products/product.svg"
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Product category tag</label>
+                    <input type="text" th:field="*{categoryLabel}" maxlength="80" placeholder="Family Protection"
                            class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
-                    <p class="text-xs text-slate-400 mt-1">Shown as the image at the top of the landing product card.</p>
+                    <p class="text-xs text-slate-400 mt-1">Small label shown on the product image, such as Family Protection or Critical Illness.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Icon Class</label>
-                        <input type="text" th:field="*{iconClass}" maxlength="60" placeholder="fa-heart-pulse"
-                               class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none font-mono text-sm">
-                        <p class="text-xs text-slate-400 mt-1">
-                            Font Awesome class without the <code class="bg-slate-100 px-1 rounded">fa-solid</code> prefix.
-                            Examples: <code class="bg-slate-100 px-1 rounded">fa-heart-pulse</code>,
-                            <code class="bg-slate-100 px-1 rounded">fa-hand-holding-dollar</code>,
-                            <code class="bg-slate-100 px-1 rounded">fa-user-graduate</code>.
-                        </p>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Main brochure file</label>
+                        <input type="text" th:field="*{brochureUrl}" maxlength="255" placeholder="/brochures/product-bm.pdf"
+                               class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
+                        <p class="text-xs text-slate-400 mt-1">This is the file opened by the View Details button.</p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Accent Class</label>
-                        <input type="text" th:field="*{accentClass}" maxlength="60" placeholder="bg-yellow-100 text-zinc-950"
-                               class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none font-mono text-sm">
-                        <p class="text-xs text-slate-400 mt-1">
-                            Pair of Tailwind classes: a tile background and an icon color.
-                            Examples: <code class="bg-slate-100 px-1 rounded">bg-yellow-100 text-zinc-950</code>,
-                            <code class="bg-slate-100 px-1 rounded">bg-zinc-950 text-yellow-300</code>,
-                            <code class="bg-slate-100 px-1 rounded">bg-amber-100 text-zinc-950</code>.
-                        </p>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Second brochure file</label>
+                        <input type="text" th:field="*{altBrochureUrl}" maxlength="255" placeholder="/brochures/product-en.pdf"
+                               class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
+                        <p class="text-xs text-slate-400 mt-1">Optional. Keep empty if the product only has one brochure.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Product card image</label>
+                    <input type="text" th:field="*{imageUrl}" maxlength="255" placeholder="/images/products/product.svg"
+                           class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
+                    <p class="text-xs text-slate-400 mt-1">Image shown at the top of the product card.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Product symbol</label>
+                        <select th:field="*{iconClass}"
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
+                            <option value="fa-shield-halved">Protection shield</option>
+                            <option value="fa-hand-holding-dollar">Gift / Hibah</option>
+                            <option value="fa-person-dress">Women and family</option>
+                            <option value="fa-heart-pulse">Health protection</option>
+                            <option value="fa-hand-holding-heart">Legacy planning</option>
+                            <option value="fa-user-graduate">Education planning</option>
+                            <option value="fa-seedling">Savings goals</option>
+                            <option value="fa-circle-check">Essential cover</option>
+                            <option value="fa-sliders">Custom review</option>
+                        </select>
+                        <p class="text-xs text-slate-400 mt-1">Choose the symbol shown in admin lists and fallback product cards.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Card colour style</label>
+                        <select th:field="*{accentClass}"
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
+                            <option value="bg-yellow-400/10 text-yellow-300">Muqmeen yellow</option>
+                            <option value="bg-emerald-400/10 text-emerald-300">Trust green</option>
+                            <option value="bg-white/[0.03] text-white/70">Quiet neutral</option>
+                            <option value="bg-yellow-400 text-zinc-950">Solid yellow</option>
+                        </select>
+                        <p class="text-xs text-slate-400 mt-1">Controls the small icon tile colour on admin screens.</p>
                     </div>
                 </div>
 
@@ -132,7 +140,7 @@
                                class="mt-1 w-4 h-4 text-yellow-500 rounded focus:ring-yellow-400">
                         <span class="text-sm text-slate-700">
                             <span class="font-medium">Mark as Popular</span>
-                            <span class="block text-xs text-slate-500">Adds the red "Popular" badge to the landing card and surfaces this product first.</span>
+                            <span class="block text-xs text-slate-500">Shows a Popular badge and surfaces this product first.</span>
                         </span>
                     </label>
 
@@ -141,7 +149,7 @@
                                class="mt-1 w-4 h-4 text-yellow-500 rounded focus:ring-yellow-400">
                         <span class="text-sm text-slate-700">
                             <span class="font-medium">Active</span>
-                            <span class="block text-xs text-slate-500">When unchecked, the product is hidden from the landing page but kept in history (so existing leads still reference it).</span>
+                            <span class="block text-xs text-slate-500">When unchecked, the product is hidden from the landing page but kept for old consultation records.</span>
                         </span>
                     </label>
                 </div>

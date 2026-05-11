@@ -70,13 +70,24 @@ public class Product {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
-        if (this.iconClass == null) this.iconClass = "fa-solid fa-shield-halved";
-        if (this.accentClass == null) this.accentClass = "bg-slate-50 text-slate-500";
+        normalizeDisplayFields();
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+        normalizeDisplayFields();
+    }
+
+    private void normalizeDisplayFields() {
+        if (this.iconClass == null || this.iconClass.isBlank()) {
+            this.iconClass = "fa-shield-halved";
+        } else {
+            this.iconClass = this.iconClass.replace("fa-solid", "").trim();
+        }
+        if (this.accentClass == null || this.accentClass.isBlank()) {
+            this.accentClass = "bg-yellow-400/10 text-yellow-300";
+        }
     }
 
     public Long getId() { return id; }
