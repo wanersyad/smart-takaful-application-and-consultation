@@ -63,6 +63,7 @@ Environment variables are listed in `.env.example`. Copy it to a local `.env` fi
 - `TOYYIBPAY_BASE_URL` - `https://dev.toyyibpay.com` for sandbox or `https://toyyibpay.com` for live
 - `CONTACT_RECIPIENT` - email address that receives landing-page contact form messages
 - `SPRING_MAIL_HOST` / `SPRING_MAIL_USERNAME` / `SPRING_MAIL_PASSWORD` - SMTP settings used by the contact form
+- `CONTACT_FORMSUBMIT_ENABLED` - fallback email delivery through FormSubmit when SMTP is not configured; defaults to `true`
 
 Spring Boot reads these env vars directly, so Railway env management works without committed secrets.
 
