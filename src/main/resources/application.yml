@@ -27,6 +27,9 @@ app:
 contact:
   recipient: ${CONTACT_RECIPIENT:s72370@ocean.umt.edu.my}
   from: ${CONTACT_FROM:${SPRING_MAIL_USERNAME:no-reply@muqmeengroup.local}}
+  formsubmit:
+    enabled: ${CONTACT_FORMSUBMIT_ENABLED:true}
+    base-url: ${CONTACT_FORMSUBMIT_BASE_URL:https://formsubmit.co/ajax}
 
 toyyibpay:
   mode: ${TOYYIBPAY_MODE:mock}
