@@ -45,7 +45,7 @@ username: admin
 password: password
 ```
 
-To test with real services later, copy `.env.example` to `.env`, fill in the client-owned credentials, and run Docker Compose again. Compose reads `.env` automatically.
+The included Compose file is intentionally local-dev only, so it always uses the `dev` profile and H2 even if your `.env` contains production Supabase values. Railway/client deployment should use Railway environment variables rather than this local Compose file.
 
 Useful Docker commands:
 
