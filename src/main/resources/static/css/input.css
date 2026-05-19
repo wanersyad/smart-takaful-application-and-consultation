@@ -27,12 +27,135 @@
 
 @layer components {
   .smooth-transition {
-    @apply transition-all duration-300 ease-out;
+    @apply transition-all duration-200 ease-out;
   }
 
   .brand-shell {
     @apply border border-zinc-200 bg-white shadow-premium;
   }
+}
+
+:root {
+  --motion-snappy: 180ms cubic-bezier(0.2, 0, 0, 1);
+  --motion-snappy-slow: 260ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes muqmeen-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.7rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes muqmeen-scale-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+body {
+  animation: muqmeen-fade-up 220ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+nav,
+main > section,
+.brand-shell,
+body main > div,
+body main > form,
+body main > article {
+  animation: muqmeen-fade-up 280ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+main > section:nth-of-type(2) {
+  animation-delay: 45ms;
+}
+
+main > section:nth-of-type(3) {
+  animation-delay: 75ms;
+}
+
+main > section:nth-of-type(4) {
+  animation-delay: 105ms;
+}
+
+button,
+a,
+input,
+select,
+textarea,
+article,
+.brand-shell,
+#chat-toggle,
+#chat-panel,
+#booking-modal > div,
+#mobile-menu-panel {
+  transition-duration: var(--motion-snappy);
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+button,
+a {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+}
+
+input,
+select,
+textarea {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+}
+
+button:hover,
+a:hover {
+  transform: translateY(-1px);
+}
+
+button:active,
+a:active {
+  transform: translateY(0) scale(0.985);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.14);
+}
+
+#products article,
+#reviews article,
+#faq article,
+body table,
+.brand-shell {
+  transition-property: border-color, box-shadow, transform, background-color;
+}
+
+#products article:hover,
+#reviews article:hover,
+#faq article:hover,
+.brand-shell:hover {
+  transform: translateY(-0.18rem);
+}
+
+#chat-toggle:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+#chat-panel:not(.hidden),
+#booking-modal:not([style*="display: none"]) > div {
+  animation: muqmeen-scale-in 220ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+#mobile-menu-panel {
+  transition-duration: 190ms;
 }
 
 .font-bold,
@@ -483,6 +606,18 @@ body [class*="hover:text-zinc-900"]:not([class*="hover:bg-yellow"]):hover,
   }
 }
 
+@media (hover: none) {
+  button:hover,
+  a:hover,
+  #products article:hover,
+  #reviews article:hover,
+  #faq article:hover,
+  .brand-shell:hover,
+  #chat-toggle:hover {
+    transform: none;
+  }
+}
+
 @media (max-width: 640px) {
   #chat-toggle {
     right: 1rem;
@@ -511,5 +646,31 @@ body [class*="hover:text-zinc-900"]:not([class*="hover:bg-yellow"]):hover,
     min-height: 3rem;
     max-height: 7rem;
     font-size: 16px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+
+  button:hover,
+  a:hover,
+  button:active,
+  a:active,
+  input:focus,
+  select:focus,
+  textarea:focus,
+  #products article:hover,
+  #reviews article:hover,
+  #faq article:hover,
+  .brand-shell:hover,
+  #chat-toggle:hover {
+    transform: none !important;
   }
 }
