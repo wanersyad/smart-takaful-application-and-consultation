@@ -5,6 +5,7 @@ import com.muqmeen.takaful.domain.Lead;
 import com.muqmeen.takaful.domain.Payment;
 import com.muqmeen.takaful.repository.LeadRepository;
 import com.muqmeen.takaful.repository.PaymentRepository;
+import com.muqmeen.takaful.repository.ProductRepository;
 import com.muqmeen.takaful.service.ContactEmailService;
 import com.muqmeen.takaful.service.CustomerService;
 import com.muqmeen.takaful.service.PaymentService;
@@ -57,6 +58,9 @@ class SecurityIntegrationTests {
 
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     private PaymentService paymentService;
@@ -319,6 +323,52 @@ class SecurityIntegrationTests {
                         .param("status", "CONTACTED"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("OK"));
+    }
+
+    @Test
+    void adminProductCrudUpdatesLandingCatalogue() throws Exception {
+        mockMvc.perform(post("/admin/products")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf())
+                        .param("name", "Test Family Plan")
+                        .param("description", "A customer-visible product added by admin.")
+                        .param("categoryLabel", "Family Review")
+                        .param("brochureUrl", "/brochures/test-family-bm.pdf")
+                        .param("altBrochureUrl", "/brochures/test-family-en.pdf")
+                        .param("imageUrl", "/images/products/test-family.svg")
+                        .param("iconClass", "fa-shield-halved")
+                        .param("accentClass", "bg-yellow-400/10 text-yellow-300")
+                        .param("active", "true"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/products"));
+
+        Long productId = productRepository.findByName("Test Family Plan").orElseThrow().getId();
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Test Family Plan")))
+                .andExpect(content().string(containsString("/brochures/test-family-bm.pdf")));
+
+        mockMvc.perform(post("/admin/products/{id}", productId)
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf())
+                        .param("name", "Updated Family Plan")
+                        .param("description", "Updated product detail.")
+                        .param("categoryLabel", "Updated Review")
+                        .param("brochureUrl", "/brochures/updated-family-bm.pdf")
+                        .param("altBrochureUrl", "/brochures/updated-family-en.pdf")
+                        .param("imageUrl", "/images/products/updated-family.svg")
+                        .param("iconClass", "fa-heart-pulse")
+                        .param("accentClass", "bg-yellow-400/10 text-yellow-300")
+                        .param("active", "true"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/products"));
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Updated Family Plan")))
+                .andExpect(content().string(containsString("/brochures/updated-family-bm.pdf")))
+                .andExpect(content().string(containsString("/images/products/updated-family.svg")));
     }
 
     @Test

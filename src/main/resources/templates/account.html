@@ -12,7 +12,7 @@
 </head>
 <body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white antialiased">
     <nav class="sticky top-0 z-40 border-b border-yellow-400/20 bg-[#0d0d0d]">
-        <div class="mx-auto flex min-h-16 max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 md:h-20 md:flex-row md:items-center md:justify-between md:py-0 lg:px-8">
+        <div class="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 md:h-20 md:py-0 lg:px-8">
             <a href="/" class="flex items-center gap-3">
                 <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="Muqmeen Group logo"
                      class="h-12 w-12 object-contain">
@@ -20,13 +20,28 @@
                     MUQMEEN <span class="logo-wordmark-strong text-yellow-300">GROUP</span>
                 </span>
             </a>
-            <div class="flex items-center justify-between gap-2 rounded-full border border-yellow-400/15 bg-white/[0.03] p-1 text-xs font-medium sm:text-sm md:justify-end md:border-0 md:bg-transparent md:p-0">
-                <a href="/#products" class="rounded-full px-3 py-2 text-white/80 hover:text-yellow-300">Products</a>
-                <a href="/account" class="rounded-full bg-yellow-400 px-3 py-2 font-semibold text-zinc-950">Account</a>
+            <button type="button" class="page-menu-open flex h-11 w-11 items-center justify-center rounded-full border border-yellow-400/25 text-yellow-300 hover:border-yellow-400 hover:bg-yellow-400/10 md:hidden" aria-label="Open account navigation" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="hidden items-center justify-end gap-2 text-sm font-medium md:flex">
+                <a href="/#products" class="rounded-full px-4 py-2 text-white/80 hover:bg-yellow-400/10 hover:text-yellow-300">Products</a>
+                <a href="/account" class="rounded-full bg-yellow-400 px-4 py-2 font-semibold text-zinc-950 hover:bg-yellow-300">Account</a>
                 <form th:action="@{/logout}" method="post" class="inline">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <button type="submit" class="rounded-full px-3 py-2 text-white/80 hover:text-yellow-300">
+                    <button type="submit" class="rounded-full px-4 py-2 text-white/80 hover:bg-yellow-400/10 hover:text-yellow-300">
                         <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="page-mobile-menu hidden border-t border-yellow-400/15 px-4 pb-4 md:hidden">
+            <div class="grid gap-2 rounded-2xl border border-yellow-400/15 bg-white/[0.03] p-2 text-sm font-medium">
+                <a href="/#products" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Products</a>
+                <a href="/account" class="rounded-xl bg-yellow-400 px-4 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Account</a>
+                <form th:action="@{/logout}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="w-full rounded-xl px-4 py-3 text-left text-white hover:bg-yellow-400/10 hover:text-yellow-300">
+                        <i class="fa-solid fa-right-from-bracket mr-2"></i>Logout
                     </button>
                 </form>
             </div>
@@ -104,5 +119,15 @@
             </div>
         </section>
     </main>
+    <script>
+        document.querySelectorAll('.page-menu-open').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const menu = button.closest('nav').querySelector('.page-mobile-menu');
+                if (!menu) return;
+                menu.classList.toggle('hidden');
+                button.setAttribute('aria-expanded', String(!menu.classList.contains('hidden')));
+            });
+        });
+    </script>
 </body>
 </html>

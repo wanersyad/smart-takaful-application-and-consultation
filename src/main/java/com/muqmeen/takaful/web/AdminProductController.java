@@ -82,6 +82,10 @@ public class AdminProductController {
                 .map(existing -> {
                     existing.setName(product.getName());
                     existing.setDescription(product.getDescription());
+                    existing.setCategoryLabel(product.getCategoryLabel());
+                    existing.setBrochureUrl(product.getBrochureUrl());
+                    existing.setAltBrochureUrl(product.getAltBrochureUrl());
+                    existing.setImageUrl(product.getImageUrl());
                     existing.setIconClass(product.getIconClass());
                     existing.setAccentClass(product.getAccentClass());
                     existing.setFeatured(product.isFeatured());

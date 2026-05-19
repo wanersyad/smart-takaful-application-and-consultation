@@ -8,7 +8,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class ProductSeeder implements CommandLineRunner {
@@ -82,28 +81,14 @@ public class ProductSeeder implements CommandLineRunner {
                         false)
         );
 
-        brochureProducts.forEach(this::upsert);
-
-        Set<String> replacedPrototypeProducts = Set.of("Hibah Al-Wasiyyah", "PruBSN EduSmart", "PruBSN Medical");
-        replacedPrototypeProducts.forEach(name -> productService.findByName(name).ifPresent(product -> {
-            product.setActive(false);
-            productService.save(product);
-        }));
+        brochureProducts.forEach(this::insertIfMissing);
     }
 
-    private void upsert(Product source) {
-        Product target = productService.findByName(source.getName()).orElseGet(Product::new);
-        target.setName(source.getName());
-        target.setDescription(source.getDescription());
-        target.setCategoryLabel(source.getCategoryLabel());
-        target.setIconClass(source.getIconClass());
-        target.setAccentClass(source.getAccentClass());
-        target.setBrochureUrl(source.getBrochureUrl());
-        target.setAltBrochureUrl(source.getAltBrochureUrl());
-        target.setImageUrl(source.getImageUrl());
-        target.setFeatured(source.isFeatured());
-        target.setActive(true);
-        productService.save(target);
+    private void insertIfMissing(Product source) {
+        if (productService.findByName(source.getName()).isPresent()) {
+            return;
+        }
+        productService.save(source);
     }
 
     private Product build(String name,
