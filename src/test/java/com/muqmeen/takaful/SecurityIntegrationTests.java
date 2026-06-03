@@ -8,8 +8,10 @@ import com.muqmeen.takaful.repository.PaymentRepository;
 import com.muqmeen.takaful.repository.ProductRepository;
 import com.muqmeen.takaful.service.ContactEmailService;
 import com.muqmeen.takaful.service.CustomerService;
+import com.muqmeen.takaful.service.PasswordResetEmailService;
 import com.muqmeen.takaful.service.PaymentService;
 import com.muqmeen.takaful.service.chat.ChatService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,14 +22,18 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.util.Arrays;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -70,6 +76,14 @@ class SecurityIntegrationTests {
 
     @MockitoBean
     private ContactEmailService contactEmailService;
+
+    @MockitoBean
+    private PasswordResetEmailService passwordResetEmailService;
+
+    @BeforeEach
+    void resetMocks() {
+        reset(passwordResetEmailService, contactEmailService, chatService);
+    }
 
     @Test
     void anonymousUsersCanBrowsePublicRoutesAndSeeLoginContract() throws Exception {
@@ -249,7 +263,46 @@ class SecurityIntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Admin sign in")))
                 .andExpect(content().string(containsString("Admin username")))
-                .andExpect(content().string(not(containsString("Create an account"))));
+                .andExpect(content().string(not(containsString("Create an account"))))
+                .andExpect(content().string(not(containsString("Forgot password"))));
+    }
+
+    @Test
+    void customerForgotPasswordFlowResetsPassword() throws Exception {
+        Customer customer = customerService.register(
+                "Reset User",
+                "reset.user@example.com",
+                "60123450001",
+                "password123"
+        );
+
+        mockMvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Forgot password?")));
+
+        mockMvc.perform(post("/forgot-password")
+                        .with(csrf())
+                        .param("email", customer.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("reset link has been sent")));
+
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        verify(passwordResetEmailService).sendResetLink(any(Customer.class), urlCaptor.capture());
+        String token = tokenFrom(urlCaptor.getValue());
+
+        mockMvc.perform(post("/reset-password")
+                        .with(csrf())
+                        .param("token", token)
+                        .param("password", "newPassword123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
+
+        mockMvc.perform(post("/login")
+                        .with(csrf())
+                        .param("username", customer.getEmail())
+                        .param("password", "newPassword123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/account"));
     }
 
     @Test
@@ -439,5 +492,13 @@ class SecurityIntegrationTests {
         lead.setTipAmount(tipAmount);
         lead.setPaymentStatus(tipAmount != null && tipAmount.compareTo(BigDecimal.ZERO) > 0 ? "PENDING" : "SKIPPED");
         return leadRepository.save(lead);
+    }
+
+    private String tokenFrom(String resetUrl) {
+        return Arrays.stream(URI.create(resetUrl).getQuery().split("&"))
+                .filter(part -> part.startsWith("token="))
+                .map(part -> part.substring("token=".length()))
+                .findFirst()
+                .orElseThrow();
     }
 }

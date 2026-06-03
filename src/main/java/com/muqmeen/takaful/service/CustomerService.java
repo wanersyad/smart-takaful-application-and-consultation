@@ -46,6 +46,11 @@ public class CustomerService {
         return findByEmail(authentication.getName());
     }
 
+    public Customer updatePassword(Customer customer, String password) {
+        customer.setPasswordHash(passwordEncoder.encode(password));
+        return customerRepository.save(customer);
+    }
+
     private String normalizeEmail(String email) {
         return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
     }
