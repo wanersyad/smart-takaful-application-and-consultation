@@ -30,6 +30,10 @@ class ContactEmailServiceTest {
                 mailProvider,
                 "s72370@ocean.umt.edu.my",
                 "no-reply@muqmeengroup.local",
+                "auto",
+                "",
+                "",
+                "https://api.resend.com",
                 true,
                 "https://formsubmit.co/ajax",
                 restClientBuilder
@@ -41,6 +45,45 @@ class ContactEmailServiceTest {
                 .andExpect(content().string(containsString("\"_replyto\":\"aminah@example.com\"")))
                 .andExpect(content().string(containsString("\"message\":\"Please explain AnugerahMax.\"")))
                 .andRespond(withSuccess("{\"success\":true}", MediaType.APPLICATION_JSON));
+
+        service.send(new ContactEmailService.ContactMessage(
+                "Aminah",
+                "aminah@example.com",
+                "60123456789",
+                "PruBSN AnugerahMax",
+                "Please explain AnugerahMax."
+        ));
+
+        server.verify();
+    }
+
+    @Test
+    void sendsViaResendWhenConfigured() {
+        RestClient.Builder restClientBuilder = RestClient.builder();
+        MockRestServiceServer server = MockRestServiceServer.bindTo(restClientBuilder).build();
+        ObjectProvider<JavaMailSender> mailProvider = mock();
+        when(mailProvider.getIfAvailable()).thenReturn(null);
+
+        ContactEmailService service = new ContactEmailService(
+                mailProvider,
+                "s72370@ocean.umt.edu.my",
+                "Muqmeen Group <onboarding@resend.dev>",
+                "resend",
+                "",
+                "re_test_key",
+                "https://api.resend.com",
+                false,
+                "https://formsubmit.co/ajax",
+                restClientBuilder
+        );
+
+        server.expect(once(), requestTo("https://api.resend.com/emails"))
+                .andExpect(method(POST))
+                .andExpect(content().string(containsString("\"from\":\"Muqmeen Group <onboarding@resend.dev>\"")))
+                .andExpect(content().string(containsString("\"to\":[\"s72370@ocean.umt.edu.my\"]")))
+                .andExpect(content().string(containsString("\"reply_to\":\"aminah@example.com\"")))
+                .andExpect(content().string(containsString("\"text\":\"New Muqmeen Group contact request")))
+                .andRespond(withSuccess("{\"id\":\"email-test\"}", MediaType.APPLICATION_JSON));
 
         service.send(new ContactEmailService.ContactMessage(
                 "Aminah",

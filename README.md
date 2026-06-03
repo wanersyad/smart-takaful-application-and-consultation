@@ -88,6 +88,8 @@ Environment variables are listed in `.env.example`. Copy it to a local `.env` fi
 - `TOYYIBPAY_SECRET_KEY` / `TOYYIBPAY_CATEGORY_CODE` - ToyyibPay bill credentials
 - `TOYYIBPAY_BASE_URL` - `https://dev.toyyibpay.com` for sandbox or `https://toyyibpay.com` for live
 - `CONTACT_RECIPIENT` - email address that receives landing-page contact form messages
+- `CONTACT_DELIVERY` - `auto`, `resend`, `smtp`, or `formsubmit`; use `resend` on Railway when SMTP is blocked
+- `RESEND_API_KEY` / `RESEND_BASE_URL` - HTTPS email API settings for contact form delivery
 - `SPRING_MAIL_HOST` / `SPRING_MAIL_USERNAME` / `SPRING_MAIL_PASSWORD` - SMTP settings used by the contact form
 - `CONTACT_FORMSUBMIT_ENABLED` - fallback email delivery through FormSubmit when SMTP is not configured; defaults to `true`
 

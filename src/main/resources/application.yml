@@ -31,6 +31,10 @@ app:
 contact:
   recipient: ${CONTACT_RECIPIENT:s72370@ocean.umt.edu.my}
   from: ${CONTACT_FROM:${SPRING_MAIL_USERNAME:no-reply@muqmeengroup.local}}
+  delivery: ${CONTACT_DELIVERY:auto}
+  resend:
+    api-key: ${RESEND_API_KEY:}
+    base-url: ${RESEND_BASE_URL:https://api.resend.com}
   formsubmit:
     enabled: ${CONTACT_FORMSUBMIT_ENABLED:true}
     base-url: ${CONTACT_FORMSUBMIT_BASE_URL:https://formsubmit.co/ajax}
