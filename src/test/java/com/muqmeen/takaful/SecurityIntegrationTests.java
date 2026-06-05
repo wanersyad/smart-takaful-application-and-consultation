@@ -302,7 +302,29 @@ class SecurityIntegrationTests {
                         .param("username", customer.getEmail())
                         .param("password", "newPassword123"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/account"));
+                .andExpect(redirectedUrl("/#products"));
+    }
+
+    @Test
+    void customerLoginDefaultsBackToProductsAndMobileMenuLinksAccount() throws Exception {
+        Customer customer = customerService.register(
+                "Product Return",
+                "product.return@example.com",
+                "60123450002",
+                "password123"
+        );
+
+        mockMvc.perform(post("/login")
+                        .with(csrf())
+                        .param("username", customer.getEmail())
+                        .param("password", "password123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/#products"));
+
+        mockMvc.perform(get("/").with(user(customer.getEmail()).roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Account / History")))
+                .andExpect(content().string(containsString("href=\"/account\"")));
     }
 
     @Test

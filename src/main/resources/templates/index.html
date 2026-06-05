@@ -39,11 +39,11 @@
                    class="hidden rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 sm:inline-flex">
                     Account
                 </a>
-                <a th:unless="${customerSignedIn}" href="/login"
+                <a th:unless="${customerSignedIn}" th:href="@{/login(redirect='/#products')}" href="/login?redirect=/#products"
                    class="hidden rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 sm:inline-flex">
                     Login
                 </a>
-                <a th:unless="${customerSignedIn}" href="/login"
+                <a th:unless="${customerSignedIn}" th:href="@{/login(redirect='/#products')}" href="/login?redirect=/#products"
                    class="hidden items-center justify-center rounded-full bg-yellow-400 px-5 py-2.5 text-sm font-semibold text-zinc-950 shadow-[0_12px_30px_-16px_rgba(250,204,21,0.9)] hover:bg-yellow-300 sm:inline-flex">
                     Instant Quote
                 </a>
@@ -115,7 +115,7 @@
                     <div class="mt-4 grid gap-3">
                         <a th:if="${customerSignedIn}" href="/account"
                            class="flex items-center justify-center rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                            View Account
+                            Account / History
                         </a>
                         <form th:if="${customerSignedIn}" th:action="@{/logout}" method="post">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -123,11 +123,11 @@
                                 Logout
                             </button>
                         </form>
-                        <a th:unless="${customerSignedIn}" href="/login"
+                        <a th:unless="${customerSignedIn}" th:href="@{/login(redirect='/#products')}" href="/login?redirect=/#products"
                            class="flex items-center justify-center rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
                             Login
                         </a>
-                        <a th:unless="${customerSignedIn}" href="/register"
+                        <a th:unless="${customerSignedIn}" th:href="@{/register(redirect='/#products')}" href="/register?redirect=/#products"
                            class="flex items-center justify-center rounded-full border border-yellow-400/30 px-5 py-3 text-sm font-semibold text-white hover:bg-yellow-400/10">
                             Create Account
                         </a>

@@ -37,7 +37,7 @@ public class AuthController {
     public String login(@RequestParam(value = "redirect", required = false) String redirect,
                         Model model) {
         model.addAttribute("adminLogin", false);
-        model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/account"));
+        model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/#products"));
         return "login";
     }
 
@@ -57,7 +57,7 @@ public class AuthController {
             form.setEmail(email);
             model.addAttribute("registerForm", form);
         }
-        model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/account"));
+        model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/#products"));
         return "register";
     }
 
@@ -68,17 +68,17 @@ public class AuthController {
                            Model model,
                            HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/account"));
+            model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/#products"));
             return "register";
         }
 
         try {
             Customer customer = customerService.register(form.fullName, form.email, form.phoneNumber, form.password);
             authenticate(customer, request);
-            return "redirect:" + safeUserRedirectOrDefault(redirect, "/account");
+            return "redirect:" + safeUserRedirectOrDefault(redirect, "/#products");
         } catch (CustomerService.DuplicateCustomerException ex) {
             bindingResult.rejectValue("email", "duplicate", ex.getMessage());
-            model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/account"));
+            model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/#products"));
             return "register";
         }
     }
