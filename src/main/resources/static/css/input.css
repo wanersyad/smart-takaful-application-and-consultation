@@ -190,6 +190,134 @@ select option {
   color: #ffffff;
 }
 
+.theme-select {
+  position: relative;
+  width: 100%;
+}
+
+.theme-select-native {
+  position: absolute !important;
+  inset: auto auto 0 0 !important;
+  height: 1px !important;
+  width: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.theme-select-button {
+  display: flex;
+  min-height: 3rem;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  border: 1px solid rgba(250, 204, 21, 0.38);
+  background: #050505;
+  color: #facc15;
+  border-radius: 0.95rem;
+  padding: 0.78rem 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.35;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.theme-select-pill .theme-select-button {
+  min-height: 3.35rem;
+  border-radius: 9999px;
+  padding-inline: 1.25rem;
+}
+
+.theme-select-compact .theme-select-button {
+  min-height: 2.35rem;
+  border-radius: 0.65rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+}
+
+.theme-select-button:hover,
+.theme-select.is-open .theme-select-button {
+  border-color: rgba(250, 204, 21, 0.9) !important;
+  background: rgba(250, 204, 21, 0.08) !important;
+  color: #facc15 !important;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.12);
+}
+
+.theme-select-button:focus-visible {
+  outline: none;
+  border-color: #facc15;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.18);
+}
+
+.theme-select-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.theme-select-chevron {
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-left: 0.4rem solid transparent;
+  border-right: 0.4rem solid transparent;
+  border-top: 0.45rem solid #facc15;
+  transition: transform var(--motion-snappy);
+}
+
+.theme-select.is-open .theme-select-chevron {
+  transform: rotate(180deg);
+}
+
+.theme-select-list {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 90;
+  max-height: 17rem;
+  width: 100%;
+  overflow-y: auto;
+  border: 1px solid rgba(250, 204, 21, 0.55);
+  border-radius: 1rem;
+  background: #0b0b0b;
+  padding: 0.35rem;
+  box-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(250, 204, 21, 0.08);
+}
+
+.theme-select-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  border: 0;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.86);
+  padding: 0.72rem 0.85rem;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.theme-select-option:hover,
+.theme-select-option.is-active {
+  background: rgba(250, 204, 21, 0.14) !important;
+  color: #facc15 !important;
+  transform: none;
+}
+
+.theme-select-option.is-selected {
+  background: #facc15 !important;
+  color: #050505 !important;
+}
+
+.theme-select-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 #products article,
 #reviews article,
 #faq article,
@@ -453,6 +581,50 @@ body textarea::placeholder,
 .muqmeen-dark-site input::placeholder,
 .muqmeen-dark-site textarea::placeholder {
   color: rgba(255, 255, 255, 0.46) !important;
+}
+
+body .theme-select .theme-select-button,
+.muqmeen-dark-site .theme-select .theme-select-button {
+  background-color: #050505 !important;
+  border-color: rgba(250, 204, 21, 0.38) !important;
+  color: #facc15 !important;
+}
+
+body .theme-select .theme-select-button:hover,
+body .theme-select.is-open .theme-select-button,
+.muqmeen-dark-site .theme-select .theme-select-button:hover,
+.muqmeen-dark-site .theme-select.is-open .theme-select-button {
+  background-color: rgba(250, 204, 21, 0.08) !important;
+  border-color: rgba(250, 204, 21, 0.9) !important;
+  color: #facc15 !important;
+  transform: none !important;
+}
+
+body .theme-select .theme-select-list,
+.muqmeen-dark-site .theme-select .theme-select-list {
+  background-color: #0b0b0b !important;
+  border-color: rgba(250, 204, 21, 0.55) !important;
+}
+
+body .theme-select .theme-select-option,
+.muqmeen-dark-site .theme-select .theme-select-option {
+  background-color: transparent !important;
+  color: rgba(255, 255, 255, 0.86) !important;
+}
+
+body .theme-select .theme-select-option:hover,
+body .theme-select .theme-select-option.is-active,
+.muqmeen-dark-site .theme-select .theme-select-option:hover,
+.muqmeen-dark-site .theme-select .theme-select-option.is-active {
+  background-color: rgba(250, 204, 21, 0.14) !important;
+  color: #facc15 !important;
+  transform: none !important;
+}
+
+body .theme-select .theme-select-option.is-selected,
+.muqmeen-dark-site .theme-select .theme-select-option.is-selected {
+  background-color: #facc15 !important;
+  color: #050505 !important;
 }
 
 body #chat-panel,

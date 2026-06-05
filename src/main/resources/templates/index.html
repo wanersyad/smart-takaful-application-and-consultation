@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script defer th:src="@{/js/theme-select.js}"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body id="top" x-data="bookingFlow()" x-init="initBooking()" class="muqmeen-dark-site bg-zinc-950 text-white antialiased"
@@ -423,13 +424,13 @@
                         Interest
                         <select name="subject" required
                                 class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
+                            <option value="General Takaful Consultation" selected>General Takaful Consultation</option>
                             <option value="PruBSN AnugerahMax">PruBSN AnugerahMax</option>
                             <option value="PruBSN Anggun">PruBSN Anggun</option>
                             <option value="PruBSN Asas360">PruBSN Asas360</option>
                             <option value="PruBSN Kritikal Care360">PruBSN Kritikal Care360</option>
                             <option value="PruBSN WarisanGold">PruBSN WarisanGold</option>
                             <option value="PruBSN Aspirasi">PruBSN Aspirasi</option>
-                            <option value="General Takaful Consultation">General Takaful Consultation</option>
                         </select>
                     </label>
                     <label class="text-sm font-semibold text-zinc-200 md:col-span-2">
