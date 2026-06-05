@@ -128,7 +128,7 @@ public class SecurityConfig {
                 return;
             }
 
-            response.sendRedirect(admin ? "/admin/dashboard" : "/account");
+            response.sendRedirect(admin ? "/admin/dashboard" : "/#products");
         };
     }
 
