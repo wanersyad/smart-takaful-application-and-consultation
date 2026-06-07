@@ -45,7 +45,9 @@ username: admin
 password: password
 ```
 
-The included Compose file is intentionally local-dev only, so it always uses the `dev` profile and H2 even if your `.env` contains production Supabase values. Railway/client deployment should use Railway environment variables rather than this local Compose file.
+The included Compose file is intentionally local-dev only, so it always uses the `dev` profile, H2, and mock ToyyibPay. Railway/client deployment should use Railway environment variables rather than this local Compose file.
+
+For a client Mac setup and boss-demo checklist, see `CLIENT_MAC_SETUP.md`.
 
 Useful Docker commands:
 
@@ -53,6 +55,12 @@ Useful Docker commands:
 docker compose down
 docker compose up --build
 docker build -t muqmeen-takaful-web:local .
+```
+
+If port 8080 is already used:
+
+```bash
+PORT=8081 docker compose up --build
 ```
 
 ## Key Routes
