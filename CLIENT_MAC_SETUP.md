@@ -39,7 +39,7 @@ Do this before running any Terminal command that starts with `docker`.
 Open Terminal:
 
 ```bash
-git clone https://github.com/s72370/smart-takaful-application-and-consultation.git
+git clone https://github.com/wanersyad/smart-takaful-application-and-consultation.git
 cd smart-takaful-application-and-consultation
 ```
 

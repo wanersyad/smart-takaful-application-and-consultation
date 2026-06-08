@@ -33,7 +33,7 @@ app:
   base-url: ${APP_BASE_URL:http://localhost:8080}
 
 contact:
-  recipient: ${CONTACT_RECIPIENT:s72370@ocean.umt.edu.my}
+  recipient: ${CONTACT_RECIPIENT:wanersyadd@gmail.com}
   from: ${CONTACT_FROM:${SPRING_MAIL_USERNAME:no-reply@muqmeengroup.local}}
   delivery: ${CONTACT_DELIVERY:auto}
   resend:

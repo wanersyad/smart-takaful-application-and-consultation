@@ -17,7 +17,7 @@ services:
       TOYYIBPAY_CATEGORY_CODE: ""
       TOYYIBPAY_BASE_URL: ${TOYYIBPAY_BASE_URL:-https://dev.toyyibpay.com}
       CONTACT_DELIVERY: ${CONTACT_DELIVERY:-formsubmit}
-      CONTACT_RECIPIENT: ${CONTACT_RECIPIENT:-s72370@ocean.umt.edu.my}
+      CONTACT_RECIPIENT: ${CONTACT_RECIPIENT:-wanersyadd@gmail.com}
       CONTACT_FROM: ${CONTACT_FROM:-}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       RESEND_BASE_URL: ${RESEND_BASE_URL:-https://api.resend.com}
