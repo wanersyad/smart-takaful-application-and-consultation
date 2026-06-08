@@ -1,6 +1,7 @@
 package com.muqmeen.takaful.web;
 
 import com.muqmeen.takaful.service.ContactEmailService;
+import com.muqmeen.takaful.service.ContactInquiryService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,9 +16,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ContactController {
 
     private final ContactEmailService contactEmailService;
+    private final ContactInquiryService contactInquiryService;
 
-    public ContactController(ContactEmailService contactEmailService) {
+    public ContactController(ContactEmailService contactEmailService,
+                             ContactInquiryService contactInquiryService) {
         this.contactEmailService = contactEmailService;
+        this.contactInquiryService = contactInquiryService;
     }
 
     @PostMapping("/contact")
@@ -29,6 +33,13 @@ public class ContactController {
             return "redirect:/#contact";
         }
 
+        var inquiry = contactInquiryService.create(new ContactInquiryService.ContactInput(
+                form.fullName,
+                form.email,
+                form.phoneNumber,
+                form.subject,
+                form.message
+        ));
         try {
             contactEmailService.send(new ContactEmailService.ContactMessage(
                     form.fullName,
@@ -37,8 +48,10 @@ public class ContactController {
                     form.subject,
                     form.message
             ));
+            contactInquiryService.markDelivered(inquiry.getId(), "Email delivery accepted");
             redirectAttributes.addFlashAttribute("contactSent", true);
         } catch (ContactEmailService.ContactEmailException ex) {
+            contactInquiryService.markFailed(inquiry.getId(), ex.getMessage());
             redirectAttributes.addFlashAttribute("contactError", "We could not send the message right now. Please try again shortly.");
         }
 

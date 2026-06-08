@@ -3,6 +3,7 @@ package com.muqmeen.takaful.web;
 import com.muqmeen.takaful.domain.Customer;
 import com.muqmeen.takaful.domain.Payment;
 import com.muqmeen.takaful.service.CustomerService;
+import com.muqmeen.takaful.service.LandingMetricsService;
 import com.muqmeen.takaful.service.PaymentService;
 import com.muqmeen.takaful.service.ProductService;
 import com.muqmeen.takaful.service.QuotationService;
@@ -26,21 +27,25 @@ public class WebController {
     private final CustomerService customerService;
     private final PaymentService paymentService;
     private final QuotationService quotationService;
+    private final LandingMetricsService landingMetricsService;
 
     public WebController(ProductService productService,
                          CustomerService customerService,
                          PaymentService paymentService,
-                         QuotationService quotationService) {
+                         QuotationService quotationService,
+                         LandingMetricsService landingMetricsService) {
         this.productService = productService;
         this.customerService = customerService;
         this.paymentService = paymentService;
         this.quotationService = quotationService;
+        this.landingMetricsService = landingMetricsService;
     }
 
     @GetMapping("/")
     public String landingPage(Authentication authentication, Model model) {
         Optional<Customer> customer = customerService.currentCustomer(authentication);
         model.addAttribute("products", productService.listActiveForLanding());
+        model.addAttribute("metrics", landingMetricsService.current());
         model.addAttribute("customerSignedIn", customer.isPresent());
         customer.ifPresent(c -> model.addAttribute("currentCustomer", c));
         return "index";

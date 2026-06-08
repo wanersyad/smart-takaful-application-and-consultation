@@ -9,9 +9,11 @@ import com.muqmeen.takaful.domain.Product;
 import com.muqmeen.takaful.domain.ProductCoverageItem;
 import com.muqmeen.takaful.domain.Quotation;
 import com.muqmeen.takaful.repository.ConsultationApplicationRepository;
+import com.muqmeen.takaful.repository.ContactInquiryRepository;
 import com.muqmeen.takaful.repository.PaymentRepository;
 import com.muqmeen.takaful.repository.ProductRepository;
 import com.muqmeen.takaful.service.ApplicationService;
+import com.muqmeen.takaful.service.ContactEmailService;
 import com.muqmeen.takaful.service.CustomerProfileService;
 import com.muqmeen.takaful.service.CustomerService;
 import com.muqmeen.takaful.service.PaymentService;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -35,6 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -58,16 +63,19 @@ class DynamicApplicationIntegrationTests {
     @Autowired private CustomerService customerService;
     @Autowired private ProductRepository productRepository;
     @Autowired private ConsultationApplicationRepository applicationRepository;
+    @Autowired private ContactInquiryRepository contactInquiryRepository;
     @Autowired private ApplicationService applicationService;
     @Autowired private CustomerProfileService customerProfileService;
     @Autowired private QuotationService quotationService;
     @Autowired private PaymentService paymentService;
     @Autowired private PaymentRepository paymentRepository;
+    @MockitoBean private ContactEmailService contactEmailService;
 
     @BeforeEach
     void clean() {
         paymentRepository.deleteAll();
         applicationRepository.deleteAll();
+        contactInquiryRepository.deleteAll();
         productRepository.deleteAll();
     }
 
@@ -78,6 +86,9 @@ class DynamicApplicationIntegrationTests {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Dynamic Medical")))
+                .andExpect(content().string(containsString("Active Products")))
+                .andExpect(content().string(not(containsString("30+"))))
+                .andExpect(content().string(not(containsString("70+"))))
                 .andExpect(content().string(not(containsString("Paid Tips"))))
                 .andExpect(content().string(not(containsString("Our Client Reviews"))));
 
@@ -88,6 +99,36 @@ class DynamicApplicationIntegrationTests {
         mockMvc.perform(get("/applications/new").param("productId", product.getId().toString()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
+    void contactFormPersistsInquiryAndAdminCanResolveIt() throws Exception {
+        mockMvc.perform(post("/contact")
+                        .with(csrf())
+                        .param("fullName", "Public Visitor")
+                        .param("email", "visitor@example.com")
+                        .param("phoneNumber", "60123456789")
+                        .param("subject", "General Takaful Consultation")
+                        .param("message", "I want to understand which product fits my family."))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/#contact"));
+
+        verify(contactEmailService).send(any(ContactEmailService.ContactMessage.class));
+        var inquiry = contactInquiryRepository.findTop5ByOrderByCreatedAtDesc().get(0);
+        assertEquals("Public Visitor", inquiry.getFullName());
+        assertEquals("NEW", inquiry.getStatus());
+
+        mockMvc.perform(get("/admin/dashboard").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Public Visitor")))
+                .andExpect(content().string(containsString("I want to understand which product fits my family.")));
+
+        mockMvc.perform(post("/admin/contact-inquiries/" + inquiry.getId() + "/resolve")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/dashboard"));
+        assertEquals("RESOLVED", contactInquiryRepository.findById(inquiry.getId()).orElseThrow().getStatus());
     }
 
     @Test

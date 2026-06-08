@@ -4,6 +4,7 @@ import com.muqmeen.takaful.domain.ApplicationStatus;
 import com.muqmeen.takaful.domain.ConsultationApplication;
 import com.muqmeen.takaful.domain.Quotation;
 import com.muqmeen.takaful.service.ApplicationService;
+import com.muqmeen.takaful.service.ContactInquiryService;
 import com.muqmeen.takaful.service.QuotationService;
 import com.muqmeen.takaful.service.QuotationService.QuotationItemInput;
 import org.springframework.stereotype.Controller;
@@ -26,10 +27,14 @@ public class AdminApplicationController {
 
     private final ApplicationService applicationService;
     private final QuotationService quotationService;
+    private final ContactInquiryService contactInquiryService;
 
-    public AdminApplicationController(ApplicationService applicationService, QuotationService quotationService) {
+    public AdminApplicationController(ApplicationService applicationService,
+                                      QuotationService quotationService,
+                                      ContactInquiryService contactInquiryService) {
         this.applicationService = applicationService;
         this.quotationService = quotationService;
+        this.contactInquiryService = contactInquiryService;
     }
 
     @GetMapping("/dashboard")
@@ -42,7 +47,16 @@ public class AdminApplicationController {
         model.addAttribute("needsInfoApplications", countStatuses(applications, ApplicationStatus.NEEDS_INFO));
         model.addAttribute("quotedApplications", countStatuses(applications, ApplicationStatus.QUOTED, ApplicationStatus.PAYMENT_PENDING));
         model.addAttribute("paidApplications", countStatuses(applications, ApplicationStatus.PAID, ApplicationStatus.CLOSED));
+        model.addAttribute("recentInquiries", contactInquiryService.recent());
+        model.addAttribute("newInquiries", contactInquiryService.countNew());
         return "admin/dashboard";
+    }
+
+    @PostMapping("/contact-inquiries/{id}/resolve")
+    public String resolveInquiry(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        contactInquiryService.markResolved(id);
+        redirectAttributes.addFlashAttribute("flashMessage", "Contact inquiry marked resolved.");
+        return "redirect:/admin/dashboard";
     }
 
     private long countStatuses(List<ConsultationApplication> applications, ApplicationStatus... statuses) {

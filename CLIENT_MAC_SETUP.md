@@ -12,13 +12,16 @@ It includes:
 
 - Public landing page with product brochures.
 - Customer registration and login.
-- Consultation request submission.
-- Customer consultation history.
+- Customer profile and profile picture updates.
+- Structured Takaful application drafts and submission.
+- Customer application history, quotation status, and payment status.
 - Admin login.
-- Admin leads dashboard.
-- Admin product management.
+- Admin application review dashboard.
+- Admin product management with structured product data.
+- Admin quotation builder after reviewing an application.
+- Stored contact enquiries from the public contact form.
 - Chat assistant for basic Takaful/product questions.
-- Optional ToyyibPay tips, currently mocked for local demo.
+- Quotation-linked ToyyibPay payment, currently mocked for local demo.
 
 For local demo on Mac, the app runs inside Docker and uses temporary demo data. This means it is safe to test without touching the real Railway/Supabase production setup.
 
@@ -102,18 +105,20 @@ Demo data resets when the app/container is recreated because the local database 
 Use this flow when showing the app to a boss or evaluator:
 
 1. Open `http://localhost:8080`.
-2. Show the landing page, product section, reviews, FAQ, and contact form.
-3. Click a product card to open its brochure/details.
-4. Click `Consult Agent`.
+2. Show the landing page, dynamic product section, FAQ, and contact form.
+3. Click a product card to open its database-backed details.
+4. Click the product application button.
 5. Register a customer account if not signed in.
-6. Submit a consultation request.
-7. If a tip is selected, show the local mock ToyyibPay page.
-8. Open the customer account page to show consultation history.
+6. Save an application draft, then complete required applicant, IC, bank, measurement, nominee, and signature details.
+7. Submit the application.
+8. Open the customer account page to show application history.
 9. Log out.
 10. Open `http://localhost:8080/admin`.
 11. Sign in as admin.
-12. Show leads management.
-13. Show product management and explain that admins can add/edit/hide product cards.
+12. Show application management and contact enquiries.
+13. Review the submitted application and create a quotation.
+14. Publish the quotation, then return as the customer to show the mock payment flow.
+15. Show product management and explain that admins can add/edit/archive product records.
 
 Recommended boss-demo note:
 
@@ -127,8 +132,8 @@ ToyyibPay is intentionally kept as mock mode in Docker Compose.
 
 That means:
 
-- Consultation submission still works.
-- Optional tips do not call real ToyyibPay.
+- Application submission still works.
+- Payment is only available after the admin publishes a quotation.
 - The app redirects to the local mock payment screen.
 - No ToyyibPay category code or secret key is needed for the Mac demo.
 
@@ -192,10 +197,11 @@ Safe things to click during demo:
 
 - Product cards.
 - Brochure/details buttons.
-- Consultation form.
+- Application form.
 - Customer registration/login.
 - Customer account page.
-- Admin leads/product screens.
+- Admin application/product screens.
+- Admin quotation builder.
 
 ## 12. Local Demo vs Live Deployment
 
@@ -204,6 +210,7 @@ Local Docker demo:
 - Runs on the Mac.
 - Uses temporary in-memory data.
 - Uses mock ToyyibPay.
+- Uses local file storage inside the container.
 - Good for code review and presentation.
 
 Railway deployment:
@@ -212,6 +219,7 @@ Railway deployment:
 - Uses real environment variables.
 - Connects to Supabase.
 - Can use real email delivery.
+- Should use private Supabase Storage for persistent file uploads in final production.
 - Can later use ToyyibPay sandbox/live.
 
 Do not assume a local Docker change is live online until it is committed, pushed, and deployed.

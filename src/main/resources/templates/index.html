@@ -58,20 +58,20 @@
                 </div>
                 <div class="mt-12 grid max-w-4xl grid-cols-2 gap-3 rounded-[2rem] border border-yellow-400/25 bg-white/[0.02] p-3 sm:grid-cols-4">
                     <div class="rounded-[1.5rem] bg-yellow-400/10 p-5 text-center">
-                        <p class="text-3xl font-semibold text-yellow-300">30+</p>
-                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Clients Guided</p>
+                        <p class="text-3xl font-semibold text-yellow-300" th:text="${metrics.customers}">0</p>
+                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Customers</p>
                     </div>
                     <div class="rounded-[1.5rem] bg-white/[0.03] p-5 text-center">
-                        <p class="text-3xl font-semibold text-yellow-300">70+</p>
-                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Consultations</p>
+                        <p class="text-3xl font-semibold text-yellow-300" th:text="${metrics.applications}">0</p>
+                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Applications</p>
                     </div>
                     <div class="rounded-[1.5rem] bg-white/[0.03] p-5 text-center">
-                        <p class="text-3xl font-semibold text-yellow-300">25+</p>
-                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Hibah Reviews</p>
+                        <p class="text-3xl font-semibold text-yellow-300" th:text="${metrics.activeProducts}">0</p>
+                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Active Products</p>
                     </div>
                     <div class="rounded-[1.5rem] bg-white/[0.03] p-5 text-center">
-                        <p class="text-3xl font-semibold text-yellow-300">24h</p>
-                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Follow-Up Target</p>
+                        <p class="text-3xl font-semibold text-yellow-300" th:text="${metrics.quotedOrPaid}">0</p>
+                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Quoted / Paid</p>
                     </div>
                 </div>
             </div>

@@ -12,6 +12,7 @@ alter table if exists public.product_documents enable row level security;
 alter table if exists public.consultation_applications enable row level security;
 alter table if exists public.application_nominees enable row level security;
 alter table if exists public.stored_files enable row level security;
+alter table if exists public.contact_inquiries enable row level security;
 alter table if exists public.quotations enable row level security;
 alter table if exists public.quotation_items enable row level security;
 alter table if exists public.payments enable row level security;
@@ -28,8 +29,32 @@ create policy "deny direct anon application access" on public.consultation_appli
 drop policy if exists "deny direct anon file access" on public.stored_files;
 create policy "deny direct anon file access" on public.stored_files for all to anon using (false) with check (false);
 
+drop policy if exists "deny direct anon contact inquiry access" on public.contact_inquiries;
+create policy "deny direct anon contact inquiry access" on public.contact_inquiries for all to anon using (false) with check (false);
+
 drop policy if exists "deny direct anon quotation access" on public.quotations;
 create policy "deny direct anon quotation access" on public.quotations for all to anon using (false) with check (false);
 
 drop policy if exists "deny direct anon payment access" on public.payments;
 create policy "deny direct anon payment access" on public.payments for all to anon using (false) with check (false);
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+    'takaful-private',
+    'takaful-private',
+    false,
+    10485760,
+    array['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+)
+on conflict (id) do update
+set public = excluded.public,
+    file_size_limit = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
+
+alter table if exists storage.objects enable row level security;
+
+drop policy if exists "deny direct anon takaful object access" on storage.objects;
+create policy "deny direct anon takaful object access"
+on storage.objects for all to anon
+using (false)
+with check (false);

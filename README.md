@@ -82,7 +82,7 @@ PORT=8081 docker compose up --build
 | `POST /payment/callback` | ToyyibPay callback; hash-verified before payment status changes |
 | `GET /success` | Post-submission confirmation |
 | `POST /api/chat` | Public chatbot endpoint with CSRF and rate limiting |
-| `POST /contact` | Public contact form; sends product enquiries to the configured recipient |
+| `POST /contact` | Public contact form; stores enquiries and sends them to the configured recipient |
 | `GET /admin/dashboard` | Protected application review queue |
 | `GET /admin/applications/{id}` | Admin application detail, files, nominee data, and status control |
 | `GET /admin/applications/{id}/quotation` | Admin quotation builder |
@@ -118,7 +118,7 @@ Spring Boot reads these env vars directly, so Railway env management works witho
 
 Production should start from real admin-created product records, not hardcoded products. For a quick local demo, set `SPRING_PROFILES_ACTIVE=dev` and `DEMO_SEED_ENABLED=true`; if the product table is empty, the app inserts sample structured products with benefits, coverage items, requirements, and documents.
 
-After Railway/Supabase creates the dynamic tables through Hibernate, run `supabase/dynamic-system-rls.sql` in the Supabase SQL Editor. It enables RLS on the public tables, keeps the private storage bucket private, and revokes direct Data API access so sensitive customer/application rows remain accessible through the Java server routes only.
+After Railway/Supabase creates the dynamic tables through Hibernate, run `supabase-rls.sql` in the Supabase SQL Editor. It enables RLS on the public tables, creates the private storage bucket, and denies direct anon Data API/Storage access so sensitive customer/application rows remain accessible through the Java server routes only.
 
 ## Accounts, Applications, and Payments
 
@@ -127,6 +127,8 @@ Customers can browse products publicly, but starting an application requires a c
 Customers can maintain profile data and upload a profile picture. Applications store their own submitted snapshot: applicant details, IC front/back images, work and income information, bank details, height/weight, nominee information, and signature image.
 
 Payment happens only after admin review. The admin creates and publishes a quotation with selected payable items, then the customer starts ToyyibPay payment from the quotation. Dev/Docker uses mock ToyyibPay; sandbox/live can be configured later through environment variables.
+
+Public contact enquiries are stored in `contact_inquiries` and visible on the admin dashboard, even when external email delivery fails.
 
 ## Frontend Build
 
@@ -169,9 +171,9 @@ takaful-web-java/
 
 1. Architecture setup - complete
 2. Database integration - complete
-3. Customer profiles and application intake - in progress
+3. Customer profiles and application intake - complete
 4. Structured admin product CRUD - complete
-5. Admin review and quotation builder - in progress
+5. Admin review and quotation builder - complete
 6. Quotation-linked ToyyibPay mock - complete locally
 7. Gemini chatbot - complete
 

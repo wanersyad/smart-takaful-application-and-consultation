@@ -15,4 +15,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findAllByOrderByNameAsc();
 
     Optional<Product> findByName(String name);
+
+    long countByActiveTrueAndArchivedFalse();
 }

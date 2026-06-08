@@ -57,6 +57,42 @@
             <p class="mt-2 text-3xl font-semibold text-white" th:text="${paidApplications}">0</p>
         </div>
     </section>
+    <section class="mt-8 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-xs uppercase tracking-[0.25em] text-white/45">Contact enquiries</p>
+                <h2 class="mt-2 text-2xl font-semibold text-yellow-300">Recent public questions</h2>
+            </div>
+            <span class="w-fit rounded-full border border-yellow-400/25 bg-yellow-400/10 px-4 py-2 text-sm font-semibold text-yellow-200">
+                <span th:text="${newInquiries}">0</span> new
+            </span>
+        </div>
+        <div th:if="${#lists.isEmpty(recentInquiries)}" class="mt-6 rounded-2xl border border-yellow-400/10 bg-black p-6 text-white/60">
+            No contact enquiries yet. Public contact form submissions will appear here.
+        </div>
+        <div th:if="${!#lists.isEmpty(recentInquiries)}" class="mt-6 grid gap-3">
+            <article th:each="inquiry : ${recentInquiries}" class="grid gap-4 rounded-2xl border border-yellow-400/10 bg-black p-4 lg:grid-cols-[1fr,1.3fr,.7fr] lg:items-center">
+                <div>
+                    <p class="font-semibold text-white" th:text="${inquiry.fullName}">Name</p>
+                    <p class="mt-1 text-sm text-white/55">
+                        <span th:text="${inquiry.email}">email@example.com</span>
+                        <span th:if="${inquiry.phoneNumber != null && !#strings.isEmpty(inquiry.phoneNumber)}"> · <span th:text="${inquiry.phoneNumber}">phone</span></span>
+                    </p>
+                    <p class="mt-1 text-xs text-white/40" th:text="${#temporals.format(inquiry.createdAt, 'yyyy-MM-dd HH:mm')}">date</p>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-yellow-200" th:text="${inquiry.subject}">Subject</p>
+                    <p class="mt-1 text-sm leading-6 text-white/65" th:text="${inquiry.message}">Message</p>
+                    <p class="mt-2 text-xs text-white/40" th:text="${inquiry.deliverySummary}">Delivery</p>
+                </div>
+                <form th:if="${inquiry.status != 'RESOLVED'}" th:action="@{/admin/contact-inquiries/{id}/resolve(id=${inquiry.id})}" method="post" class="lg:text-right">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm font-semibold text-yellow-200 hover:bg-yellow-400 hover:text-zinc-950">Mark Resolved</button>
+                </form>
+                <span th:if="${inquiry.status == 'RESOLVED'}" class="w-fit rounded-full border border-emerald-400/25 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-300 lg:ml-auto">Resolved</span>
+            </article>
+        </div>
+    </section>
     <section class="mt-8 overflow-hidden rounded-3xl border border-yellow-400/25 bg-[#111]">
         <div class="hidden grid-cols-[.9fr,1.1fr,1.2fr,.9fr,.8fr] border-b border-yellow-400/15 px-5 py-4 text-xs font-semibold uppercase tracking-wide text-white/60 md:grid">
             <span>Date</span><span>Customer</span><span>Product</span><span>Status</span><span>Action</span>
