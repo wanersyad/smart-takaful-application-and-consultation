@@ -35,7 +35,7 @@ public class ToyyibPayClient {
     public ToyyibPayBill createBill(Quotation quotation, Payment payment) {
         if (properties.isMockMode()) {
             String billCode = "MGM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-            return new ToyyibPayBill(billCode, "/payment/mock/" + billCode);
+            return new ToyyibPayBill(billCode, paymentUrl(billCode));
         }
 
         if (!properties.isConfiguredForGateway()) {
@@ -70,7 +70,14 @@ public class ToyyibPayClient {
                 .body(String.class);
 
         String billCode = parseBillCode(response);
-        return new ToyyibPayBill(billCode, properties.getBaseUrl() + "/" + billCode);
+        return new ToyyibPayBill(billCode, paymentUrl(billCode));
+    }
+
+    public String paymentUrl(String billCode) {
+        if (properties.isMockMode()) {
+            return "/payment/mock/" + billCode;
+        }
+        return properties.getBaseUrl() + "/" + billCode;
     }
 
     private String parseBillCode(String response) {

@@ -110,8 +110,15 @@ Environment variables are listed in `.env.example`. Copy it to a local `.env` fi
 - `FILE_STORAGE_MODE` - `local` for Docker/dev uploads or `supabase` for private Supabase Storage
 - `LOCAL_UPLOAD_DIR` - local upload folder used by Docker/dev
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_STORAGE_BUCKET` - private Supabase Storage settings
+- `DEMO_SEED_ENABLED` - dev-only optional sample product seed; keep `false` for Railway/prod
 
 Spring Boot reads these env vars directly, so Railway env management works without committed secrets.
+
+## Demo Seed and Supabase Hardening
+
+Production should start from real admin-created product records, not hardcoded products. For a quick local demo, set `SPRING_PROFILES_ACTIVE=dev` and `DEMO_SEED_ENABLED=true`; if the product table is empty, the app inserts sample structured products with benefits, coverage items, requirements, and documents.
+
+After Railway/Supabase creates the dynamic tables through Hibernate, run `supabase/dynamic-system-rls.sql` in the Supabase SQL Editor. It enables RLS on the public tables, keeps the private storage bucket private, and revokes direct Data API access so sensitive customer/application rows remain accessible through the Java server routes only.
 
 ## Accounts, Applications, and Payments
 

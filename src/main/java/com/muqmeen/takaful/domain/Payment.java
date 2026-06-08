@@ -13,6 +13,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Entity
@@ -82,6 +84,10 @@ public class Payment {
 
     public Integer getAmountCents() { return amountCents; }
     public void setAmountCents(Integer amountCents) { this.amountCents = amountCents; }
+    public BigDecimal getAmountRinggit() {
+        if (amountCents == null) return BigDecimal.ZERO;
+        return BigDecimal.valueOf(amountCents).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+    }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

@@ -6,6 +6,7 @@ import com.muqmeen.takaful.domain.Payment;
 import com.muqmeen.takaful.domain.Quotation;
 import com.muqmeen.takaful.repository.PaymentRepository;
 import com.muqmeen.takaful.repository.QuotationRepository;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -38,8 +39,17 @@ public class PaymentService {
     public PaymentStart prepareQuotationPayment(Quotation quotation) {
         quotation = quotationRepository.findById(quotation.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Quotation not found"));
-        if (!"PUBLISHED".equals(quotation.getStatus())) {
+        if (!"PUBLISHED".equals(quotation.getStatus()) && !"PAYMENT_PENDING".equals(quotation.getStatus())) {
             throw new IllegalStateException("Only published quotations can be paid.");
+        }
+        Payment existingPayment = paymentRepository.findByQuotation(quotation);
+        if (existingPayment != null) {
+            if ("PAID".equals(existingPayment.getStatus())) {
+                return new PaymentStart(existingPayment, "/applications/" + quotation.getApplication().getId());
+            }
+            if (existingPayment.getBillCode() != null && !existingPayment.getBillCode().isBlank()) {
+                return new PaymentStart(existingPayment, toyyibPayClient.paymentUrl(existingPayment.getBillCode()));
+            }
         }
         int amountCents = amountCents(quotation.selectedTotal());
 
@@ -69,7 +79,7 @@ public class PaymentService {
     }
 
     public Optional<Payment> findByBillCode(String billCode) {
-        return Optional.ofNullable(paymentRepository.findByBillCode(billCode));
+        return Optional.ofNullable(paymentRepository.findByBillCode(billCode)).map(this::initializeDetails);
     }
 
     public Payment updateMockStatus(String billCode, String statusId) {
@@ -78,7 +88,7 @@ public class PaymentService {
             throw new IllegalArgumentException("Payment not found");
         }
         applyStatus(payment, statusId, null, "mock");
-        return paymentRepository.save(payment);
+        return initializeDetails(paymentRepository.save(payment));
     }
 
     public boolean processCallback(Map<String, String> params) {
@@ -149,6 +159,15 @@ public class PaymentService {
     private int amountCents(BigDecimal amount) {
         if (amount == null) return 0;
         return amount.multiply(BigDecimal.valueOf(100)).intValue();
+    }
+
+    private Payment initializeDetails(Payment payment) {
+        Hibernate.initialize(payment.getQuotation());
+        Hibernate.initialize(payment.getCustomer());
+        if (payment.getQuotation() != null) {
+            Hibernate.initialize(payment.getQuotation().getApplication());
+        }
+        return payment;
     }
 
     private String summarize(Map<String, String> params) {

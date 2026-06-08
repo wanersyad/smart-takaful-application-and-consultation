@@ -85,11 +85,16 @@ public class WebController {
     @GetMapping("/payment/return")
     public String paymentReturn(@RequestParam(value = "billcode", required = false) String billCode,
                                 @RequestParam(value = "status_id", required = false) String statusId,
+                                Authentication authentication,
                                 Model model) {
         model.addAttribute("billCode", billCode);
         model.addAttribute("statusId", statusId);
         if (billCode != null) {
+            Optional<Customer> customer = customerService.currentCustomer(authentication);
             paymentService.findByBillCode(billCode)
+                    .filter(payment -> customer.isPresent()
+                            && payment.getCustomer() != null
+                            && payment.getCustomer().getId().equals(customer.get().getId()))
                     .ifPresent(payment -> model.addAttribute("payment", payment));
         }
         return "payment_return";

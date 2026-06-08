@@ -209,7 +209,11 @@ class DynamicApplicationIntegrationTests {
                 List.of(new QuotationItemInput("Base contribution", "Monthly plan", new BigDecimal("120.00"), true)));
         quotation = quotationService.publish(quotation.getId());
 
-        String redirect = paymentService.prepareQuotationPayment(quotation).redirectUrl();
+        PaymentService.PaymentStart firstStart = paymentService.prepareQuotationPayment(quotation);
+        PaymentService.PaymentStart secondStart = paymentService.prepareQuotationPayment(quotation);
+        assertEquals(firstStart.payment().getBillCode(), secondStart.payment().getBillCode());
+
+        String redirect = firstStart.redirectUrl();
         mockMvc.perform(get(redirect))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("ToyyibPay Mock")));

@@ -15,10 +15,23 @@
         <div>
             <p class="text-white/60">Application #<span th:text="${application.id}">1</span></p>
             <h1 class="text-4xl font-semibold text-yellow-300" th:text="${application.product.name}">Product</h1>
-            <p class="mt-2 text-white/70" th:text="${application.applicantFullName}">Customer</p>
+            <p class="mt-2 text-white/70"><span th:text="${application.applicantFullName}">Customer</span> submitted a full application snapshot for review.</p>
         </div>
-        <a th:href="@{/admin/applications/{id}/quotation(id=${application.id})}" class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Build Quotation</a>
+        <div class="flex flex-col gap-3 sm:flex-row">
+            <a th:href="@{/admin/applications/{id}/quotation(id=${application.id})}" class="rounded-full bg-yellow-400 px-6 py-3 text-center font-semibold text-zinc-950 hover:bg-yellow-300">
+                <i class="fa-solid fa-file-invoice-dollar mr-2"></i>Build Quotation
+            </a>
+            <a href="#documents" class="rounded-full border border-yellow-400/30 px-6 py-3 text-center font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300">
+                <i class="fa-solid fa-folder-open mr-2"></i>View Files
+            </a>
+        </div>
     </div>
+    <section class="mt-6 grid gap-4 md:grid-cols-4">
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Status</p><p class="mt-2 text-xl font-semibold text-yellow-300" th:text="${application.status}">SUBMITTED</p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Product</p><p class="mt-2 font-semibold" th:text="${application.product.name}">Product</p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Quotation</p><p class="mt-2 font-semibold" th:text="${quotation.status}">DRAFT</p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Payable Total</p><p class="mt-2 text-xl font-semibold text-yellow-300">RM <span th:text="${#numbers.formatDecimal(quotation.selectedTotal(), 1, 2)}">0.00</span></p></div>
+    </section>
     <form th:action="@{/admin/applications/{id}/status(id=${application.id})}" method="post" class="mt-6 flex flex-col gap-3 rounded-3xl border border-yellow-400/25 bg-[#111] p-5 sm:flex-row sm:items-end">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
         <label class="grid flex-1 gap-2 text-sm text-white/80">Review status
@@ -40,19 +53,56 @@
                 <div><dt class="text-white/45">Height / Weight</dt><dd><span th:text="${application.heightCm}">0</span> cm / <span th:text="${application.weightKg}">0</span> kg</dd></div>
             </dl>
         </section>
-        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-            <h2 class="text-xl font-semibold text-yellow-300">Documents and Nominees</h2>
-            <div class="mt-5 flex flex-wrap gap-3">
-                <a th:if="${application.icFrontFile != null}" th:href="@{/files/{id}(id=${application.icFrontFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">IC Front</a>
-                <a th:if="${application.icBackFile != null}" th:href="@{/files/{id}(id=${application.icBackFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">IC Back</a>
-                <a th:if="${application.signatureFile != null}" th:href="@{/files/{id}(id=${application.signatureFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">Signature</a>
+        <section id="documents" class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <h2 class="text-xl font-semibold text-yellow-300">Documents</h2>
+            <div class="mt-5 grid gap-3">
+                <a th:if="${application.icFrontFile != null}" th:href="@{/files/{id}(id=${application.icFrontFile.id})}" class="flex items-center justify-between gap-3 rounded-2xl border border-yellow-400/20 bg-black p-4 text-sm hover:bg-yellow-400/10">
+                    <span><i class="fa-solid fa-id-card mr-2 text-yellow-300"></i>IC front image</span>
+                    <span class="text-white/50" th:text="${application.icFrontFile.originalFilename}">front.png</span>
+                </a>
+                <a th:if="${application.icBackFile != null}" th:href="@{/files/{id}(id=${application.icBackFile.id})}" class="flex items-center justify-between gap-3 rounded-2xl border border-yellow-400/20 bg-black p-4 text-sm hover:bg-yellow-400/10">
+                    <span><i class="fa-solid fa-id-card mr-2 text-yellow-300"></i>IC back image</span>
+                    <span class="text-white/50" th:text="${application.icBackFile.originalFilename}">back.png</span>
+                </a>
+                <a th:if="${application.signatureFile != null}" th:href="@{/files/{id}(id=${application.signatureFile.id})}" class="flex items-center justify-between gap-3 rounded-2xl border border-yellow-400/20 bg-black p-4 text-sm hover:bg-yellow-400/10">
+                    <span><i class="fa-solid fa-signature mr-2 text-yellow-300"></i>Applicant signature</span>
+                    <span class="text-white/50" th:text="${application.signatureFile.originalFilename}">signature.png</span>
+                </a>
+                <p th:if="${application.icFrontFile == null && application.icBackFile == null && application.signatureFile == null}" class="rounded-2xl bg-black p-4 text-white/55">No private files attached yet.</p>
             </div>
-            <article th:each="nominee : ${application.nominees}" class="mt-4 rounded-2xl bg-black p-4">
-                <p class="font-semibold text-yellow-300" th:text="${nominee.fullName}">Nominee</p>
-                <p class="text-sm text-white/65"><span th:text="${nominee.icNumber}">IC</span> / <span th:text="${nominee.relationship}">Relationship</span> / <span th:text="${nominee.phoneNumber}">Phone</span></p>
-            </article>
         </section>
     </div>
+    <section class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+        <h2 class="text-xl font-semibold text-yellow-300">Nominees</h2>
+        <div class="mt-5 grid gap-4 lg:grid-cols-2">
+            <article th:each="nominee : ${application.nominees}" class="rounded-2xl border border-yellow-400/15 bg-black p-4">
+                <p class="font-semibold text-yellow-300" th:text="${nominee.fullName}">Nominee</p>
+                <dl class="mt-3 grid gap-2 text-sm text-white/70">
+                    <div><dt class="text-white/40">IC / Relationship</dt><dd><span th:text="${nominee.icNumber}">IC</span> / <span th:text="${nominee.relationship}">Relationship</span></dd></div>
+                    <div><dt class="text-white/40">Phone</dt><dd th:text="${nominee.phoneNumber}">Phone</dd></div>
+                    <div><dt class="text-white/40">Occupation</dt><dd th:text="${nominee.occupation}">Occupation</dd></div>
+                    <div><dt class="text-white/40">Home address</dt><dd th:text="${nominee.homeAddress}">Address</dd></div>
+                </dl>
+            </article>
+        </div>
+    </section>
+    <section class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+                <h2 class="text-xl font-semibold text-yellow-300">Quotation and Payment Flow</h2>
+                <p class="mt-2 text-white/60">Create the quotation after review. Customer payment is only available after publishing.</p>
+            </div>
+            <a th:href="@{/admin/applications/{id}/quotation(id=${application.id})}" class="rounded-full bg-yellow-400 px-6 py-3 text-center font-semibold text-zinc-950 hover:bg-yellow-300">Open Builder</a>
+        </div>
+        <div class="mt-5 grid gap-3">
+            <div th:each="item : ${quotation.items}" class="grid gap-3 rounded-2xl border border-yellow-400/15 bg-black p-4 sm:grid-cols-[1fr,auto,auto] sm:items-center">
+                <div><p class="font-semibold" th:text="${item.itemName}">Item</p><p class="text-sm text-white/55" th:text="${item.description}">Description</p></div>
+                <span class="rounded-full px-3 py-1 text-xs font-semibold" th:classappend="${item.selected} ? ' bg-yellow-400 text-zinc-950' : ' border border-white/15 text-white/55'" th:text="${item.selected} ? 'Included' : 'Not included'">Included</span>
+                <p class="font-semibold text-yellow-300">RM <span th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</span></p>
+            </div>
+            <p th:if="${#lists.isEmpty(quotation.items)}" class="rounded-2xl bg-black p-4 text-white/55">No quotation items yet.</p>
+        </div>
+    </section>
 </main>
 </body>
 </html>

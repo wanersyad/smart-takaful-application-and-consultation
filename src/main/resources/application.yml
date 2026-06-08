@@ -62,3 +62,6 @@ file-storage:
   supabase-url: ${SUPABASE_URL:}
   supabase-service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
   supabase-bucket: ${SUPABASE_STORAGE_BUCKET:takaful-private}
+
+demo-seed:
+  enabled: ${DEMO_SEED_ENABLED:false}

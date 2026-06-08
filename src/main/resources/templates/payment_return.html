@@ -4,13 +4,21 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Return - Muqmeen Group</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
 <main class="mx-auto flex min-h-screen max-w-xl items-center px-4">
     <div class="w-full rounded-3xl border border-yellow-400/25 bg-[#111] p-8 text-center">
-        <h1 class="text-3xl font-semibold text-yellow-300">Payment Return Received</h1>
-        <p class="mt-3 text-white/70">We received the gateway return for bill <span th:text="${billCode}">bill</span>. Final status is confirmed by callback.</p>
-        <a href="/account" class="mt-8 inline-flex rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950">Back to Account</a>
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-yellow-400 text-2xl text-zinc-950"><i class="fa-solid fa-receipt"></i></div>
+        <h1 class="mt-5 text-3xl font-semibold text-yellow-300">Payment Return Received</h1>
+        <p class="mt-3 text-white/70">We received the gateway return for bill <span class="text-yellow-300" th:text="${billCode ?: '-'}">bill</span>. Final status is confirmed by ToyyibPay callback.</p>
+        <div th:if="${payment != null}" class="mt-6 rounded-2xl bg-black p-5 text-left">
+            <p class="text-sm text-white/50">Current payment status</p>
+            <p class="mt-1 text-2xl font-semibold text-yellow-300" th:text="${payment.status}">PENDING</p>
+            <p class="mt-3 text-sm text-white/60">Amount: RM <span th:text="${#numbers.formatDecimal(payment.amountRinggit, 1, 2)}">0.00</span></p>
+        </div>
+        <a th:if="${payment != null && payment.quotation != null}" th:href="@{/applications/{id}(id=${payment.quotation.application.id})}" class="mt-8 inline-flex rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Back to Application</a>
+        <a th:if="${payment == null || payment.quotation == null}" href="/account" class="mt-8 inline-flex rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Back to Account</a>
     </div>
 </main>
 </body>
