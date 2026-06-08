@@ -32,11 +32,55 @@
             <label class="grid gap-2 text-sm text-white/80">Coverage purpose<textarea th:field="*{coveragePurpose}" rows="4" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
             <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Terms and notes<textarea th:field="*{termsNotes}" rows="4" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
         </section>
-        <section class="grid gap-5">
-            <label class="grid gap-2 text-sm text-white/80">Benefits, one per line<textarea name="benefitsText" rows="5" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${benefitsText}"></textarea></label>
-            <label class="grid gap-2 text-sm text-white/80">Coverage items, one per line as: Item name | Explanation<textarea name="coverageText" rows="5" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${coverageText}"></textarea></label>
-            <label class="grid gap-2 text-sm text-white/80">Requirements, one per line<textarea name="requirementsText" rows="5" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${requirementsText}"></textarea></label>
-            <label class="grid gap-2 text-sm text-white/80">Documents, one per line as: Label | URL | Type<textarea name="documentsText" rows="4" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${documentsText}"></textarea></label>
+        <section class="grid gap-6">
+            <textarea id="benefitsText" name="benefitsText" class="hidden" th:text="${benefitsText}"></textarea>
+            <textarea id="coverageText" name="coverageText" class="hidden" th:text="${coverageText}"></textarea>
+            <textarea id="requirementsText" name="requirementsText" class="hidden" th:text="${requirementsText}"></textarea>
+            <textarea id="documentsText" name="documentsText" class="hidden" th:text="${documentsText}"></textarea>
+
+            <div class="rounded-2xl border border-yellow-400/15 bg-black p-5" data-list="benefits">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-white">Benefits</h2>
+                        <p class="text-sm text-white/55">Short points customers will read on the product detail view.</p>
+                    </div>
+                    <button type="button" class="add-row rounded-full border border-yellow-400/30 px-4 py-2 text-sm font-semibold text-yellow-300 hover:bg-yellow-400 hover:text-zinc-950"><i class="fa-solid fa-plus mr-2"></i>Add Benefit</button>
+                </div>
+                <div class="rows mt-4 grid gap-3"></div>
+            </div>
+
+            <div class="rounded-2xl border border-yellow-400/15 bg-black p-5" data-list="coverage">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-white">Coverage Items</h2>
+                        <p class="text-sm text-white/55">Each row becomes one database coverage item with its own explanation.</p>
+                    </div>
+                    <button type="button" class="add-row rounded-full border border-yellow-400/30 px-4 py-2 text-sm font-semibold text-yellow-300 hover:bg-yellow-400 hover:text-zinc-950"><i class="fa-solid fa-plus mr-2"></i>Add Coverage</button>
+                </div>
+                <div class="rows mt-4 grid gap-3"></div>
+            </div>
+
+            <div class="rounded-2xl border border-yellow-400/15 bg-black p-5" data-list="requirements">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-white">Requirements</h2>
+                        <p class="text-sm text-white/55">Documents, eligibility notes, or information needed before applying.</p>
+                    </div>
+                    <button type="button" class="add-row rounded-full border border-yellow-400/30 px-4 py-2 text-sm font-semibold text-yellow-300 hover:bg-yellow-400 hover:text-zinc-950"><i class="fa-solid fa-plus mr-2"></i>Add Requirement</button>
+                </div>
+                <div class="rows mt-4 grid gap-3"></div>
+            </div>
+
+            <div class="rounded-2xl border border-yellow-400/15 bg-black p-5" data-list="documents">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-white">Documents</h2>
+                        <p class="text-sm text-white/55">Optional brochure links. Product information above remains the source of truth.</p>
+                    </div>
+                    <button type="button" class="add-row rounded-full border border-yellow-400/30 px-4 py-2 text-sm font-semibold text-yellow-300 hover:bg-yellow-400 hover:text-zinc-950"><i class="fa-solid fa-plus mr-2"></i>Add Document</button>
+                </div>
+                <div class="rows mt-4 grid gap-3"></div>
+            </div>
         </section>
         <section class="grid gap-3 rounded-2xl border border-yellow-400/15 bg-black p-5">
             <label class="flex items-center gap-3"><input type="checkbox" th:field="*{featured}" class="h-5 w-5 accent-yellow-400"> <span>Mark as featured/popular</span></label>
@@ -45,5 +89,93 @@
         <button class="rounded-full bg-yellow-400 px-6 py-4 font-semibold text-zinc-950 hover:bg-yellow-300">Save Product</button>
     </form>
 </main>
+<template id="simple-row-template">
+    <div class="structured-row grid gap-3 sm:grid-cols-[1fr,auto]">
+        <input placeholder="Add item" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
+        <button type="button" class="remove-row rounded-2xl border border-red-400/35 px-4 py-3 text-red-200 hover:bg-red-500 hover:text-white"><i class="fa-solid fa-trash"></i></button>
+    </div>
+</template>
+<template id="coverage-row-template">
+    <div class="structured-row grid gap-3 lg:grid-cols-[0.85fr,1.35fr,auto]">
+        <input data-part="name" placeholder="Coverage item name" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
+        <input data-part="description" placeholder="What this item covers" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
+        <button type="button" class="remove-row rounded-2xl border border-red-400/35 px-4 py-3 text-red-200 hover:bg-red-500 hover:text-white"><i class="fa-solid fa-trash"></i></button>
+    </div>
+</template>
+<template id="document-row-template">
+    <div class="structured-row grid gap-3 lg:grid-cols-[0.8fr,1.2fr,0.55fr,auto]">
+        <input data-part="label" placeholder="Document label" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
+        <input data-part="url" placeholder="Brochure or file URL" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
+        <input data-part="type" placeholder="PDF" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
+        <button type="button" class="remove-row rounded-2xl border border-red-400/35 px-4 py-3 text-red-200 hover:bg-red-500 hover:text-white"><i class="fa-solid fa-trash"></i></button>
+    </div>
+</template>
+<script>
+const textareas = {
+    benefits: document.getElementById('benefitsText'),
+    coverage: document.getElementById('coverageText'),
+    requirements: document.getElementById('requirementsText'),
+    documents: document.getElementById('documentsText')
+};
+
+function lines(value) {
+    return (value || '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+}
+
+function rowTemplate(type) {
+    if (type === 'coverage') return document.getElementById('coverage-row-template');
+    if (type === 'documents') return document.getElementById('document-row-template');
+    return document.getElementById('simple-row-template');
+}
+
+function addStructuredRow(type, raw = '') {
+    const container = document.querySelector(`[data-list="${type}"] .rows`);
+    const row = rowTemplate(type).content.firstElementChild.cloneNode(true);
+    const parts = raw.split('|').map((part) => part.trim());
+    if (type === 'coverage') {
+        row.querySelector('[data-part="name"]').value = parts[0] || '';
+        row.querySelector('[data-part="description"]').value = parts[1] || '';
+    } else if (type === 'documents') {
+        row.querySelector('[data-part="label"]').value = parts[0] || '';
+        row.querySelector('[data-part="url"]').value = parts[1] || '';
+        row.querySelector('[data-part="type"]').value = parts[2] || 'PDF';
+    } else {
+        row.querySelector('input').value = raw;
+    }
+    row.querySelector('.remove-row').addEventListener('click', () => {
+        row.remove();
+        if (!container.querySelector('.structured-row')) addStructuredRow(type);
+    });
+    container.appendChild(row);
+}
+
+function serializeStructuredRows() {
+    for (const type of Object.keys(textareas)) {
+        const rows = [...document.querySelectorAll(`[data-list="${type}"] .structured-row`)];
+        textareas[type].value = rows.map((row) => {
+            if (type === 'coverage') {
+                const name = row.querySelector('[data-part="name"]').value.trim();
+                const description = row.querySelector('[data-part="description"]').value.trim();
+                return name ? `${name} | ${description}` : '';
+            }
+            if (type === 'documents') {
+                const label = row.querySelector('[data-part="label"]').value.trim();
+                const url = row.querySelector('[data-part="url"]').value.trim();
+                const docType = row.querySelector('[data-part="type"]').value.trim();
+                return label ? `${label} | ${url} | ${docType || 'PDF'}` : '';
+            }
+            return row.querySelector('input').value.trim();
+        }).filter(Boolean).join('\n');
+    }
+}
+
+for (const type of Object.keys(textareas)) {
+    const existing = lines(textareas[type].value);
+    (existing.length ? existing : ['']).forEach((line) => addStructuredRow(type, line));
+    document.querySelector(`[data-list="${type}"] .add-row`).addEventListener('click', () => addStructuredRow(type));
+}
+
+document.querySelector('form').addEventListener('submit', serializeStructuredRows);
+</script>
 </body>
 </html>

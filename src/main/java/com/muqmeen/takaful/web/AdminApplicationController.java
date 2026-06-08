@@ -34,9 +34,26 @@ public class AdminApplicationController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        model.addAttribute("applications", applicationService.listForAdmin());
+        List<ConsultationApplication> applications = applicationService.listForAdmin();
+        model.addAttribute("applications", applications);
         model.addAttribute("statuses", ApplicationStatus.values());
+        model.addAttribute("totalApplications", applications.size());
+        model.addAttribute("submittedApplications", countStatuses(applications, ApplicationStatus.SUBMITTED, ApplicationStatus.UNDER_REVIEW));
+        model.addAttribute("needsInfoApplications", countStatuses(applications, ApplicationStatus.NEEDS_INFO));
+        model.addAttribute("quotedApplications", countStatuses(applications, ApplicationStatus.QUOTED, ApplicationStatus.PAYMENT_PENDING));
+        model.addAttribute("paidApplications", countStatuses(applications, ApplicationStatus.PAID, ApplicationStatus.CLOSED));
         return "admin/dashboard";
+    }
+
+    private long countStatuses(List<ConsultationApplication> applications, ApplicationStatus... statuses) {
+        return applications.stream()
+                .filter(application -> {
+                    for (ApplicationStatus status : statuses) {
+                        if (application.getStatus() == status) return true;
+                    }
+                    return false;
+                })
+                .count();
     }
 
     @GetMapping("/applications/{id}")
@@ -90,22 +107,34 @@ public class AdminApplicationController {
     public static class QuotationForm {
         public String adminNotes;
         public String itemsText;
+        public List<QuotationItemRow> items = new ArrayList<>();
 
         static QuotationForm from(Quotation quotation) {
             QuotationForm form = new QuotationForm();
             form.adminNotes = quotation.getAdminNotes();
-            form.itemsText = quotation.getItems().stream()
-                    .map(item -> item.getItemName() + " | "
-                            + (item.getDescription() == null ? "" : item.getDescription()) + " | "
-                            + (item.getAmount() == null ? "0.00" : item.getAmount()) + " | "
-                            + (item.isSelected() ? "yes" : "no"))
-                    .reduce((a, b) -> a + "\n" + b)
-                    .orElse("");
+            quotation.getItems().stream()
+                    .sorted((a, b) -> Integer.compare(a.getDisplayOrder(), b.getDisplayOrder()))
+                    .forEach(item -> form.items.add(QuotationItemRow.from(item)));
+            if (form.items.isEmpty()) {
+                form.items.add(new QuotationItemRow());
+            }
             return form;
         }
 
         List<QuotationItemInput> toItems() {
             List<QuotationItemInput> rows = new ArrayList<>();
+            if (items != null) {
+                for (QuotationItemRow item : items) {
+                    if (item == null || item.itemName == null || item.itemName.isBlank()) continue;
+                    rows.add(new QuotationItemInput(
+                            item.itemName.trim(),
+                            item.description == null ? "" : item.description.trim(),
+                            item.amount == null ? BigDecimal.ZERO : item.amount,
+                            item.selected
+                    ));
+                }
+            }
+            if (!rows.isEmpty()) return rows;
             if (itemsText == null || itemsText.isBlank()) return rows;
             for (String line : itemsText.split("\\R")) {
                 String trimmed = line.trim();
@@ -131,5 +160,32 @@ public class AdminApplicationController {
 
         public void setAdminNotes(String adminNotes) { this.adminNotes = adminNotes; }
         public void setItemsText(String itemsText) { this.itemsText = itemsText; }
+        public List<QuotationItemRow> getItems() { return items; }
+        public void setItems(List<QuotationItemRow> items) { this.items = items; }
+    }
+
+    public static class QuotationItemRow {
+        public String itemName;
+        public String description;
+        public BigDecimal amount = BigDecimal.ZERO;
+        public boolean selected = true;
+
+        static QuotationItemRow from(com.muqmeen.takaful.domain.QuotationItem item) {
+            QuotationItemRow row = new QuotationItemRow();
+            row.itemName = item.getItemName();
+            row.description = item.getDescription();
+            row.amount = item.getAmount();
+            row.selected = item.isSelected();
+            return row;
+        }
+
+        public String getItemName() { return itemName; }
+        public void setItemName(String itemName) { this.itemName = itemName; }
+        public String getDescription() { return description; }
+        public void setDescription(String description) { this.description = description; }
+        public BigDecimal getAmount() { return amount; }
+        public void setAmount(BigDecimal amount) { this.amount = amount; }
+        public boolean isSelected() { return selected; }
+        public void setSelected(boolean selected) { this.selected = selected; }
     }
 }

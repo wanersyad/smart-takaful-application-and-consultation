@@ -35,6 +35,28 @@
     <p th:if="${flashMessage}" class="mb-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
     <h1 class="text-4xl font-semibold text-yellow-300">Application Management</h1>
     <p class="mt-2 text-white/65">Review submitted applications, request corrections, and create quotations.</p>
+    <section class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5">
+            <p class="text-xs uppercase tracking-wide text-white/55">Total</p>
+            <p class="mt-2 text-3xl font-semibold text-yellow-300" th:text="${totalApplications}">0</p>
+        </div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5">
+            <p class="text-xs uppercase tracking-wide text-white/55">Submitted / Review</p>
+            <p class="mt-2 text-3xl font-semibold text-white" th:text="${submittedApplications}">0</p>
+        </div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5">
+            <p class="text-xs uppercase tracking-wide text-white/55">Needs Info</p>
+            <p class="mt-2 text-3xl font-semibold text-white" th:text="${needsInfoApplications}">0</p>
+        </div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5">
+            <p class="text-xs uppercase tracking-wide text-white/55">Quoted / Payment</p>
+            <p class="mt-2 text-3xl font-semibold text-white" th:text="${quotedApplications}">0</p>
+        </div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5">
+            <p class="text-xs uppercase tracking-wide text-white/55">Paid / Closed</p>
+            <p class="mt-2 text-3xl font-semibold text-white" th:text="${paidApplications}">0</p>
+        </div>
+    </section>
     <section class="mt-8 overflow-hidden rounded-3xl border border-yellow-400/25 bg-[#111]">
         <div class="hidden grid-cols-[.9fr,1.1fr,1.2fr,.9fr,.8fr] border-b border-yellow-400/15 px-5 py-4 text-xs font-semibold uppercase tracking-wide text-white/60 md:grid">
             <span>Date</span><span>Customer</span><span>Product</span><span>Status</span><span>Action</span>

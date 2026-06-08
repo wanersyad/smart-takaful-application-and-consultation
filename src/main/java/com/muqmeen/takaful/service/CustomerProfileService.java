@@ -5,6 +5,7 @@ import com.muqmeen.takaful.domain.CustomerProfile;
 import com.muqmeen.takaful.domain.FilePurpose;
 import com.muqmeen.takaful.domain.StoredFile;
 import com.muqmeen.takaful.repository.CustomerProfileRepository;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,11 +26,13 @@ public class CustomerProfileService {
     }
 
     public CustomerProfile getOrCreate(Customer customer) {
-        return customerProfileRepository.findByCustomer(customer).orElseGet(() -> {
-            CustomerProfile profile = new CustomerProfile();
-            profile.setCustomer(customer);
-            return customerProfileRepository.save(profile);
+        CustomerProfile profile = customerProfileRepository.findByCustomer(customer).orElseGet(() -> {
+            CustomerProfile createdProfile = new CustomerProfile();
+            createdProfile.setCustomer(customer);
+            return customerProfileRepository.save(createdProfile);
         });
+        Hibernate.initialize(profile.getProfilePicture());
+        return profile;
     }
 
     public CustomerProfile update(Customer customer, ProfileUpdate update, MultipartFile profilePicture) {

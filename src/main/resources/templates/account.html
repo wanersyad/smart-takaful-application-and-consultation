@@ -35,9 +35,15 @@
 <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
     <p th:if="${flashMessage}" class="mb-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
     <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-            <p class="text-white/65">Signed in as <span class="font-semibold text-white" th:text="${customer.fullName}">Customer</span></p>
-            <h1 class="mt-2 text-4xl font-semibold text-yellow-300">My Takaful Applications</h1>
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
+            <div class="h-20 w-20 overflow-hidden rounded-3xl border border-yellow-400/30 bg-yellow-400/10">
+                <img th:if="${profile.profilePicture != null}" th:src="@{/files/{id}(id=${profile.profilePicture.id})}" alt="Profile picture" class="h-full w-full object-cover">
+                <div th:if="${profile.profilePicture == null}" class="flex h-full w-full items-center justify-center text-2xl text-yellow-300"><i class="fa-solid fa-user"></i></div>
+            </div>
+            <div>
+                <p class="text-white/65">Signed in as <span class="font-semibold text-white" th:text="${customer.fullName}">Customer</span></p>
+                <h1 class="mt-2 text-4xl font-semibold text-yellow-300">My Takaful Applications</h1>
+            </div>
         </div>
         <a href="/account/profile" class="rounded-full border border-yellow-400/30 px-6 py-3 text-center font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300">Update Profile</a>
     </div>

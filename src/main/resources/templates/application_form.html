@@ -49,14 +49,50 @@
             </div>
         </section>
 
-        <section class="grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2">
-            <h2 class="sm:col-span-2 text-2xl font-semibold text-yellow-300">Nominee Information</h2>
-            <label class="grid gap-2 text-sm text-white/80">Full name<input name="nominee1FullName" th:value="${form.nominee1FullName}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="grid gap-2 text-sm text-white/80">IC number<input name="nominee1IcNumber" th:value="${form.nominee1IcNumber}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="grid gap-2 text-sm text-white/80">Relationship<input name="nominee1Relationship" th:value="${form.nominee1Relationship}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="grid gap-2 text-sm text-white/80">Phone number<input name="nominee1PhoneNumber" th:value="${form.nominee1PhoneNumber}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="grid gap-2 text-sm text-white/80">Occupation<input name="nominee1Occupation" th:value="${form.nominee1Occupation}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Home address<textarea name="nominee1HomeAddress" rows="3" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${form.nominee1HomeAddress}"></textarea></label>
+        <section class="grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-2xl font-semibold text-yellow-300">Nominee Information</h2>
+                    <p class="mt-1 text-sm text-white/55">Add the main nominee, then include extra nominees when needed.</p>
+                </div>
+                <button type="button" id="add-nominee" class="rounded-full border border-yellow-400/30 px-5 py-3 text-sm font-semibold text-yellow-300 hover:bg-yellow-400 hover:text-zinc-950"><i class="fa-solid fa-plus mr-2"></i>Add Nominee</button>
+            </div>
+
+            <article class="nominee-card grid gap-5 rounded-2xl border border-yellow-400/15 bg-black p-5 sm:grid-cols-2" data-slot="1">
+                <h3 class="sm:col-span-2 text-lg font-semibold text-white">Nominee 1 <span class="text-sm text-yellow-300">(required)</span></h3>
+                <label class="grid gap-2 text-sm text-white/80">Full name<input name="nominee1FullName" th:value="${form.nominee1FullName}" required class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">IC number<input name="nominee1IcNumber" th:value="${form.nominee1IcNumber}" required class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">Relationship<input name="nominee1Relationship" th:value="${form.nominee1Relationship}" required class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">Phone number<input name="nominee1PhoneNumber" th:value="${form.nominee1PhoneNumber}" required class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">Occupation<input name="nominee1Occupation" th:value="${form.nominee1Occupation}" required class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Home address<textarea name="nominee1HomeAddress" rows="3" required class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3" th:text="${form.nominee1HomeAddress}"></textarea></label>
+            </article>
+
+            <article class="nominee-card optional-nominee grid gap-5 rounded-2xl border border-yellow-400/15 bg-black p-5 sm:grid-cols-2" data-slot="2" th:classappend="${#strings.isEmpty(form.nominee2FullName)} ? ' hidden' : ''">
+                <div class="sm:col-span-2 flex items-center justify-between gap-3">
+                    <h3 class="text-lg font-semibold text-white">Nominee 2 <span class="text-sm text-white/45">(optional)</span></h3>
+                    <button type="button" class="remove-nominee rounded-full border border-red-400/35 px-4 py-2 text-sm text-red-200 hover:bg-red-500 hover:text-white">Remove</button>
+                </div>
+                <label class="grid gap-2 text-sm text-white/80">Full name<input name="nominee2FullName" th:value="${form.nominee2FullName}" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">IC number<input name="nominee2IcNumber" th:value="${form.nominee2IcNumber}" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">Relationship<input name="nominee2Relationship" th:value="${form.nominee2Relationship}" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">Phone number<input name="nominee2PhoneNumber" th:value="${form.nominee2PhoneNumber}" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">Occupation<input name="nominee2Occupation" th:value="${form.nominee2Occupation}" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Home address<textarea name="nominee2HomeAddress" rows="3" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3" th:text="${form.nominee2HomeAddress}"></textarea></label>
+            </article>
+
+            <article class="nominee-card optional-nominee grid gap-5 rounded-2xl border border-yellow-400/15 bg-black p-5 sm:grid-cols-2" data-slot="3" th:classappend="${#strings.isEmpty(form.nominee3FullName)} ? ' hidden' : ''">
+                <div class="sm:col-span-2 flex items-center justify-between gap-3">
+                    <h3 class="text-lg font-semibold text-white">Nominee 3 <span class="text-sm text-white/45">(optional)</span></h3>
+                    <button type="button" class="remove-nominee rounded-full border border-red-400/35 px-4 py-2 text-sm text-red-200 hover:bg-red-500 hover:text-white">Remove</button>
+                </div>
+                <label class="grid gap-2 text-sm text-white/80">Full name<input name="nominee3FullName" th:value="${form.nominee3FullName}" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">IC number<input name="nominee3IcNumber" th:value="${form.nominee3IcNumber}" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">Relationship<input name="nominee3Relationship" th:value="${form.nominee3Relationship}" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">Phone number<input name="nominee3PhoneNumber" th:value="${form.nominee3PhoneNumber}" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="grid gap-2 text-sm text-white/80">Occupation<input name="nominee3Occupation" th:value="${form.nominee3Occupation}" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3"></label>
+                <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Home address<textarea name="nominee3HomeAddress" rows="3" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3" th:text="${form.nominee3HomeAddress}"></textarea></label>
+            </article>
         </section>
 
         <div class="flex flex-col gap-3 sm:flex-row">
@@ -77,6 +113,24 @@ function end(){ drawing = false; document.getElementById('signatureDataUrl').val
 canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
 canvas.addEventListener('touchstart', start); canvas.addEventListener('touchmove', move); window.addEventListener('touchend', end);
 document.getElementById('clear-signature').addEventListener('click', () => { ctx.clearRect(0,0,canvas.width,canvas.height); document.getElementById('signatureDataUrl').value=''; });
+
+const nomineeButton = document.getElementById('add-nominee');
+function updateNomineeButton() {
+    nomineeButton.classList.toggle('hidden', !document.querySelector('.optional-nominee.hidden'));
+}
+nomineeButton.addEventListener('click', () => {
+    const next = document.querySelector('.optional-nominee.hidden');
+    if (!next) return;
+    next.classList.remove('hidden');
+    updateNomineeButton();
+});
+document.querySelectorAll('.remove-nominee').forEach((button) => button.addEventListener('click', () => {
+    const card = button.closest('.optional-nominee');
+    card.querySelectorAll('input, textarea').forEach((field) => field.value = '');
+    card.classList.add('hidden');
+    updateNomineeButton();
+}));
+updateNomineeButton();
 </script>
 </body>
 </html>

@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -158,8 +159,17 @@ class DynamicApplicationIntegrationTests {
                         .param("nominee1Relationship", "Spouse")
                         .param("nominee1HomeAddress", "Nominee Address")
                         .param("nominee1Occupation", "Engineer")
-                        .param("nominee1PhoneNumber", "60122222222"))
+                        .param("nominee1PhoneNumber", "60122222222")
+                        .param("nominee2FullName", "Second Nominee")
+                        .param("nominee2IcNumber", "910202022222")
+                        .param("nominee2Relationship", "Child")
+                        .param("nominee2HomeAddress", "Second Address")
+                        .param("nominee2Occupation", "Student")
+                        .param("nominee2PhoneNumber", "60133333333"))
                 .andExpect(status().is3xxRedirection());
+
+        ConsultationApplication submitted = applicationService.findById(draft.getId()).orElseThrow();
+        assertEquals(2, submitted.getNominees().size());
 
         mockMvc.perform(get("/account").with(user(customer.getEmail()).roles("USER")))
                 .andExpect(status().isOk())

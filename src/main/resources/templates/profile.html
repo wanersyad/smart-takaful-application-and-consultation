@@ -10,7 +10,16 @@
 <body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
 <main class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
     <a href="/account" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to account</a>
-    <h1 class="mt-5 text-4xl font-semibold text-yellow-300">Customer Profile</h1>
+    <div class="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center">
+        <div class="h-24 w-24 overflow-hidden rounded-3xl border border-yellow-400/30 bg-yellow-400/10">
+            <img th:if="${profile.profilePicture != null}" th:src="@{/files/{id}(id=${profile.profilePicture.id})}" alt="Profile picture" class="h-full w-full object-cover">
+            <div th:if="${profile.profilePicture == null}" class="flex h-full w-full items-center justify-center text-3xl text-yellow-300"><i class="fa-solid fa-user"></i></div>
+        </div>
+        <div>
+            <p class="text-white/60" th:text="${customer.email}">customer@email.com</p>
+            <h1 class="text-4xl font-semibold text-yellow-300">Customer Profile</h1>
+        </div>
+    </div>
     <p th:if="${flashMessage}" class="mt-5 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
     <form th:action="@{/account/profile}" method="post" enctype="multipart/form-data" class="mt-8 grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

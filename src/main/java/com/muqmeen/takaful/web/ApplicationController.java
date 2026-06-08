@@ -125,6 +125,18 @@ public class ApplicationController {
         public String nominee1HomeAddress;
         public String nominee1Occupation;
         public String nominee1PhoneNumber;
+        public String nominee2FullName;
+        public String nominee2IcNumber;
+        public String nominee2Relationship;
+        public String nominee2HomeAddress;
+        public String nominee2Occupation;
+        public String nominee2PhoneNumber;
+        public String nominee3FullName;
+        public String nominee3IcNumber;
+        public String nominee3Relationship;
+        public String nominee3HomeAddress;
+        public String nominee3Occupation;
+        public String nominee3PhoneNumber;
 
         static ApplicationForm from(ConsultationApplication application) {
             ApplicationForm form = new ApplicationForm();
@@ -141,15 +153,35 @@ public class ApplicationController {
             form.bankAccountNumber = application.getBankAccountNumber();
             form.heightCm = application.getHeightCm();
             form.weightKg = application.getWeightKg();
-            application.getNominees().stream().findFirst().ifPresent(nominee -> {
-                form.nominee1FullName = nominee.getFullName();
-                form.nominee1IcNumber = nominee.getIcNumber();
-                form.nominee1Relationship = nominee.getRelationship();
-                form.nominee1HomeAddress = nominee.getHomeAddress();
-                form.nominee1Occupation = nominee.getOccupation();
-                form.nominee1PhoneNumber = nominee.getPhoneNumber();
-            });
+            for (int index = 0; index < application.getNominees().size() && index < 3; index++) {
+                form.fillNominee(index + 1, application.getNominees().get(index));
+            }
             return form;
+        }
+
+        private void fillNominee(int slot, com.muqmeen.takaful.domain.ApplicationNominee nominee) {
+            if (slot == 1) {
+                nominee1FullName = nominee.getFullName();
+                nominee1IcNumber = nominee.getIcNumber();
+                nominee1Relationship = nominee.getRelationship();
+                nominee1HomeAddress = nominee.getHomeAddress();
+                nominee1Occupation = nominee.getOccupation();
+                nominee1PhoneNumber = nominee.getPhoneNumber();
+            } else if (slot == 2) {
+                nominee2FullName = nominee.getFullName();
+                nominee2IcNumber = nominee.getIcNumber();
+                nominee2Relationship = nominee.getRelationship();
+                nominee2HomeAddress = nominee.getHomeAddress();
+                nominee2Occupation = nominee.getOccupation();
+                nominee2PhoneNumber = nominee.getPhoneNumber();
+            } else if (slot == 3) {
+                nominee3FullName = nominee.getFullName();
+                nominee3IcNumber = nominee.getIcNumber();
+                nominee3Relationship = nominee.getRelationship();
+                nominee3HomeAddress = nominee.getHomeAddress();
+                nominee3Occupation = nominee.getOccupation();
+                nominee3PhoneNumber = nominee.getPhoneNumber();
+            }
         }
 
         ApplicationInput toInput() {
@@ -167,14 +199,11 @@ public class ApplicationController {
                     bankAccountNumber,
                     heightCm,
                     weightKg,
-                    List.of(new NomineeInput(
-                            nominee1FullName,
-                            nominee1IcNumber,
-                            nominee1Relationship,
-                            nominee1HomeAddress,
-                            nominee1Occupation,
-                            nominee1PhoneNumber
-                    ))
+                    List.of(
+                            new NomineeInput(nominee1FullName, nominee1IcNumber, nominee1Relationship, nominee1HomeAddress, nominee1Occupation, nominee1PhoneNumber),
+                            new NomineeInput(nominee2FullName, nominee2IcNumber, nominee2Relationship, nominee2HomeAddress, nominee2Occupation, nominee2PhoneNumber),
+                            new NomineeInput(nominee3FullName, nominee3IcNumber, nominee3Relationship, nominee3HomeAddress, nominee3Occupation, nominee3PhoneNumber)
+                    )
             );
         }
 
@@ -197,5 +226,17 @@ public class ApplicationController {
         public void setNominee1HomeAddress(String nominee1HomeAddress) { this.nominee1HomeAddress = nominee1HomeAddress; }
         public void setNominee1Occupation(String nominee1Occupation) { this.nominee1Occupation = nominee1Occupation; }
         public void setNominee1PhoneNumber(String nominee1PhoneNumber) { this.nominee1PhoneNumber = nominee1PhoneNumber; }
+        public void setNominee2FullName(String nominee2FullName) { this.nominee2FullName = nominee2FullName; }
+        public void setNominee2IcNumber(String nominee2IcNumber) { this.nominee2IcNumber = nominee2IcNumber; }
+        public void setNominee2Relationship(String nominee2Relationship) { this.nominee2Relationship = nominee2Relationship; }
+        public void setNominee2HomeAddress(String nominee2HomeAddress) { this.nominee2HomeAddress = nominee2HomeAddress; }
+        public void setNominee2Occupation(String nominee2Occupation) { this.nominee2Occupation = nominee2Occupation; }
+        public void setNominee2PhoneNumber(String nominee2PhoneNumber) { this.nominee2PhoneNumber = nominee2PhoneNumber; }
+        public void setNominee3FullName(String nominee3FullName) { this.nominee3FullName = nominee3FullName; }
+        public void setNominee3IcNumber(String nominee3IcNumber) { this.nominee3IcNumber = nominee3IcNumber; }
+        public void setNominee3Relationship(String nominee3Relationship) { this.nominee3Relationship = nominee3Relationship; }
+        public void setNominee3HomeAddress(String nominee3HomeAddress) { this.nominee3HomeAddress = nominee3HomeAddress; }
+        public void setNominee3Occupation(String nominee3Occupation) { this.nominee3Occupation = nominee3Occupation; }
+        public void setNominee3PhoneNumber(String nominee3PhoneNumber) { this.nominee3PhoneNumber = nominee3PhoneNumber; }
     }
 }
