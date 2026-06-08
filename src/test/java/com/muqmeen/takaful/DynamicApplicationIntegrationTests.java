@@ -3,6 +3,7 @@ package com.muqmeen.takaful;
 import com.muqmeen.takaful.domain.ApplicationStatus;
 import com.muqmeen.takaful.domain.ConsultationApplication;
 import com.muqmeen.takaful.domain.Customer;
+import com.muqmeen.takaful.domain.CustomerProfile;
 import com.muqmeen.takaful.domain.Product;
 import com.muqmeen.takaful.domain.ProductCoverageItem;
 import com.muqmeen.takaful.domain.Quotation;
@@ -10,6 +11,7 @@ import com.muqmeen.takaful.repository.ConsultationApplicationRepository;
 import com.muqmeen.takaful.repository.PaymentRepository;
 import com.muqmeen.takaful.repository.ProductRepository;
 import com.muqmeen.takaful.service.ApplicationService;
+import com.muqmeen.takaful.service.CustomerProfileService;
 import com.muqmeen.takaful.service.CustomerService;
 import com.muqmeen.takaful.service.PaymentService;
 import com.muqmeen.takaful.service.QuotationService;
@@ -54,6 +56,7 @@ class DynamicApplicationIntegrationTests {
     @Autowired private ProductRepository productRepository;
     @Autowired private ConsultationApplicationRepository applicationRepository;
     @Autowired private ApplicationService applicationService;
+    @Autowired private CustomerProfileService customerProfileService;
     @Autowired private QuotationService quotationService;
     @Autowired private PaymentService paymentService;
     @Autowired private PaymentRepository paymentRepository;
@@ -116,8 +119,10 @@ class DynamicApplicationIntegrationTests {
     void customerUpdatesProfileCreatesDraftSubmitsApplicationAndSeesItInAccount() throws Exception {
         Product product = saveProduct("PruBSN Application");
         Customer customer = customer("flow");
+        Customer otherCustomer = customer("flow-other");
 
-        mockMvc.perform(post("/account/profile")
+        mockMvc.perform(multipart("/account/profile")
+                        .file(image("profilePicture", "profile.png"))
                         .with(user(customer.getEmail()).roles("USER"))
                         .with(csrf())
                         .param("homeAddress", "123 Jalan Takaful")
@@ -131,6 +136,13 @@ class DynamicApplicationIntegrationTests {
                         .param("heightCm", "170")
                         .param("weightKg", "70"))
                 .andExpect(status().is3xxRedirection());
+
+        CustomerProfile profile = customerProfileService.getOrCreate(customer);
+        mockMvc.perform(get("/files/" + profile.getProfilePicture().getId()).with(user(customer.getEmail()).roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(new byte[] {1, 2, 3, 4}));
+        mockMvc.perform(get("/files/" + profile.getProfilePicture().getId()).with(user(otherCustomer.getEmail()).roles("USER")))
+                .andExpect(status().isForbidden());
 
         ConsultationApplication draft = applicationService.start(customer, product.getId());
         mockMvc.perform(multipart("/applications/" + draft.getId())
@@ -170,6 +182,13 @@ class DynamicApplicationIntegrationTests {
 
         ConsultationApplication submitted = applicationService.findById(draft.getId()).orElseThrow();
         assertEquals(2, submitted.getNominees().size());
+        mockMvc.perform(get("/files/" + submitted.getIcFrontFile().getId()).with(user(customer.getEmail()).roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(new byte[] {1, 2, 3, 4}));
+        mockMvc.perform(get("/files/" + submitted.getIcFrontFile().getId()).with(user(otherCustomer.getEmail()).roles("USER")))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/files/" + submitted.getIcFrontFile().getId()).with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
 
         mockMvc.perform(get("/account").with(user(customer.getEmail()).roles("USER")))
                 .andExpect(status().isOk())
