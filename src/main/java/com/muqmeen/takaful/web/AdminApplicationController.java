@@ -61,6 +61,8 @@ public class AdminApplicationController {
         ConsultationApplication application = applicationService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Application not found"));
         model.addAttribute("application", application);
+        model.addAttribute("app", application);
+        model.addAttribute("productName", productName(application));
         model.addAttribute("statuses", ApplicationStatus.values());
         model.addAttribute("quotation", quotationService.getOrCreate(application));
         return "admin/application-detail";
@@ -69,8 +71,10 @@ public class AdminApplicationController {
     @PostMapping("/applications/{id}/status")
     public String updateStatus(@PathVariable Long id,
                                @RequestParam ApplicationStatus status,
+                               @RequestParam(required = false) String adminReviewNotes,
+                               @RequestParam(required = false) String correctionRequest,
                                RedirectAttributes redirectAttributes) {
-        applicationService.updateStatus(id, status);
+        applicationService.updateStatus(id, status, adminReviewNotes, correctionRequest);
         redirectAttributes.addFlashAttribute("flashMessage", "Application status updated.");
         return "redirect:/admin/applications/" + id;
     }
@@ -81,9 +85,15 @@ public class AdminApplicationController {
                 .orElseThrow(() -> new IllegalArgumentException("Application not found"));
         Quotation quotation = quotationService.getOrCreate(application);
         model.addAttribute("application", application);
+        model.addAttribute("app", application);
+        model.addAttribute("productName", productName(application));
         model.addAttribute("quotation", quotation);
         model.addAttribute("form", QuotationForm.from(quotation));
         return "admin/quotation-form";
+    }
+
+    private String productName(ConsultationApplication application) {
+        return application.getProduct() == null ? "Product unavailable" : application.getProduct().getName();
     }
 
     @PostMapping("/applications/{id}/quotation")

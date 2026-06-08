@@ -9,12 +9,17 @@
 </head>
 <body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
 <main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-    <a th:href="@{/applications/{id}(id=${application.id})}" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to application</a>
+    <a th:href="@{/applications/{id}(id=${app.id})}" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to application</a>
     <h1 class="mt-5 text-4xl font-semibold text-yellow-300">Takaful Application</h1>
-    <p class="mt-2 text-white/65">Product: <span class="font-semibold text-white" th:text="${application.product.name}">Product</span></p>
+    <p class="mt-2 text-white/65">Product: <span class="font-semibold text-white" th:text="${productName}">Product</span></p>
     <p th:if="${flashMessage}" class="mt-5 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Message</p>
+    <section th:if="${app.correctionRequest != null && !#strings.isEmpty(app.correctionRequest) && app.correctionResolvedAt == null}" class="mt-6 rounded-3xl border border-amber-400/30 bg-amber-400/10 p-6">
+        <p class="text-sm uppercase tracking-wide text-amber-200">Correction Request</p>
+        <h2 class="mt-2 text-2xl font-semibold text-yellow-300">Update and resubmit this application</h2>
+        <p class="mt-3 text-white/80" th:text="${app.correctionRequest}">Correction request</p>
+    </section>
 
-    <form th:action="@{/applications/{id}(id=${application.id})}" method="post" enctype="multipart/form-data" class="mt-8 space-y-6">
+    <form th:action="@{/applications/{id}(id=${app.id})}" method="post" enctype="multipart/form-data" class="mt-8 space-y-6">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
         <section class="grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2">
             <h2 class="sm:col-span-2 text-2xl font-semibold text-yellow-300">Applicant Details</h2>

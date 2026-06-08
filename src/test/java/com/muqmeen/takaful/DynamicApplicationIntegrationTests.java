@@ -202,6 +202,27 @@ class DynamicApplicationIntegrationTests {
         mockMvc.perform(post("/admin/applications/" + application.getId() + "/status")
                         .with(user("admin").roles("ADMIN"))
                         .with(csrf())
+                        .param("status", "NEEDS_INFO")
+                        .param("adminReviewNotes", "Initial review completed")
+                        .param("correctionRequest", "Please upload a clearer IC image and confirm bank details."))
+                .andExpect(status().is3xxRedirection());
+
+        ConsultationApplication needsInfo = applicationService.findById(application.getId()).orElseThrow();
+        assertEquals(ApplicationStatus.NEEDS_INFO, needsInfo.getStatus());
+        assertEquals("Please upload a clearer IC image and confirm bank details.", needsInfo.getCorrectionRequest());
+
+        mockMvc.perform(get("/applications/" + application.getId()).with(user(customer.getEmail()).roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Please upload a clearer IC image and confirm bank details.")))
+                .andExpect(content().string(containsString("Edit and Resubmit")));
+
+        mockMvc.perform(get("/applications/" + application.getId() + "/edit").with(user(customer.getEmail()).roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Correction Request")));
+
+        mockMvc.perform(post("/admin/applications/" + application.getId() + "/status")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf())
                         .param("status", "UNDER_REVIEW"))
                 .andExpect(status().is3xxRedirection());
 

@@ -79,9 +79,14 @@ public class ApplicationService {
         replaceNominees(application, input.nominees());
         attachFiles(application, customer, icFront, icBack, signatureDataUrl);
         if (submit) {
+            boolean resolvingCorrection = application.getStatus() == ApplicationStatus.NEEDS_INFO
+                    && !isBlank(application.getCorrectionRequest());
             validateSubmission(application);
             application.setStatus(ApplicationStatus.SUBMITTED);
             application.setSubmittedAt(LocalDateTime.now());
+            if (resolvingCorrection) {
+                application.setCorrectionResolvedAt(LocalDateTime.now());
+            }
         }
         return applicationRepository.save(application);
     }
@@ -116,9 +121,21 @@ public class ApplicationService {
     }
 
     public ConsultationApplication updateStatus(Long id, ApplicationStatus status) {
+        return updateStatus(id, status, null, null);
+    }
+
+    public ConsultationApplication updateStatus(Long id, ApplicationStatus status, String adminReviewNotes, String correctionRequest) {
         ConsultationApplication application = applicationRepository.findById(id)
+                .map(this::initializeDetails)
                 .orElseThrow(() -> new IllegalArgumentException("Application not found"));
         application.setStatus(status);
+        application.setReviewedAt(LocalDateTime.now());
+        application.setAdminReviewNotes(adminReviewNotes);
+        if (status == ApplicationStatus.NEEDS_INFO) {
+            application.setCorrectionRequest(correctionRequest);
+            application.setCorrectionRequestedAt(LocalDateTime.now());
+            application.setCorrectionResolvedAt(null);
+        }
         return applicationRepository.save(application);
     }
 

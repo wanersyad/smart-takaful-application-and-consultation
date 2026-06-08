@@ -44,6 +44,16 @@ public class ConsultationApplication {
     @Column(nullable = false, length = 30)
     private ApplicationStatus status = ApplicationStatus.DRAFT;
 
+    @Column(length = 2000)
+    private String adminReviewNotes;
+
+    @Column(length = 2000)
+    private String correctionRequest;
+
+    private LocalDateTime reviewedAt;
+    private LocalDateTime correctionRequestedAt;
+    private LocalDateTime correctionResolvedAt;
+
     @Column(length = 120)
     private String applicantFullName;
 
@@ -130,6 +140,16 @@ public class ConsultationApplication {
     public void setProduct(Product product) { this.product = product; }
     public ApplicationStatus getStatus() { return status; }
     public void setStatus(ApplicationStatus status) { this.status = status; }
+    public String getAdminReviewNotes() { return adminReviewNotes; }
+    public void setAdminReviewNotes(String adminReviewNotes) { this.adminReviewNotes = adminReviewNotes; }
+    public String getCorrectionRequest() { return correctionRequest; }
+    public void setCorrectionRequest(String correctionRequest) { this.correctionRequest = correctionRequest; }
+    public LocalDateTime getReviewedAt() { return reviewedAt; }
+    public void setReviewedAt(LocalDateTime reviewedAt) { this.reviewedAt = reviewedAt; }
+    public LocalDateTime getCorrectionRequestedAt() { return correctionRequestedAt; }
+    public void setCorrectionRequestedAt(LocalDateTime correctionRequestedAt) { this.correctionRequestedAt = correctionRequestedAt; }
+    public LocalDateTime getCorrectionResolvedAt() { return correctionResolvedAt; }
+    public void setCorrectionResolvedAt(LocalDateTime correctionResolvedAt) { this.correctionResolvedAt = correctionResolvedAt; }
     public String getApplicantFullName() { return applicantFullName; }
     public void setApplicantFullName(String applicantFullName) { this.applicantFullName = applicantFullName; }
     public String getEmail() { return email; }

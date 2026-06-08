@@ -47,6 +47,8 @@ public class ApplicationController {
         ConsultationApplication application = applicationService.findOwned(id, customer)
                 .orElseThrow(ApplicationAccessDeniedException::new);
         model.addAttribute("application", application);
+        model.addAttribute("app", application);
+        model.addAttribute("productName", productName(application));
         return "application_detail";
     }
 
@@ -59,8 +61,14 @@ public class ApplicationController {
             return "redirect:/applications/" + id;
         }
         model.addAttribute("application", application);
+        model.addAttribute("app", application);
+        model.addAttribute("productName", productName(application));
         model.addAttribute("form", ApplicationForm.from(application));
         return "application_form";
+    }
+
+    private String productName(ConsultationApplication application) {
+        return application.getProduct() == null ? "Product unavailable" : application.getProduct().getName();
     }
 
     @PostMapping("/applications/{id}")
