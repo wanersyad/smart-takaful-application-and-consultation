@@ -4,6 +4,7 @@ import com.muqmeen.takaful.domain.ApplicationStatus;
 import com.muqmeen.takaful.domain.ConsultationApplication;
 import com.muqmeen.takaful.domain.Customer;
 import com.muqmeen.takaful.domain.CustomerProfile;
+import com.muqmeen.takaful.domain.Payment;
 import com.muqmeen.takaful.domain.Product;
 import com.muqmeen.takaful.domain.ProductCoverageItem;
 import com.muqmeen.takaful.domain.Quotation;
@@ -31,6 +32,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -297,6 +299,7 @@ class DynamicApplicationIntegrationTests {
     void adminReviewsApplicationCreatesQuotationAndMockPaymentUpdatesStatus() throws Exception {
         Product product = saveProduct("Quoted Product");
         Customer customer = customer("quoted");
+        Customer otherCustomer = customer("quoted-other");
         ConsultationApplication application = submittedApplication(customer, product);
 
         mockMvc.perform(get("/admin/dashboard").with(user("admin").roles("ADMIN")))
@@ -334,14 +337,50 @@ class DynamicApplicationIntegrationTests {
                 List.of(new QuotationItemInput("Base contribution", "Monthly plan", new BigDecimal("120.00"), true)));
         quotation = quotationService.publish(quotation.getId());
 
-        PaymentService.PaymentStart firstStart = paymentService.prepareQuotationPayment(quotation);
-        PaymentService.PaymentStart secondStart = paymentService.prepareQuotationPayment(quotation);
-        assertEquals(firstStart.payment().getBillCode(), secondStart.payment().getBillCode());
+        mockMvc.perform(post("/quotations/" + quotation.getId() + "/pay")
+                        .with(user(otherCustomer.getEmail()).roles("USER"))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/account"));
 
-        String redirect = firstStart.redirectUrl();
+        var paymentStart = mockMvc.perform(post("/quotations/" + quotation.getId() + "/pay")
+                        .with(user(customer.getEmail()).roles("USER"))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        String redirect = paymentStart.getResponse().getRedirectedUrl();
+        assertTrue(redirect.startsWith("/payment/mock/"));
+
+        Payment payment = paymentRepository.findByQuotation(quotation);
+        assertEquals("PENDING", payment.getStatus());
+        assertEquals(ApplicationStatus.PAYMENT_PENDING, applicationService.findById(application.getId()).orElseThrow().getStatus());
+
         mockMvc.perform(get(redirect))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("ToyyibPay Mock")));
+
+        mockMvc.perform(post("/payment/callback")
+                        .param("status", "1")
+                        .param("order_id", payment.getExternalReferenceNo())
+                        .param("refno", "TP-REF-1")
+                        .param("billcode", payment.getBillCode())
+                        .param("hash", "invalid"))
+                .andExpect(status().isBadRequest());
+
+        String validHash = paymentService.expectedHash("1", payment.getExternalReferenceNo(), "TP-REF-1");
+        mockMvc.perform(post("/payment/callback")
+                        .param("status", "1")
+                        .param("order_id", payment.getExternalReferenceNo())
+                        .param("refno", "TP-REF-1")
+                        .param("billcode", payment.getBillCode())
+                        .param("amount", "120.00")
+                        .param("hash", validHash))
+                .andExpect(status().isOk())
+                .andExpect(content().string("OK"));
+
+        Payment paidPayment = paymentRepository.findByQuotation(quotation);
+        assertEquals("PAID", paidPayment.getStatus());
+        assertEquals(ApplicationStatus.PAID, applicationService.findById(application.getId()).orElseThrow().getStatus());
     }
 
     @Test
