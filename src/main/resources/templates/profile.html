@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Muqmeen Group</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<main class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+    <a href="/account" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to account</a>
+    <h1 class="mt-5 text-4xl font-semibold text-yellow-300">Customer Profile</h1>
+    <p th:if="${flashMessage}" class="mt-5 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
+    <form th:action="@{/account/profile}" method="post" enctype="multipart/form-data" class="mt-8 grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Profile picture<input name="profilePicture" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white"></label>
+        <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Home address<textarea name="homeAddress" rows="3" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${profile.homeAddress}"></textarea></label>
+        <label class="grid gap-2 text-sm text-white/80">Occupation<input name="occupation" th:value="${profile.occupation}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+        <label class="grid gap-2 text-sm text-white/80">Position<input name="positionTitle" th:value="${profile.positionTitle}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+        <label class="grid gap-2 text-sm text-white/80">Employer name<input name="employerName" th:value="${profile.employerName}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+        <label class="grid gap-2 text-sm text-white/80">Annual income<input name="annualIncome" type="number" step="0.01" th:value="${profile.annualIncome}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+        <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Workplace address<textarea name="workplaceAddress" rows="3" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${profile.workplaceAddress}"></textarea></label>
+        <label class="grid gap-2 text-sm text-white/80">Bank name<input name="bankName" th:value="${profile.bankName}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+        <label class="grid gap-2 text-sm text-white/80">Bank account number<input name="bankAccountNumber" th:value="${profile.bankAccountNumber}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+        <label class="grid gap-2 text-sm text-white/80">Height (cm)<input name="heightCm" type="number" step="0.1" th:value="${profile.heightCm}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+        <label class="grid gap-2 text-sm text-white/80">Weight (kg)<input name="weightKg" type="number" step="0.1" th:value="${profile.weightKg}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+        <button class="sm:col-span-2 rounded-full bg-yellow-400 px-6 py-4 font-semibold text-zinc-950 hover:bg-yellow-300">Save Profile</button>
+    </form>
+</main>
+</body>
+</html>

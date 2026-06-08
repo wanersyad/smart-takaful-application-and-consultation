@@ -26,10 +26,10 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/", "/login", "/admin/login", "/register", "/forgot-password", "/reset-password", "/success", "/payment/**", "/api/chat", "/brochures/**", "/error", "/favicon.ico").permitAll()
+                        .requestMatchers("/", "/products/**", "/login", "/admin/login", "/register", "/forgot-password", "/reset-password", "/success", "/payment/**", "/api/chat", "/brochures/**", "/error", "/favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.POST, "/contact").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/submit-lead").hasRole("USER")
-                        .requestMatchers("/account/**").hasRole("USER")
+                        .requestMatchers("/files/**").authenticated()
+                        .requestMatchers("/account/**", "/applications/**", "/quotations/**").hasRole("USER")
                         .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

@@ -44,27 +44,28 @@ public class ChatKnowledgeBase {
             (gambling). Surpluses can be shared back with participants.
 
             PRODUCT FOCUS
-            Muqmeen Group currently guides customers through PruBSN brochure options such
-            as AnugerahMax, Anggun, Asas360, Kritikal Care360, WarisanGold, and Aspirasi.
-            Hibah remains part of the planning conversation where legacy and beneficiary
-            preparation are relevant.
+            Muqmeen Group maintains its Takaful products in the database. Product pages
+            can include category, summary, detailed description, eligibility, coverage
+            purpose, benefits, coverage items, requirements, notes, images, and optional
+            brochure documents.
 
-            CONSULTATION MODES
-            Customers can request a free consultation in three ways through the booking
-            form on this site: (1) WhatsApp chat for quick questions, (2) Voice or video
-            call for deeper discussion, or (3) face-to-face meeting (Klang Valley area).
+            APPLICATION PROCESS
+            Customers can browse products publicly. To apply or request consultation,
+            they sign in and complete a structured application with applicant details,
+            IC front/back images, home and work information, income, bank details,
+            height, weight, nominee information, and a drawn signature. A customer may
+            save a draft before submitting.
 
-            OPTIONAL TIP / SEDEKAH
-            Consultations are free of charge. The booking form offers an optional
-            tip/sedekah amount (RM 5, RM 10, RM 50, or skip) processed via ToyyibPay as a
-            way to support the agent's effort. Tipping is never required and does not
-            affect the consultation.
+            ADMIN REVIEW AND QUOTATION
+            After submission, the agent/admin reviews the application, requests more
+            information if needed, and creates an adjustable quotation. The quotation
+            contains selected payment items and a total. Payment happens only after the
+            quotation is published, not during consultation submission.
 
-            HOW TO BOOK
-            On the landing page, click the consultation button on any product card.
-            A modal opens to capture name, WhatsApp number, preferred consultation mode,
-            and optional tip. After submission an agent will follow up via the chosen
-            channel.""";
+            HOW TO APPLY
+            On the landing page, choose a product, view its database-backed details, and
+            click the consultation/application button. The customer account shows profile
+            data, application history, statuses, quotations, and payment state.""";
 
     private final ProductService productService;
     private final AtomicReference<CachedPrompt> cache = new AtomicReference<>();
@@ -97,7 +98,8 @@ public class ChatKnowledgeBase {
                 sb.append("- ").append(p.getName());
                 if (p.isFeatured()) sb.append(" [Popular]");
                 sb.append(": ");
-                sb.append(p.getDescription() == null ? "" : p.getDescription());
+                String summary = p.getSummary() == null || p.getSummary().isBlank() ? p.getDescription() : p.getSummary();
+                sb.append(summary == null ? "" : summary);
                 sb.append("\n");
             }
         }

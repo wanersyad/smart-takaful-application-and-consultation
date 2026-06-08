@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muqmeen.takaful.config.AppProperties;
 import com.muqmeen.takaful.config.ToyyibPayProperties;
-import com.muqmeen.takaful.domain.Lead;
 import com.muqmeen.takaful.domain.Payment;
+import com.muqmeen.takaful.domain.Quotation;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -32,7 +32,7 @@ public class ToyyibPayClient {
         this.restClient = RestClient.create();
     }
 
-    public ToyyibPayBill createBill(Lead lead, Payment payment) {
+    public ToyyibPayBill createBill(Quotation quotation, Payment payment) {
         if (properties.isMockMode()) {
             String billCode = "MGM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
             return new ToyyibPayBill(billCode, "/payment/mock/" + billCode);
@@ -45,21 +45,21 @@ public class ToyyibPayClient {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("userSecretKey", properties.getSecretKey());
         form.add("categoryCode", properties.getCategoryCode());
-        form.add("billName", limit("Muqmeen_Takaful_Tip", 30));
-        form.add("billDescription", limit("Optional consultation appreciation tip", 100));
+        form.add("billName", limit("Muqmeen_Takaful_Quote", 30));
+        form.add("billDescription", limit("Published Takaful quotation payment", 100));
         form.add("billPriceSetting", "1");
         form.add("billPayorInfo", "1");
         form.add("billAmount", String.valueOf(payment.getAmountCents()));
         form.add("billReturnUrl", appProperties.getBaseUrl() + "/payment/return");
         form.add("billCallbackUrl", appProperties.getBaseUrl() + "/payment/callback");
         form.add("billExternalReferenceNo", payment.getExternalReferenceNo());
-        form.add("billTo", lead.getFullName());
-        form.add("billEmail", lead.getCustomer() == null ? "" : lead.getCustomer().getEmail());
-        form.add("billPhone", lead.getPhoneNumber());
+        form.add("billTo", quotation.getApplication().getApplicantFullName());
+        form.add("billEmail", quotation.getApplication().getEmail());
+        form.add("billPhone", quotation.getApplication().getPhoneNumber());
         form.add("billSplitPayment", "0");
         form.add("billSplitPaymentArgs", "");
         form.add("billPaymentChannel", "0");
-        form.add("billContentEmail", "Thank you for supporting your Muqmeen Takaful consultation.");
+        form.add("billContentEmail", "Thank you for completing your Muqmeen Takaful quotation payment.");
         form.add("billChargeToCustomer", "1");
 
         String response = restClient.post()

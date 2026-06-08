@@ -1,6 +1,6 @@
 # Smart Takaful & Consultation System
 
-Muqmeen Group digital funnel: a Spring Boot monolith that replaces manual Takaful lead generation with a public consultation form, protected admin dashboard, product management, and a grounded chatbot.
+Muqmeen Group dynamic Takaful application system: a Spring Boot monolith for public product browsing, customer profiles, structured product applications, admin review, quotation generation, quotation-linked payment, and a grounded chatbot.
 
 ## Stack
 
@@ -67,19 +67,26 @@ PORT=8081 docker compose up --build
 
 | Route | Purpose |
 |---|---|
-| `GET /` | Landing page with product cards, consultation modal, and chatbot |
+| `GET /` | Landing page with database-backed product cards and chatbot |
+| `GET /products/{id}` | Public product detail page with DB-backed benefits, coverage, requirements, and documents |
 | `GET /login` / `POST /login` | Shared customer/admin login |
 | `GET /register` / `POST /register` | Customer account signup |
-| `GET /account` | Customer consultation and tip history |
-| `POST /submit-lead` | Authenticated customer consultation request; redirects to ToyyibPay or success |
+| `GET /account` | Customer profile summary, application history, quotation/payment status |
+| `GET /account/profile` / `POST /account/profile` | Customer profile and profile picture update |
+| `GET /applications/new` | Start a product application draft |
+| `GET /applications/{id}` / `POST /applications/{id}` | Customer application detail, draft update, and submission |
+| `GET /files/{id}` | Authenticated private file download for owners/admins |
+| `POST /quotations/{id}/pay` | Customer starts payment for a published quotation |
 | `GET /payment/mock/{billCode}` | Simulated ToyyibPay gateway |
 | `GET /payment/return` | User-facing ToyyibPay return page |
 | `POST /payment/callback` | ToyyibPay callback; hash-verified before payment status changes |
 | `GET /success` | Post-submission confirmation |
 | `POST /api/chat` | Public chatbot endpoint with CSRF and rate limiting |
 | `POST /contact` | Public contact form; sends product enquiries to the configured recipient |
-| `GET /admin/dashboard` | Protected leads table and total tips KPI |
-| `GET /admin/products` | Protected product CRUD |
+| `GET /admin/dashboard` | Protected application review queue |
+| `GET /admin/applications/{id}` | Admin application detail, files, nominee data, and status control |
+| `GET /admin/applications/{id}/quotation` | Admin quotation builder |
+| `GET /admin/products` | Protected structured product CRUD |
 
 ## Environment
 
@@ -100,14 +107,19 @@ Environment variables are listed in `.env.example`. Copy it to a local `.env` fi
 - `RESEND_API_KEY` / `RESEND_BASE_URL` - HTTPS email API settings for contact form delivery
 - `SPRING_MAIL_HOST` / `SPRING_MAIL_USERNAME` / `SPRING_MAIL_PASSWORD` - SMTP settings used by the contact form
 - `CONTACT_FORMSUBMIT_ENABLED` - fallback email delivery through FormSubmit when SMTP is not configured; defaults to `true`
+- `FILE_STORAGE_MODE` - `local` for Docker/dev uploads or `supabase` for private Supabase Storage
+- `LOCAL_UPLOAD_DIR` - local upload folder used by Docker/dev
+- `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_STORAGE_BUCKET` - private Supabase Storage settings
 
 Spring Boot reads these env vars directly, so Railway env management works without committed secrets.
 
-## Accounts and Payments
+## Accounts, Applications, and Payments
 
-Customers can browse products publicly, but submitting a consultation requires a customer account. Product CTAs redirect anonymous visitors to login/register and return them to the selected product after sign-in.
+Customers can browse products publicly, but starting an application requires a customer account. Product records are stored in the database with structured benefits, coverage items, requirements, notes, images, and optional documents.
 
-Consultations remain free. Optional tips use ToyyibPay bills in sandbox/live mode and a local mock gateway in dev. ToyyibPay callbacks are verified with the documented MD5 formula before the app marks a payment as paid, pending, or failed.
+Customers can maintain profile data and upload a profile picture. Applications store their own submitted snapshot: applicant details, IC front/back images, work and income information, bank details, height/weight, nominee information, and signature image.
+
+Payment happens only after admin review. The admin creates and publishes a quotation with selected payable items, then the customer starts ToyyibPay payment from the quotation. Dev/Docker uses mock ToyyibPay; sandbox/live can be configured later through environment variables.
 
 ## Frontend Build
 
@@ -150,9 +162,10 @@ takaful-web-java/
 
 1. Architecture setup - complete
 2. Database integration - complete
-3. Lead persistence - complete
-4. Admin product CRUD - complete
-5. UI overhaul - complete
-6. Gemini chatbot - complete
+3. Customer profiles and application intake - in progress
+4. Structured admin product CRUD - complete
+5. Admin review and quotation builder - in progress
+6. Quotation-linked ToyyibPay mock - complete locally
+7. Gemini chatbot - complete
 
-Spring Security protects `/admin/**` for admins and `/account` plus `/submit-lead` for signed-in customers. Public browsing, signup/login, payment return/callback routes, success pages, brochures, contact, and chat remain accessible as needed.
+Spring Security protects `/admin/**` for admins and `/account/**`, `/applications/**`, `/quotations/**`, and `/files/**` for authenticated users. Public browsing, signup/login, product detail pages, payment return/callback routes, contact, and chat remain accessible as needed.

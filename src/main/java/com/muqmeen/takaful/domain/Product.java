@@ -1,10 +1,12 @@
 package com.muqmeen.takaful.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -12,6 +14,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -29,6 +33,22 @@ public class Product {
     @Size(max = 500)
     @Column(length = 500)
     private String description;
+
+    @Size(max = 500)
+    @Column(length = 500)
+    private String summary;
+
+    @Column(length = 3000)
+    private String detailedDescription;
+
+    @Column(length = 1200)
+    private String eligibility;
+
+    @Column(length = 1200)
+    private String coveragePurpose;
+
+    @Column(length = 2000)
+    private String termsNotes;
 
     @Size(max = 60)
     @Column(length = 60)
@@ -59,6 +79,21 @@ public class Product {
 
     @Column(nullable = false)
     private boolean active;
+
+    @Column(nullable = false)
+    private boolean archived;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductBenefit> benefits = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductCoverageItem> coverageItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductRequirement> requirements = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductDocument> documents = new ArrayList<>();
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -98,6 +133,21 @@ public class Product {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
+    public String getSummary() { return summary; }
+    public void setSummary(String summary) { this.summary = summary; }
+
+    public String getDetailedDescription() { return detailedDescription; }
+    public void setDetailedDescription(String detailedDescription) { this.detailedDescription = detailedDescription; }
+
+    public String getEligibility() { return eligibility; }
+    public void setEligibility(String eligibility) { this.eligibility = eligibility; }
+
+    public String getCoveragePurpose() { return coveragePurpose; }
+    public void setCoveragePurpose(String coveragePurpose) { this.coveragePurpose = coveragePurpose; }
+
+    public String getTermsNotes() { return termsNotes; }
+    public void setTermsNotes(String termsNotes) { this.termsNotes = termsNotes; }
+
     public String getIconClass() { return iconClass; }
     public void setIconClass(String iconClass) { this.iconClass = iconClass; }
 
@@ -121,6 +171,46 @@ public class Product {
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+
+    public boolean isArchived() { return archived; }
+    public void setArchived(boolean archived) { this.archived = archived; }
+
+    public List<ProductBenefit> getBenefits() { return benefits; }
+    public List<ProductCoverageItem> getCoverageItems() { return coverageItems; }
+    public List<ProductRequirement> getRequirements() { return requirements; }
+    public List<ProductDocument> getDocuments() { return documents; }
+
+    public void replaceBenefits(List<ProductBenefit> replacement) {
+        this.benefits.clear();
+        replacement.forEach(benefit -> {
+            benefit.setProduct(this);
+            this.benefits.add(benefit);
+        });
+    }
+
+    public void replaceCoverageItems(List<ProductCoverageItem> replacement) {
+        this.coverageItems.clear();
+        replacement.forEach(item -> {
+            item.setProduct(this);
+            this.coverageItems.add(item);
+        });
+    }
+
+    public void replaceRequirements(List<ProductRequirement> replacement) {
+        this.requirements.clear();
+        replacement.forEach(requirement -> {
+            requirement.setProduct(this);
+            this.requirements.add(requirement);
+        });
+    }
+
+    public void replaceDocuments(List<ProductDocument> replacement) {
+        this.documents.clear();
+        replacement.forEach(document -> {
+            document.setProduct(this);
+            this.documents.add(document);
+        });
+    }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 

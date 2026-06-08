@@ -1,89 +1,61 @@
 package com.muqmeen.takaful.web;
 
 import com.muqmeen.takaful.domain.Customer;
-import com.muqmeen.takaful.domain.Lead;
 import com.muqmeen.takaful.domain.Payment;
 import com.muqmeen.takaful.service.CustomerService;
 import com.muqmeen.takaful.service.PaymentService;
 import com.muqmeen.takaful.service.ProductService;
-import com.muqmeen.takaful.service.TakafulService;
-import jakarta.validation.Valid;
+import com.muqmeen.takaful.service.QuotationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.math.BigDecimal;
 import java.util.Map;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
 public class WebController {
 
-    private final TakafulService takafulService;
     private final ProductService productService;
     private final CustomerService customerService;
     private final PaymentService paymentService;
+    private final QuotationService quotationService;
 
-    public WebController(TakafulService takafulService,
-                         ProductService productService,
+    public WebController(ProductService productService,
                          CustomerService customerService,
-                         PaymentService paymentService) {
-        this.takafulService = takafulService;
+                         PaymentService paymentService,
+                         QuotationService quotationService) {
         this.productService = productService;
         this.customerService = customerService;
         this.paymentService = paymentService;
+        this.quotationService = quotationService;
     }
 
     @GetMapping("/")
-    public String landingPage(@RequestParam(value = "productId", required = false) Long productId,
-                              Authentication authentication,
-                              Model model) {
+    public String landingPage(Authentication authentication, Model model) {
         Optional<Customer> customer = customerService.currentCustomer(authentication);
-        if (!model.containsAttribute("lead")) {
-            Lead lead = new Lead();
-            customer.ifPresent(c -> {
-                lead.setFullName(c.getFullName());
-                lead.setPhoneNumber(c.getPhoneNumber());
-            });
-            model.addAttribute("lead", lead);
-        }
         model.addAttribute("products", productService.listActiveForLanding());
         model.addAttribute("customerSignedIn", customer.isPresent());
         customer.ifPresent(c -> model.addAttribute("currentCustomer", c));
-        if (customer.isPresent() && productId != null) {
-            productService.findActiveById(productId)
-                    .ifPresent(product -> model.addAttribute("selectedProductName", product.getName()));
-        }
         return "index";
     }
 
-    @PostMapping("/submit-lead")
-    public String submitLead(@Valid @ModelAttribute("lead") Lead lead,
-                             BindingResult bindingResult,
-                             Authentication authentication,
-                             Model model) {
-        Customer customer = customerService.currentCustomer(authentication)
-                .orElseThrow(() -> new IllegalStateException("Authenticated customer not found"));
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("formError", true);
-            model.addAttribute("products", productService.listActiveForLanding());
-            model.addAttribute("customerSignedIn", true);
-            model.addAttribute("currentCustomer", customer);
-            return "index";
-        }
-
-        Lead savedLead = takafulService.processNewLead(lead, customer);
-        PaymentService.PaymentStart paymentStart = paymentService.prepareTipPayment(savedLead);
-        return "redirect:" + paymentStart.redirectUrl();
+    @GetMapping("/products/{id}")
+    public String productDetail(@PathVariable Long id, Authentication authentication, Model model) {
+        Customer customer = customerService.currentCustomer(authentication).orElse(null);
+        return productService.findActiveById(id)
+                .map(product -> {
+                    model.addAttribute("product", product);
+                    model.addAttribute("customerSignedIn", customer != null);
+                    return "product_detail";
+                })
+                .orElse("redirect:/#products");
     }
 
     @GetMapping("/payment/mock/{billCode}")
@@ -96,9 +68,10 @@ public class WebController {
     public String paymentCallback(@RequestParam("billcode") String billCode,
                                   @RequestParam("status_id") String statusId) {
         Payment payment = paymentService.updateMockStatus(billCode, statusId);
-        return Optional.of(payment.getLead())
-                .map(lead -> "redirect:/success?leadId=" + lead.getId())
-                .orElse("redirect:/success");
+        if (payment.getQuotation() != null) {
+            return "redirect:/applications/" + payment.getQuotation().getApplication().getId();
+        }
+        return "redirect:/account";
     }
 
     @PostMapping("/payment/callback")
@@ -117,48 +90,30 @@ public class WebController {
         model.addAttribute("statusId", statusId);
         if (billCode != null) {
             paymentService.findByBillCode(billCode)
-                    .ifPresent(payment -> model.addAttribute("lead", payment.getLead()));
+                    .ifPresent(payment -> model.addAttribute("payment", payment));
         }
         return "payment_return";
     }
 
+    @PostMapping("/quotations/{id}/pay")
+    public String payQuotation(@PathVariable Long id, Authentication authentication) {
+        Customer customer = customerService.currentCustomer(authentication)
+                .orElseThrow(() -> new IllegalStateException("Authenticated customer not found"));
+        return quotationService.findById(id)
+                .filter(quotation -> quotation.getApplication().getCustomer().getId().equals(customer.getId()))
+                .map(paymentService::prepareQuotationPayment)
+                .map(PaymentService.PaymentStart::redirectUrl)
+                .map("redirect:"::concat)
+                .orElse("redirect:/account");
+    }
+
     @GetMapping("/success")
-    public String successPage(@RequestParam(value = "leadId", required = false) Long leadId,
-                              Authentication authentication,
-                              Model model) {
-        if (leadId != null) {
-            Optional<Customer> customer = customerService.currentCustomer(authentication);
-            takafulService.findLead(leadId)
-                    .filter(lead -> lead.getCustomer() == null
-                            || customer.map(c -> lead.getCustomer().getId().equals(c.getId())).orElse(false))
-                    .ifPresent(lead -> model.addAttribute("lead", lead));
-        }
+    public String successPage() {
         return "success";
     }
 
     @GetMapping("/admin")
     public String adminEntry() {
         return "redirect:/admin/dashboard";
-    }
-
-    @GetMapping("/admin/dashboard")
-    public String adminDashboard(Model model) {
-        List<Lead> leads = takafulService.getAllLeadsForAdmin();
-        model.addAttribute("leads", leads);
-
-        BigDecimal totalTips = leads.stream()
-                .filter(l -> "PAID".equals(l.getPaymentStatus()))
-                .map(Lead::getTipAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        model.addAttribute("totalTips", totalTips);
-        return "admin/dashboard";
-    }
-
-    @PostMapping("/admin/lead/{id}/status")
-    @ResponseBody
-    public String updateStatus(@PathVariable Long id, @RequestParam String status) {
-        takafulService.updateLeadStatus(id, status);
-        return "OK";
     }
 }

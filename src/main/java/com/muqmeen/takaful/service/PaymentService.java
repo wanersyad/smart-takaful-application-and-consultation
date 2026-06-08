@@ -1,10 +1,11 @@
 package com.muqmeen.takaful.service;
 
 import com.muqmeen.takaful.config.ToyyibPayProperties;
-import com.muqmeen.takaful.domain.Lead;
+import com.muqmeen.takaful.domain.ApplicationStatus;
 import com.muqmeen.takaful.domain.Payment;
-import com.muqmeen.takaful.repository.LeadRepository;
+import com.muqmeen.takaful.domain.Quotation;
 import com.muqmeen.takaful.repository.PaymentRepository;
+import com.muqmeen.takaful.repository.QuotationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -20,43 +21,49 @@ import java.util.UUID;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final LeadRepository leadRepository;
+    private final QuotationRepository quotationRepository;
     private final ToyyibPayClient toyyibPayClient;
     private final ToyyibPayProperties toyyibPayProperties;
 
     public PaymentService(PaymentRepository paymentRepository,
-                          LeadRepository leadRepository,
+                          QuotationRepository quotationRepository,
                           ToyyibPayClient toyyibPayClient,
                           ToyyibPayProperties toyyibPayProperties) {
         this.paymentRepository = paymentRepository;
-        this.leadRepository = leadRepository;
+        this.quotationRepository = quotationRepository;
         this.toyyibPayClient = toyyibPayClient;
         this.toyyibPayProperties = toyyibPayProperties;
     }
 
-    public PaymentStart prepareTipPayment(Lead lead) {
-        int amountCents = amountCents(lead.getTipAmount());
+    public PaymentStart prepareQuotationPayment(Quotation quotation) {
+        quotation = quotationRepository.findById(quotation.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Quotation not found"));
+        if (!"PUBLISHED".equals(quotation.getStatus())) {
+            throw new IllegalStateException("Only published quotations can be paid.");
+        }
+        int amountCents = amountCents(quotation.selectedTotal());
 
         Payment payment = new Payment();
-        payment.setLead(lead);
-        payment.setCustomer(lead.getCustomer());
-        payment.setExternalReferenceNo("MGM-" + lead.getId() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        payment.setQuotation(quotation);
+        payment.setCustomer(quotation.getApplication().getCustomer());
+        payment.setExternalReferenceNo("MGQ-" + quotation.getId() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         payment.setAmountCents(amountCents);
 
         if (amountCents <= 0) {
-            payment.setStatus("SKIPPED");
-            lead.setPaymentStatus("SKIPPED");
-            leadRepository.save(lead);
+            payment.setStatus("PAID");
+            quotation.setStatus("PAID");
+            quotation.getApplication().setStatus(ApplicationStatus.PAID);
+            quotationRepository.save(quotation);
             paymentRepository.save(payment);
-            return new PaymentStart(payment, "/success?leadId=" + lead.getId());
+            return new PaymentStart(payment, "/applications/" + quotation.getApplication().getId());
         }
 
         payment.setStatus("PENDING");
-        ToyyibPayClient.ToyyibPayBill bill = toyyibPayClient.createBill(lead, payment);
+        ToyyibPayClient.ToyyibPayBill bill = toyyibPayClient.createBill(quotation, payment);
         payment.setBillCode(bill.billCode());
-        lead.setBillCode(bill.billCode());
-        lead.setPaymentStatus("PENDING");
-        leadRepository.save(lead);
+        quotation.setStatus("PAYMENT_PENDING");
+        quotation.getApplication().setStatus(ApplicationStatus.PAYMENT_PENDING);
+        quotationRepository.save(quotation);
         paymentRepository.save(payment);
         return new PaymentStart(payment, bill.paymentUrl());
     }
@@ -125,8 +132,18 @@ public class PaymentService {
         payment.setStatus(normalized);
         payment.setProviderRefNo(providerRefNo);
         payment.setRawCallbackSummary(rawCallback);
-        payment.getLead().setPaymentStatus(normalized);
-        leadRepository.save(payment.getLead());
+        Quotation quotation = payment.getQuotation();
+        if (quotation != null) {
+            quotation.setStatus(normalized);
+            if ("PAID".equals(normalized)) {
+                quotation.getApplication().setStatus(ApplicationStatus.PAID);
+            } else if ("FAILED".equals(normalized)) {
+                quotation.getApplication().setStatus(ApplicationStatus.QUOTED);
+            } else {
+                quotation.getApplication().setStatus(ApplicationStatus.PAYMENT_PENDING);
+            }
+            quotationRepository.save(quotation);
+        }
     }
 
     private int amountCents(BigDecimal amount) {

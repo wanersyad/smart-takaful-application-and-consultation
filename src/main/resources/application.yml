@@ -21,6 +21,10 @@ spring:
           writetimeout: ${SPRING_MAIL_SMTP_WRITE_TIMEOUT:10000}
   jpa:
     open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:10MB}
+      max-request-size: ${MAX_REQUEST_SIZE:30MB}
 
 server:
   port: ${PORT:8080}
@@ -51,3 +55,10 @@ gemini:
   base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta/models}
   connect-timeout-ms: 3000
   read-timeout-ms: 20000
+
+file-storage:
+  mode: ${FILE_STORAGE_MODE:local}
+  local-upload-dir: ${LOCAL_UPLOAD_DIR:uploads}
+  supabase-url: ${SUPABASE_URL:}
+  supabase-service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
+  supabase-bucket: ${SUPABASE_STORAGE_BUCKET:takaful-private}

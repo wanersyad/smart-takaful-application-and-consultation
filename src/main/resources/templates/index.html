@@ -5,975 +5,257 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
-    <title>Muqmeen Group - Smart Takaful Consultation</title>
+    <title>Muqmeen Group - Smart Takaful Application</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script defer th:src="@{/js/theme-select.js}"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body id="top" x-data="bookingFlow()" x-init="initBooking()" class="muqmeen-dark-site bg-zinc-950 text-white antialiased"
-      th:attr="data-form-error=${formError},data-selected-product=${selectedProductName}">
+<body id="home" class="muqmeen-dark-site min-h-screen bg-[#050505] text-white antialiased">
+<nav class="sticky top-0 z-40 border-b border-yellow-400/20 bg-[#0d0d0d]/95 backdrop-blur">
+    <div class="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+        <a href="#home" class="flex items-center gap-3">
+            <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="Muqmeen Group logo" class="h-12 w-12 object-contain">
+            <span class="logo-wordmark text-sm text-yellow-400">MUQMEEN <span class="logo-wordmark-strong text-yellow-300">GROUP</span></span>
+        </a>
+        <button type="button" class="page-menu-open flex h-11 w-11 items-center justify-center rounded-full border border-yellow-400/25 text-yellow-300 hover:bg-yellow-400/10 md:hidden" aria-label="Open navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="hidden items-center gap-3 text-sm font-medium md:flex">
+            <a href="#home" class="rounded-full px-4 py-2 text-yellow-300 hover:bg-yellow-400/10">Home</a>
+            <a href="#products" class="rounded-full px-4 py-2 text-white/80 hover:bg-yellow-400/10 hover:text-yellow-300">Products</a>
+            <a href="#faq" class="rounded-full px-4 py-2 text-white/80 hover:bg-yellow-400/10 hover:text-yellow-300">FAQ</a>
+            <a href="#contact" class="rounded-full px-4 py-2 text-white/80 hover:bg-yellow-400/10 hover:text-yellow-300">Contact</a>
+            <a th:if="${!customerSignedIn}" href="/login?redirect=/#products" class="rounded-full px-4 py-2 text-white/80 hover:bg-yellow-400/10 hover:text-yellow-300">Login</a>
+            <a th:if="${customerSignedIn}" href="/account" class="rounded-full px-4 py-2 text-white/80 hover:bg-yellow-400/10 hover:text-yellow-300">Account</a>
+            <a href="#products" class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Apply Now</a>
+        </div>
+    </div>
+    <div class="page-mobile-menu hidden border-t border-yellow-400/15 px-4 pb-4 md:hidden">
+        <div class="grid gap-2 rounded-2xl border border-yellow-400/15 bg-white/[0.03] p-2 text-sm">
+            <a href="#home" class="rounded-xl px-4 py-3 text-yellow-300 hover:bg-yellow-400/10">Home</a>
+            <a href="#products" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Products</a>
+            <a href="#faq" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">FAQ</a>
+            <a href="#contact" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Contact</a>
+            <a th:if="${!customerSignedIn}" href="/login?redirect=/#products" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Login</a>
+            <a th:if="${customerSignedIn}" href="/account" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Account</a>
+        </div>
+    </div>
+</nav>
 
-    <nav class="sticky top-0 z-50 border-b border-white/70 bg-white/90 backdrop-blur-xl">
-        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-20 sm:px-6 lg:px-8">
-            <a href="/" class="flex items-center gap-3">
-                <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="Muqmeen Group logo"
-                     class="h-12 w-12 object-contain sm:h-14 sm:w-14">
-                <span class="logo-wordmark text-xs leading-none text-yellow-400 sm:text-base">
-                    MUQMEEN <span class="logo-wordmark-strong text-yellow-300">GROUP</span>
-                </span>
-            </a>
-
-            <div class="hidden items-center gap-8 text-sm font-semibold text-zinc-600 lg:flex">
-                <a href="#top" class="hover:text-zinc-950">Home</a>
-                <a href="#products" class="hover:text-zinc-950">Products</a>
-                <a href="#reviews" class="hover:text-zinc-950">Reviews</a>
-                <a href="#faq" class="hover:text-zinc-950">FAQ</a>
-                <a href="#contact" class="hover:text-zinc-950">Contact</a>
+<main>
+    <section class="bg-black">
+        <div class="mx-auto grid min-h-[calc(100vh-5rem)] max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.05fr_.95fr] lg:px-8">
+            <div>
+                <h1 class="max-w-3xl text-5xl font-bold leading-none text-yellow-400 sm:text-6xl lg:text-7xl">Your Trusted Takaful Partner</h1>
+                <p class="mt-7 max-w-2xl text-lg font-medium leading-8 text-white/75">
+                    Compare protection, Hibah, medical, and education planning with Muqmeen Group. Apply through a structured, trackable system and let the agent review your real needs.
+                </p>
+                <div class="mt-8 flex max-w-2xl items-center justify-between rounded-full border border-yellow-400/30 bg-white/[0.02] px-7 py-5 text-base text-white/90">
+                    <span id="typewriter-question">Which plan fits my family needs?</span>
+                    <i class="fa-solid fa-paper-plane rounded-full bg-yellow-400 p-4 text-zinc-950"></i>
+                </div>
+                <div class="mt-12 grid max-w-4xl grid-cols-2 gap-3 rounded-[2rem] border border-yellow-400/25 bg-white/[0.02] p-3 sm:grid-cols-4">
+                    <div class="rounded-[1.5rem] bg-yellow-400/10 p-5 text-center">
+                        <p class="text-3xl font-semibold text-yellow-300">30+</p>
+                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Clients Guided</p>
+                    </div>
+                    <div class="rounded-[1.5rem] bg-white/[0.03] p-5 text-center">
+                        <p class="text-3xl font-semibold text-yellow-300">70+</p>
+                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Consultations</p>
+                    </div>
+                    <div class="rounded-[1.5rem] bg-white/[0.03] p-5 text-center">
+                        <p class="text-3xl font-semibold text-yellow-300">25+</p>
+                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Hibah Reviews</p>
+                    </div>
+                    <div class="rounded-[1.5rem] bg-white/[0.03] p-5 text-center">
+                        <p class="text-3xl font-semibold text-yellow-300">24h</p>
+                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65">Follow-Up Target</p>
+                    </div>
+                </div>
             </div>
-
-            <div class="flex items-center gap-2 sm:gap-3">
-                <a th:if="${customerSignedIn}" href="/account"
-                   class="hidden rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 sm:inline-flex">
-                    Account
-                </a>
-                <a th:unless="${customerSignedIn}" th:href="@{/login(redirect='/#products')}" href="/login?redirect=/#products"
-                   class="hidden rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 sm:inline-flex">
-                    Login
-                </a>
-                <a th:unless="${customerSignedIn}" th:href="@{/login(redirect='/#products')}" href="/login?redirect=/#products"
-                   class="hidden items-center justify-center rounded-full bg-yellow-400 px-5 py-2.5 text-sm font-semibold text-zinc-950 shadow-[0_12px_30px_-16px_rgba(250,204,21,0.9)] hover:bg-yellow-300 sm:inline-flex">
-                    Instant Quote
-                </a>
-                <button th:if="${customerSignedIn}" type="button"
-                        data-open-booking="General Takaful Consultation"
-                        @click.prevent="openBooking('General Takaful Consultation')"
-                        class="hidden items-center justify-center rounded-full bg-yellow-400 px-5 py-2.5 text-sm font-semibold text-zinc-950 shadow-[0_12px_30px_-16px_rgba(250,204,21,0.9)] hover:bg-yellow-300 sm:inline-flex">
-                    Instant Quote
-                </button>
-                <form th:if="${customerSignedIn}" th:action="@{/logout}" method="post" class="hidden sm:block">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <button type="submit" class="rounded-full px-3 py-2 text-sm font-semibold text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </form>
-                <button type="button"
-                        id="mobile-menu-open"
-                        class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-yellow-400/25 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-400/10 lg:hidden"
-                        aria-label="Open navigation menu"
-                        aria-expanded="false">
-                    <i class="fa-solid fa-bars text-lg"></i>
-                </button>
+            <div class="relative">
+                <img th:src="@{/images/agents/agent3.png}" src="/images/agents/agent3.png" alt="Muqmeen Group agent" class="aspect-[4/3] w-full rounded-[2.5rem] object-cover shadow-2xl shadow-yellow-400/10">
+                <div class="absolute -left-6 top-1/3 hidden rounded-[2rem] border border-yellow-400/25 bg-[#111] p-6 text-center shadow-2xl lg:block">
+                    <i class="fa-solid fa-headset rounded-2xl bg-yellow-400 p-4 text-2xl text-zinc-950"></i>
+                    <p class="mt-3 text-4xl font-semibold text-yellow-300">24/7</p>
+                    <p class="text-sm text-white/75">Guide Support</p>
+                </div>
             </div>
         </div>
-    </nav>
+    </section>
 
-    <div id="mobile-menu" class="fixed inset-0 z-[90] hidden lg:hidden" role="dialog" aria-modal="true" aria-hidden="true">
-        <div id="mobile-menu-backdrop" class="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm"></div>
-        <aside id="mobile-menu-panel"
-               class="absolute right-0 top-0 flex h-full w-[min(22rem,88vw)] translate-x-full flex-col border-l border-yellow-400/20 bg-[#080808] opacity-80 shadow-2xl transition duration-200 ease-out">
-            <div class="flex items-center justify-between border-b border-yellow-400/15 px-5 py-5">
-                <a href="#top" class="mobile-menu-link flex items-center gap-3">
-                    <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="Muqmeen Group logo"
-                         class="h-12 w-12 object-contain">
-                    <span class="logo-wordmark text-xs leading-none text-yellow-400">
-                        MUQMEEN <span class="logo-wordmark-strong text-yellow-300">GROUP</span>
-                    </span>
-                </a>
-                <button type="button"
-                        id="mobile-menu-close"
-                        class="flex h-11 w-11 items-center justify-center rounded-full text-zinc-300 hover:bg-yellow-400/10 hover:text-yellow-300"
-                        aria-label="Close navigation menu">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+    <section id="products" class="scroll-mt-28 bg-[#0f0f0f] py-20">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p class="text-sm font-semibold uppercase tracking-[0.35em] text-yellow-400">Dynamic Product Records</p>
+                <h2 class="mt-4 text-4xl font-semibold text-yellow-300">Protection plans built around your family</h2>
+                <p class="mt-4 text-white/70">Every card below is read from the product database, including details, benefits, requirements, and documents.</p>
             </div>
 
-            <div class="flex-1 overflow-y-auto px-5 py-6">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-400">Navigate</p>
-                <div class="mt-4 grid gap-2 text-base font-medium">
-                    <a href="#top" class="mobile-menu-link flex items-center justify-between rounded-2xl border border-yellow-400/15 px-4 py-4 text-white hover:border-yellow-400 hover:bg-yellow-400/10">
-                        Home <i class="fa-solid fa-arrow-right text-sm text-yellow-400"></i>
-                    </a>
-                    <a href="#products" class="mobile-menu-link flex items-center justify-between rounded-2xl border border-yellow-400/15 px-4 py-4 text-white hover:border-yellow-400 hover:bg-yellow-400/10">
-                        Products <i class="fa-solid fa-arrow-right text-sm text-yellow-400"></i>
-                    </a>
-                    <a href="#reviews" class="mobile-menu-link flex items-center justify-between rounded-2xl border border-yellow-400/15 px-4 py-4 text-white hover:border-yellow-400 hover:bg-yellow-400/10">
-                        Reviews <i class="fa-solid fa-arrow-right text-sm text-yellow-400"></i>
-                    </a>
-                    <a href="#faq" class="mobile-menu-link flex items-center justify-between rounded-2xl border border-yellow-400/15 px-4 py-4 text-white hover:border-yellow-400 hover:bg-yellow-400/10">
-                        FAQ <i class="fa-solid fa-arrow-right text-sm text-yellow-400"></i>
-                    </a>
-                    <a href="#contact" class="mobile-menu-link flex items-center justify-between rounded-2xl border border-yellow-400/15 px-4 py-4 text-white hover:border-yellow-400 hover:bg-yellow-400/10">
-                        Contact <i class="fa-solid fa-arrow-right text-sm text-yellow-400"></i>
-                    </a>
-                </div>
-
-                <div class="mt-7 rounded-[1.5rem] border border-yellow-400/15 bg-white/[0.03] p-4">
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-yellow-400">Account</p>
-                    <div class="mt-4 grid gap-3">
-                        <a th:if="${customerSignedIn}" href="/account"
-                           class="flex items-center justify-center rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                            Account / History
-                        </a>
-                        <form th:if="${customerSignedIn}" th:action="@{/logout}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <button type="submit" class="flex w-full items-center justify-center rounded-full border border-yellow-400/30 px-5 py-3 text-sm font-semibold text-white hover:bg-yellow-400/10">
-                                Logout
-                            </button>
-                        </form>
-                        <a th:unless="${customerSignedIn}" th:href="@{/login(redirect='/#products')}" href="/login?redirect=/#products"
-                           class="flex items-center justify-center rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                            Login
-                        </a>
-                        <a th:unless="${customerSignedIn}" th:href="@{/register(redirect='/#products')}" href="/register?redirect=/#products"
-                           class="flex items-center justify-center rounded-full border border-yellow-400/30 px-5 py-3 text-sm font-semibold text-white hover:bg-yellow-400/10">
-                            Create Account
-                        </a>
-                    </div>
-                </div>
+            <div th:if="${#lists.isEmpty(products)}" class="mx-auto mt-12 max-w-2xl rounded-3xl border border-yellow-400/25 bg-black p-10 text-center">
+                <i class="fa-solid fa-box-open text-4xl text-yellow-300"></i>
+                <h3 class="mt-4 text-2xl font-semibold text-yellow-300">No products yet</h3>
+                <p class="mt-2 text-white/70">An admin must create product records before customers can apply.</p>
             </div>
 
-            <div class="border-t border-yellow-400/15 px-5 py-5">
-                <p class="text-xs font-medium leading-5 text-white/60">Smart Takaful consultation with private account history and focused follow-up.</p>
-            </div>
-        </aside>
-    </div>
-
-    <main class="overflow-hidden bg-[#f8f7f2]">
-        <section id="home" class="relative bg-[radial-gradient(circle_at_12%_12%,#fff7cc_0,#fff7cc_18%,transparent_38%),linear-gradient(110deg,#f8fbff_0%,#fffaf1_100%)] lg:min-h-[calc(100vh-5rem)]">
-            <div class="mx-auto grid max-w-7xl items-center gap-8 px-4 pb-8 pt-10 sm:px-6 sm:pt-14 lg:grid-cols-[1fr_0.9fr] lg:px-8 lg:pb-6 lg:pt-16 xl:gap-12">
-                <div>
-                    <h1 class="hero-title max-w-3xl text-4xl font-semibold leading-[0.95] tracking-tight text-zinc-950 sm:text-6xl lg:text-7xl">
-                        Your Trusted Takaful Partner
-                    </h1>
-                    <p class="mt-5 max-w-xl text-sm font-medium leading-7 text-zinc-600 sm:mt-6 sm:text-lg sm:leading-8">
-                        Compare protection, Hibah, medical, and education planning with Muqmeen Group. Book a focused consultation and track every request from your account.
-                    </p>
-
-                    <div class="mt-7 flex w-full max-w-xl rounded-full border border-yellow-400/25 bg-zinc-950/80 p-1.5 shadow-[0_24px_80px_-48px_rgba(250,204,21,0.45)] sm:mt-8">
-                        <a th:unless="${customerSignedIn}" href="/register"
-                           class="group flex min-h-12 w-full items-center justify-between gap-3 rounded-full px-4 py-2.5 text-left text-sm font-medium text-white transition duration-300 hover:bg-yellow-400/10 sm:text-base">
-                            <span class="question-prompt-text min-w-0" :class="questionKey % 2 === 0 ? 'question-prompt-type-a' : 'question-prompt-type-b'" x-text="heroQuestion">How much coverage do I need?</span>
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 transition duration-300 group-hover:bg-yellow-300">
-                                <i class="fa-solid fa-paper-plane text-xs"></i>
-                            </span>
-                        </a>
-                        <button th:if="${customerSignedIn}" type="button"
-                                data-open-booking="General Takaful Consultation"
-                                @click="openBooking('General Takaful Consultation')"
-                                class="group flex min-h-12 w-full items-center justify-between gap-3 rounded-full px-4 py-2.5 text-left text-sm font-medium text-white transition duration-300 hover:bg-yellow-400/10 sm:text-base">
-                            <span class="question-prompt-text min-w-0" :class="questionKey % 2 === 0 ? 'question-prompt-type-a' : 'question-prompt-type-b'" x-text="heroQuestion">How much coverage do I need?</span>
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 transition duration-300 group-hover:bg-yellow-300">
-                                <i class="fa-solid fa-paper-plane text-xs"></i>
-                            </span>
-                        </button>
-                    </div>
-
-                    <div class="mt-7 hidden max-w-xl grid-cols-1 gap-3 text-xs font-medium text-zinc-600 sm:mt-8 sm:grid sm:grid-cols-3 sm:gap-4 sm:text-sm">
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-yellow-500"></i> Licensed Advice</div>
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-yellow-500"></i> Fast Follow-Up</div>
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-lock text-yellow-500"></i> Private History</div>
-                    </div>
-                </div>
-
-                <div class="relative min-h-[20rem] sm:min-h-[24rem]">
-                    <div class="hero-support-badge absolute left-0 top-7 z-20 rounded-[1.5rem] border border-white/80 bg-white p-4 shadow-premium sm:-left-6 sm:top-16 sm:rounded-[2rem] sm:p-5">
-                        <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-yellow-400 text-zinc-950">
-                            <i class="fa-solid fa-headset text-2xl"></i>
+            <div th:if="${!#lists.isEmpty(products)}" class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <article th:each="product : ${products}" class="group rounded-[2rem] border border-yellow-400/25 bg-[#111] p-5 transition hover:-translate-y-1 hover:border-yellow-300 hover:bg-yellow-400/5">
+                    <a th:href="@{/products/{id}(id=${product.id})}" class="block">
+                        <img th:if="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}" th:src="${product.imageUrl}" alt="" class="aspect-[16/9] w-full rounded-[1.5rem] object-cover">
+                        <div th:if="${product.imageUrl == null || #strings.isEmpty(product.imageUrl)}" class="flex aspect-[16/9] w-full items-center justify-center rounded-[1.5rem] bg-yellow-400/10 text-5xl text-yellow-300">
+                            <i class="fa-solid" th:classappend="${product.iconClass}"> </i>
                         </div>
-                        <p class="text-3xl font-semibold leading-none text-zinc-950 sm:text-4xl">24/7</p>
-                        <p class="mt-1 text-xs font-semibold text-zinc-500">Guide Support</p>
-                    </div>
-                    <img th:src="@{/images/brand/agent3.png}" src="/images/brand/agent3.png"
-                         alt="Muqmeen Group agent"
-                         class="hero-agent-image relative ml-auto h-[20rem] w-full rounded-[2rem] object-cover object-center shadow-[0_34px_120px_-65px_rgba(9,9,11,0.8)] sm:h-[25rem] sm:rounded-[2.5rem] lg:w-[90%] xl:h-[27rem]">
-                </div>
-            </div>
-
-            <div class="relative z-30 mx-auto mt-7 max-w-5xl px-4 pb-8 lg:mt-10 lg:pb-10">
-                <div class="grid grid-cols-2 gap-3 rounded-[2rem] border border-yellow-400/20 bg-zinc-950/90 p-2.5 shadow-premium backdrop-blur-xl md:grid-cols-4">
-                    <div class="rounded-[1.4rem] bg-yellow-400/10 px-4 py-3 text-center">
-                        <p class="text-2xl font-semibold leading-none text-yellow-400 lg:text-3xl">30+</p>
-                        <p class="mt-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-white/70">Clients Guided</p>
-                    </div>
-                    <div class="rounded-[1.4rem] bg-white/[0.03] px-4 py-3 text-center">
-                        <p class="text-2xl font-semibold leading-none text-yellow-400 lg:text-3xl">70+</p>
-                        <p class="mt-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-white/70">Consultations</p>
-                    </div>
-                    <div class="rounded-[1.4rem] bg-white/[0.03] px-4 py-3 text-center">
-                        <p class="text-2xl font-semibold leading-none text-yellow-400 lg:text-3xl">25+</p>
-                        <p class="mt-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-white/70">Hibah Reviews</p>
-                    </div>
-                    <div class="rounded-[1.4rem] bg-white/[0.03] px-4 py-3 text-center">
-                        <p class="text-2xl font-semibold leading-none text-yellow-400 lg:text-3xl">24h</p>
-                        <p class="mt-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-white/70">Follow-Up Target</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="products" class="relative bg-zinc-950 py-20">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="mx-auto mb-12 max-w-6xl text-center">
-                    <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-400">Official PruBSN Brochures</p>
-                    <h2 class="mt-3 text-3xl font-semibold tracking-tight text-yellow-400 sm:text-4xl lg:whitespace-nowrap xl:text-5xl">Protection plans built around your family</h2>
-                    <p class="mt-3 text-sm font-medium leading-6 text-white/70 lg:whitespace-nowrap">Choose the product that matches your concern and start a guided consultation with Muqmeen Group.</p>
-                </div>
-
-                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    <div th:if="${#lists.isEmpty(products)}"
-                         class="md:col-span-2 xl:col-span-3 rounded-[2rem] border border-dashed border-yellow-400/30 bg-zinc-900 px-6 py-16 text-center text-white/60">
-                        <i class="fa-regular fa-folder-open mb-3 block text-3xl"></i>
-                        No products available right now. Please check back soon.
-                    </div>
-
-                    <article th:each="product, iter : ${products}"
-                             class="group relative flex min-h-[25rem] flex-col justify-between overflow-hidden rounded-[2rem] border border-yellow-400/15 bg-[#111111] p-6 shadow-[0_28px_70px_-58px_rgba(250,204,21,0.55)] transition duration-300 hover:-translate-y-1 hover:border-yellow-400/45 hover:shadow-premium"
-                             th:data-brochure-url="${product.brochureUrl}"
-                             th:classappend="${product.featured} ? ' ring-2 ring-yellow-400/90' : ''">
-                        <p th:if="${product.featured}" class="absolute right-5 top-5 z-20 rounded-full bg-yellow-400 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-zinc-950">Popular</p>
-                        <div>
-                            <div class="relative overflow-hidden rounded-[1.5rem] border border-yellow-400/20 bg-zinc-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-                                <img th:if="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}"
-                                     th:src="${product.imageUrl}"
-                                     th:alt="|${product.name} brochure image|"
-                                     class="h-52 w-full object-cover transition duration-500 group-hover:scale-[1.03]">
-                                <div th:unless="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}"
-                                     class="flex h-52 items-center justify-center bg-yellow-400 text-zinc-950">
-                                    <i th:class="|fa-solid ${product.iconClass != null && !#strings.isEmpty(product.iconClass) ? #strings.replace(product.iconClass, 'fa-solid ', '') : 'fa-shield-halved'} text-4xl|"></i>
-                                </div>
-                                <div class="absolute bottom-4 left-4 rounded-full bg-zinc-950/90 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-yellow-400"
-                                     th:text="${product.categoryLabel != null && !#strings.isEmpty(product.categoryLabel) ? product.categoryLabel : 'Takaful Plan'}">Family Protection</div>
-                            </div>
-                            <h3 class="mt-6 text-2xl font-semibold text-yellow-400" th:text="${product.name}">Product</h3>
-                            <p class="mt-3 text-sm font-medium leading-6 text-white/70" th:text="${product.description}">Description</p>
-                        </div>
-                        <div class="product-card-actions mt-7 grid grid-cols-2 gap-3">
-                            <a th:if="${product.brochureUrl != null && !#strings.isEmpty(product.brochureUrl)}"
-                               th:href="${product.brochureUrl}"
-                               target="_blank"
-                               rel="noopener"
-                               class="mobile-view-details inline-flex items-center justify-center rounded-full border border-yellow-400/25 px-4 py-3 text-sm font-semibold text-white hover:border-yellow-400 hover:bg-yellow-400/10">
-                                View Details
-                            </a>
-                            <button th:unless="${product.brochureUrl != null && !#strings.isEmpty(product.brochureUrl)}"
-                                    type="button"
-                                    class="mobile-view-details inline-flex items-center justify-center rounded-full border border-yellow-400/25 px-4 py-3 text-sm font-semibold text-white">
-                                View Details
-                            </button>
-                            <button th:if="${customerSignedIn}" type="button"
-                                    th:data-product-name="${product.name}"
-                                    th:data-open-booking="${product.name}"
-                                    @click="openBooking($el.dataset.productName || 'Consultation')"
-                                    class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                                Consult Agent <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                            <a th:unless="${customerSignedIn}"
-                               th:href="@{/login(redirect=${'/?productId=' + product.id})}"
-                               class="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                                Consult Agent <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section id="reviews" x-data="reviewCarousel()" class="bg-zinc-950 py-20">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-                    <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-400">Our Client Reviews</p>
-                        <h2 class="mt-3 text-3xl font-semibold tracking-tight text-yellow-400 sm:text-4xl">Families choose clarity first</h2>
-                        <p class="mt-3 max-w-xl text-sm font-medium leading-6 text-white/70">Real product conversations, practical comparisons, and transparent follow-up from consultation to account history.</p>
-                    </div>
-                    <div class="hidden gap-3 sm:flex">
-                        <button type="button" @click="prev()" aria-label="Previous review"
-                                class="flex h-11 w-11 items-center justify-center rounded-full border border-yellow-400/25 text-white transition hover:border-yellow-400 hover:bg-yellow-400/10">
-                            <i class="fa-solid fa-arrow-left"></i>
-                        </button>
-                        <button type="button" @click="next()" aria-label="Next review"
-                                class="flex h-11 w-11 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 transition hover:bg-yellow-300">
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="review-carousel-grid grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4"
-                     @touchstart.passive="startSwipe($event)"
-                     @touchend.passive="finishSwipe($event)">
-                    <template x-for="review in visibleReviews()" :key="review.name">
-                    <article class="rounded-[1.5rem] border border-yellow-400/20 bg-[#111111] p-6 shadow-[0_28px_70px_-58px_rgba(250,204,21,0.5)] transition duration-300 hover:-translate-y-1 hover:border-yellow-400/45">
-                        <div class="flex items-center gap-3">
-                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-yellow-400/15 font-semibold text-yellow-400" x-text="review.initial">A</div>
+                        <div class="mt-6 flex items-start justify-between gap-4">
                             <div>
-                                <p class="text-sm font-semibold text-yellow-400" x-text="review.name">Aiman Hakim</p>
-                                <p class="text-xs font-semibold text-white/60" x-text="review.product">PruBSN AnugerahMax</p>
+                                <p class="text-xs uppercase tracking-[0.25em] text-white/45" th:text="${product.categoryLabel}">Category</p>
+                                <h3 class="mt-2 text-2xl font-semibold text-yellow-300" th:text="${product.name}">Product Name</h3>
                             </div>
+                            <span th:if="${product.featured}" class="rounded-full bg-yellow-400 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-950">Popular</span>
                         </div>
-                        <p class="mt-5 min-h-[6rem] text-sm font-medium leading-6 text-white/75" x-text="review.text">Review text</p>
-                        <p class="mt-4 text-yellow-400"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
-                    </article>
-                    </template>
-                </div>
-
-                <div class="mt-8 flex justify-center gap-2">
-                    <template x-for="(_, index) in reviews" :key="index">
-                        <button type="button"
-                                @click="goTo(index)"
-                                class="h-2.5 rounded-full transition"
-                                :class="index === activeIndex ? 'w-8 bg-yellow-400' : 'w-2.5 bg-white/20 hover:bg-white/40'"
-                                :aria-label="`Go to review ${index + 1}`"></button>
-                    </template>
-                </div>
+                        <p class="mt-4 min-h-20 text-sm leading-6 text-white/70" th:text="${product.summary != null && !#strings.isEmpty(product.summary) ? product.summary : product.description}">Product summary</p>
+                    </a>
+                    <div class="mt-6 flex gap-3">
+                        <a th:href="@{/products/{id}(id=${product.id})}" class="flex-1 rounded-full border border-yellow-400/30 px-5 py-3 text-center text-sm font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300">View Details</a>
+                        <a th:href="${customerSignedIn} ? @{/applications/new(productId=${product.id})} : @{/login(redirect=${'/applications/new?productId=' + product.id})}" class="flex-1 rounded-full bg-yellow-400 px-5 py-3 text-center text-sm font-semibold text-zinc-950 hover:bg-yellow-300">Apply Product</a>
+                    </div>
+                </article>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="faq" class="relative bg-[linear-gradient(135deg,#fffaf1_0%,#f5f8ff_100%)] py-24">
-            <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-                <div class="mb-10 text-center">
-                    <p class="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-600">Frequently Asked Questions</p>
-                    <h2 class="mt-3 text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">Answers before your consultation</h2>
-                </div>
-
-                <div x-data="{ openFaq: 0 }" class="space-y-4">
-                    <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 0 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
-                        <button type="button" @click="openFaq = openFaq === 0 ? -1 : 0" class="flex w-full items-center justify-between gap-4 text-left text-sm font-semibold text-zinc-950">
-                            Which PruBSN products can I ask Muqmeen about?
-                            <i class="fa-solid" :class="openFaq === 0 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                        </button>
-                        <p x-show="openFaq === 0" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
-                            You can ask about the current brochure products shown on this page, including AnugerahMax, Anggun, Asas360, Kritikal Care360, WarisanGold, and Aspirasi.
-                        </p>
-                    </article>
-                    <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 1 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
-                        <button type="button" @click="openFaq = openFaq === 1 ? -1 : 1" class="flex w-full items-center justify-between gap-4 text-left text-sm font-semibold text-zinc-950">
-                            Can I view brochure details before signing in?
-                            <i class="fa-solid" :class="openFaq === 1 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                        </button>
-                        <p x-show="openFaq === 1" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
-                            Yes. Product brochure details are public. You only need to sign in when you want to consult an agent or save consultation history in your account.
-                        </p>
-                    </article>
-                    <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 2 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
-                        <button type="button" @click="openFaq = openFaq === 2 ? -1 : 2" class="flex w-full items-center justify-between gap-4 text-left text-sm font-semibold text-zinc-950">
-                            Which product should I compare first?
-                            <i class="fa-solid" :class="openFaq === 2 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                        </button>
-                        <p x-show="openFaq === 2" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
-                            It depends on your concern. AnugerahMax and WarisanGold fit legacy planning conversations, Kritikal Care360 focuses on critical illness, Asas360 is a practical starter review, Anggun is women-focused, and Aspirasi supports future savings goals.
-                        </p>
-                    </article>
-                    <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 3 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
-                        <button type="button" @click="openFaq = openFaq === 3 ? -1 : 3" class="flex w-full items-center justify-between gap-4 text-left text-sm font-semibold text-zinc-950">
-                            Are consultations free?
-                            <i class="fa-solid" :class="openFaq === 3 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                        </button>
-                        <p x-show="openFaq === 3" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
-                            Yes. Consultations are free. Tips are optional and use ToyyibPay when you choose to support the advisor.
-                        </p>
-                    </article>
-                    <article class="rounded-2xl border bg-white p-5 shadow-sm" :class="openFaq === 4 ? 'border-yellow-400 ring-2 ring-yellow-300/50' : 'border-zinc-100'">
-                        <button type="button" @click="openFaq = openFaq === 4 ? -1 : 4" class="flex w-full items-center justify-between gap-4 text-left text-sm font-semibold text-zinc-950">
-                            Can I track my past product interests?
-                            <i class="fa-solid" :class="openFaq === 4 ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                        </button>
-                        <p x-show="openFaq === 4" class="mt-4 text-sm font-medium leading-7 text-zinc-600">
-                            Yes. Your account shows product interest, consultation mode, submitted date, lead status, tip amount, and payment status.
-                        </p>
-                    </article>
-                </div>
+    <section id="faq" class="scroll-mt-28 bg-black py-20">
+        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p class="text-sm font-semibold uppercase tracking-[0.35em] text-yellow-400">FAQ</p>
+                <h2 class="mt-4 text-4xl font-semibold text-yellow-300">Application flow questions</h2>
             </div>
-        </section>
+            <div class="mt-10 space-y-4">
+                <details class="rounded-2xl border border-yellow-400/25 bg-[#111] p-6">
+                    <summary class="cursor-pointer font-semibold text-yellow-300">What happens after I submit an application?</summary>
+                    <p class="mt-3 text-white/70">The admin reviews your documents, profile snapshot, bank details, measurements, and nominee information. If everything is clear, the admin creates a quotation for you.</p>
+                </details>
+                <details class="rounded-2xl border border-yellow-400/25 bg-[#111] p-6">
+                    <summary class="cursor-pointer font-semibold text-yellow-300">Do I pay during the application?</summary>
+                    <p class="mt-3 text-white/70">No. Payment only happens after the agent reviews your application and publishes a quotation with selected payable items.</p>
+                </details>
+                <details class="rounded-2xl border border-yellow-400/25 bg-[#111] p-6">
+                    <summary class="cursor-pointer font-semibold text-yellow-300">Can I save a draft?</summary>
+                    <p class="mt-3 text-white/70">Yes. You can save an application draft before uploading all documents. Once submitted, it can only be edited again if the admin requests corrections.</p>
+                </details>
+            </div>
+        </div>
+    </section>
 
-        <section id="contact" class="bg-zinc-950 px-4 py-20 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-5xl rounded-[2rem] border border-yellow-400/20 bg-[#111111] p-5 text-white shadow-[0_34px_110px_-58px_rgba(250,204,21,0.22)] sm:p-10">
-                <div class="mb-8 text-center">
-                    <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl">Get A Free Consultation Now</h2>
-                    <p class="mt-2 text-sm font-medium text-zinc-300">Send a focused product question and the Muqmeen team will follow up by email.</p>
+    <section id="contact" class="scroll-mt-28 bg-[#0f0f0f] py-20">
+        <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <div class="rounded-[2rem] border border-yellow-400/25 bg-[#111] p-8 sm:p-10">
+                <div class="text-center">
+                    <h2 class="text-4xl font-semibold text-yellow-300">Get A Free Consultation Now</h2>
+                    <p class="mt-3 text-white/70">Send a focused product question and the Muqmeen team will follow up by email.</p>
                 </div>
-
-                <div th:if="${contactSent}" class="mb-5 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 px-5 py-4 text-sm font-semibold text-yellow-200">
-                    Message sent. The team will reply to your email as soon as possible.
-                </div>
-                <div th:if="${contactError}" class="mb-5 rounded-2xl border border-red-400/30 bg-red-400/10 px-5 py-4 text-sm font-semibold text-red-100" th:text="${contactError}">
-                    Please complete the contact form.
-                </div>
-
-                <form th:action="@{/contact}" method="post" class="grid gap-4 md:grid-cols-2">
+                <form th:action="@{/contact}" method="post" class="mt-8 grid gap-5 sm:grid-cols-2">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <label class="text-sm font-semibold text-zinc-200">
-                        Name
-                        <input type="text" name="fullName" required th:value="${currentCustomer != null ? currentCustomer.fullName : ''}" placeholder="Your name"
-                               class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
-                    </label>
-                    <label class="text-sm font-semibold text-zinc-200">
-                        Email
-                        <input type="email" name="email" required th:value="${currentCustomer != null ? currentCustomer.email : ''}" placeholder="you@example.com"
-                               class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
-                    </label>
-                    <label class="text-sm font-semibold text-zinc-200">
-                        Phone / WhatsApp
-                        <input type="tel" name="phoneNumber" th:value="${currentCustomer != null ? currentCustomer.phoneNumber : ''}" placeholder="60123456789"
-                               class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
-                    </label>
-                    <label class="text-sm font-semibold text-zinc-200">
-                        Interest
-                        <select name="subject" required
-                                class="mt-2 w-full rounded-full border-0 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300">
-                            <option value="General Takaful Consultation" selected>General Takaful Consultation</option>
-                            <option value="PruBSN AnugerahMax">PruBSN AnugerahMax</option>
-                            <option value="PruBSN Anggun">PruBSN Anggun</option>
-                            <option value="PruBSN Asas360">PruBSN Asas360</option>
-                            <option value="PruBSN Kritikal Care360">PruBSN Kritikal Care360</option>
-                            <option value="PruBSN WarisanGold">PruBSN WarisanGold</option>
-                            <option value="PruBSN Aspirasi">PruBSN Aspirasi</option>
+                    <label class="grid gap-2 text-sm font-medium text-white/80">Name<input name="name" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"></label>
+                    <label class="grid gap-2 text-sm font-medium text-white/80">Email<input name="email" type="email" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"></label>
+                    <label class="grid gap-2 text-sm font-medium text-white/80">Phone / WhatsApp<input name="phone" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"></label>
+                    <label class="grid gap-2 text-sm font-medium text-white/80">Interest
+                        <select name="interest" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-yellow-300 outline-none focus:border-yellow-300">
+                            <option>General Takaful Consultation</option>
+                            <option th:each="product : ${products}" th:text="${product.name}">Product</option>
                         </select>
                     </label>
-                    <label class="text-sm font-semibold text-zinc-200 md:col-span-2">
-                        Message
-                        <textarea name="message" required rows="4" maxlength="1000" placeholder="Tell us what you want to compare or clarify."
-                                  class="mt-2 w-full resize-none rounded-[1.5rem] border-0 bg-white px-5 py-4 text-sm font-semibold text-zinc-950 outline-none ring-0 focus:ring-2 focus:ring-yellow-300"></textarea>
-                    </label>
-                    <button type="submit" class="rounded-full bg-yellow-400 px-8 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300 md:col-span-2">
-                        Send Message
-                    </button>
-                </form>
-            </div>
-        </section>
-    </main>
-
-    <footer class="border-t border-yellow-400/10 bg-zinc-950 px-4 pb-8 pt-14 text-zinc-400 sm:px-6 lg:px-8">
-        <div class="mx-auto grid max-w-7xl gap-10 border-b border-white/10 pb-10 md:grid-cols-[1.2fr_1fr_1fr]">
-            <div>
-                <a href="/" class="flex items-center gap-3">
-                    <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="Muqmeen Group logo"
-                         class="h-14 w-14 object-contain">
-                    <span class="logo-wordmark text-sm leading-none text-yellow-400 sm:text-base">
-                        MUQMEEN <span class="logo-wordmark-strong text-yellow-300">GROUP</span>
-                    </span>
-                </a>
-                <p class="mt-5 max-w-sm text-sm font-medium leading-7">Smart Takaful consultation for families who want protection, clarity, and accountable follow-up.</p>
-            </div>
-            <div>
-                <p class="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white">Social</p>
-                <div class="grid gap-3 text-sm font-semibold">
-                    <a href="http://www.facebook.com/mgklg" target="_blank" rel="noopener" class="hover:text-yellow-300"><i class="fa-brands fa-facebook mr-2"></i>Facebook</a>
-                    <a href="http://www.twitter.com/azizriadi" target="_blank" rel="noopener" class="hover:text-yellow-300"><i class="fa-brands fa-twitter mr-2"></i>Twitter</a>
-                    <a href="mailto:info@muqmeen.com.my" class="hover:text-yellow-300"><i class="fa-solid fa-envelope mr-2"></i>Email</a>
-                </div>
-            </div>
-            <div>
-                <p class="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white">Useful Links</p>
-                <div class="grid gap-3 text-sm font-semibold sm:grid-cols-2">
-                    <a href="https://www.muqmeen.com.my/about" target="_blank" rel="noopener" class="hover:text-yellow-300">About</a>
-                    <a href="https://www.muqmeen.com.my/services" target="_blank" rel="noopener" class="hover:text-yellow-300">Services</a>
-                    <a href="https://www.muqmeen.com.my/projects" target="_blank" rel="noopener" class="hover:text-yellow-300">Projects</a>
-                    <a href="https://www.muqmeen.com.my/clients" target="_blank" rel="noopener" class="hover:text-yellow-300">Clients</a>
-                    <a href="https://www.muqmeen.com.my/seminar" target="_blank" rel="noopener" class="hover:text-yellow-300">Seminar</a>
-                    <a href="https://www.muqmeen.com.my/members" target="_blank" rel="noopener" class="hover:text-yellow-300">Members</a>
-                    <a href="https://www.muqmeen.com.my/ramadhanbox" target="_blank" rel="noopener" class="hover:text-yellow-300">Ramadhan Box</a>
-                    <a href="https://www.muqmeen.com.my/plans-pricing" target="_blank" rel="noopener" class="hover:text-yellow-300">Plans &amp; Pricing</a>
-                </div>
-            </div>
-        </div>
-        <p class="mx-auto mt-8 max-w-7xl text-center text-xs font-semibold">Copyright 2026. All rights reserved.</p>
-    </footer>
-
-    <div id="booking-modal" x-cloak x-show="bookingOpen" x-transition.opacity.duration.150ms @click.self="closeBooking()"
-         class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/70 p-4 backdrop-blur-sm">
-        <div x-transition.duration.180ms class="relative flex max-h-[90vh] w-full max-w-lg flex-col rounded-[2rem] bg-white shadow-2xl">
-            <button id="booking-close" type="button" @click="closeBooking()" class="absolute right-5 top-5 text-zinc-400 hover:text-zinc-950">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-
-            <div class="border-b border-zinc-100 p-7">
-                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-yellow-600">Muqmeen Consultation</p>
-                <h2 class="mt-2 text-3xl font-semibold text-zinc-950">Book Consultation</h2>
-                <p class="mt-2 text-sm text-zinc-500">Selected: <span id="modal-product-name" class="font-semibold text-zinc-950" x-text="selectedProduct || 'Product'">Product</span></p>
-            </div>
-
-            <div class="overflow-y-auto p-7">
-                <div th:if="${formError}"
-                     class="mb-4 rounded-2xl border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-700">
-                    <p class="font-semibold">
-                        <i class="fa-solid fa-circle-exclamation mr-1"></i>
-                        Please fix the highlighted fields below.
-                    </p>
-                </div>
-
-                <form id="consultation-form" th:action="@{/submit-lead}" th:object="${lead}" method="post">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <input type="hidden" name="productType" id="productType" th:field="*{productType}" x-model="selectedProduct">
-
-                    <div class="space-y-4">
-                        <div>
-                            <label class="mb-1 block text-sm font-semibold text-zinc-700">Full Name <span class="text-yellow-500">*</span></label>
-                            <input type="text" name="fullName" th:field="*{fullName}" required
-                                   th:classappend="${#fields.hasErrors('fullName')} ? 'border-amber-400 focus:ring-yellow-400' : 'border-zinc-200 focus:ring-yellow-400'"
-                                   class="w-full rounded-full border px-5 py-3 text-sm font-semibold outline-none focus:ring-2">
-                            <p th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="mt-1 text-xs text-yellow-600">Name error</p>
-                        </div>
-
-                        <div>
-                            <label class="mb-1 block text-sm font-semibold text-zinc-700">WhatsApp Number <span class="text-yellow-500">*</span></label>
-                            <input type="tel" name="phoneNumber" th:field="*{phoneNumber}" placeholder="60123456789" required
-                                   th:classappend="${#fields.hasErrors('phoneNumber')} ? 'border-amber-400 focus:ring-yellow-400' : 'border-zinc-200 focus:ring-yellow-400'"
-                                   class="w-full rounded-full border px-5 py-3 text-sm font-semibold outline-none focus:ring-2">
-                            <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="mt-1 text-xs text-yellow-600">Phone error</p>
-                        </div>
-
-                        <div>
-                            <label class="mb-1 block text-sm font-semibold text-zinc-700">Consultation Mode <span class="text-yellow-500">*</span></label>
-                            <select name="consultationMode" th:field="*{consultationMode}" required
-                                    th:classappend="${#fields.hasErrors('consultationMode')} ? 'border-amber-400 focus:ring-yellow-400' : 'border-zinc-200 focus:ring-yellow-400'"
-                                    class="w-full rounded-full border px-5 py-3 text-sm font-semibold outline-none focus:ring-2">
-                                <option value="WhatsApp">WhatsApp Text</option>
-                                <option value="Voice/Video Call">Voice/Video Call</option>
-                                <option value="Face-to-Face">Face-to-Face Meeting</option>
-                            </select>
-                            <p th:if="${#fields.hasErrors('consultationMode')}" th:errors="*{consultationMode}" class="mt-1 text-xs text-yellow-600">Mode error</p>
-                        </div>
-
-                        <div class="rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
-                            <label class="mb-3 block text-sm font-semibold text-zinc-950">
-                                <i class="fa-solid fa-mug-hot mr-2 text-yellow-500"></i>Optional Tip
-                            </label>
-
-                            <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                                <button type="button" @click="selectedTip = '0'"
-                                        :class="selectedTip === '0' ? 'border-yellow-400 bg-yellow-100 text-zinc-950' : 'border-zinc-200 bg-white hover:bg-zinc-100'"
-                                        class="rounded-full border px-3 py-2 text-sm font-semibold">RM 0</button>
-                                <button type="button" @click="selectedTip = '5'"
-                                        :class="selectedTip === '5' ? 'border-yellow-400 bg-yellow-100 text-zinc-950' : 'border-zinc-200 bg-white hover:bg-zinc-100'"
-                                        class="rounded-full border px-3 py-2 text-sm font-semibold">RM 5</button>
-                                <button type="button" @click="selectedTip = '10'"
-                                        :class="selectedTip === '10' ? 'border-yellow-400 bg-yellow-100 text-zinc-950' : 'border-zinc-200 bg-white hover:bg-zinc-100'"
-                                        class="rounded-full border px-3 py-2 text-sm font-semibold">RM 10</button>
-                                <button type="button" @click="selectedTip = '50'"
-                                        :class="selectedTip === '50' ? 'border-yellow-400 bg-yellow-100 text-zinc-950' : 'border-zinc-200 bg-white hover:bg-zinc-100'"
-                                        class="rounded-full border px-3 py-2 text-sm font-semibold">RM 50</button>
-                            </div>
-                            <input type="hidden" name="tipAmount" th:field="*{tipAmount}" x-model="selectedTip">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">
-                        Proceed &amp; Submit <i class="fa-solid fa-arrow-right"></i>
-                    </button>
+                    <label class="grid gap-2 text-sm font-medium text-white/80 sm:col-span-2">Message<textarea name="message" rows="5" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"></textarea></label>
+                    <button class="rounded-full bg-yellow-400 px-6 py-4 font-semibold text-zinc-950 hover:bg-yellow-300 sm:col-span-2">Send Message</button>
                 </form>
             </div>
         </div>
-    </div>
+    </section>
+</main>
 
-    <button id="chat-toggle" type="button" aria-label="Open chat assistant"
-            class="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-yellow-400 text-zinc-950 shadow-lg hover:bg-yellow-300">
-        <i class="fa-solid fa-comments text-xl"></i>
-    </button>
-
-    <div id="chat-panel"
-         class="fixed bottom-24 right-6 z-50 hidden h-[38rem] max-h-[calc(100vh-7rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[1.75rem] border border-yellow-400/25 bg-[#101010] shadow-2xl">
-        <div class="flex items-center justify-between border-b border-yellow-400/15 bg-zinc-950 px-5 py-4 text-white">
-            <div class="flex items-center gap-3">
-                <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt=""
-                     class="h-11 w-11 rounded-2xl object-contain">
-                <div>
-                    <p class="text-base font-semibold leading-tight">Takaful Assistant</p>
-                    <p class="text-sm text-zinc-300 leading-tight">Ask about our products</p>
-                </div>
-            </div>
-            <button type="button" id="chat-close" class="flex h-10 w-10 items-center justify-center rounded-full text-zinc-300 hover:bg-yellow-400/10 hover:text-yellow-300" aria-label="Close chat">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
+<button id="chat-toggle" class="fixed bottom-6 right-6 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-400 text-2xl text-zinc-950 shadow-2xl hover:bg-yellow-300" aria-label="Open chat">
+    <i class="fa-solid fa-comments"></i>
+</button>
+<div id="chat-panel" class="fixed bottom-24 right-6 z-40 hidden w-[min(92vw,30rem)] overflow-hidden rounded-[2rem] border border-yellow-400/25 bg-[#111] shadow-2xl">
+    <div class="flex items-center justify-between border-b border-yellow-400/20 p-5">
+        <div class="flex items-center gap-3">
+            <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="" class="h-10 w-10 object-contain">
+            <div><p class="font-semibold text-yellow-300">Takaful Assistant</p><p class="text-sm text-white/65">Ask about our products</p></div>
         </div>
-        <div id="chat-messages" class="flex-1 space-y-4 overflow-y-auto bg-[#0d0d0d] p-5 text-sm leading-6"></div>
-        <form id="chat-form" class="flex items-end gap-3 border-t border-yellow-400/15 bg-[#080808] p-4">
-            <textarea id="chat-input" rows="1" maxlength="500" required
-                      placeholder="Ask a Takaful question..."
-                      class="min-h-12 flex-1 resize-none overflow-hidden rounded-2xl border border-yellow-400/35 px-4 py-3 text-sm leading-6 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400"></textarea>
-            <button id="chat-send" type="submit"
-                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-yellow-400 text-sm font-semibold text-zinc-950 hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </form>
+        <button id="chat-close" class="text-white/70 hover:text-yellow-300"><i class="fa-solid fa-xmark"></i></button>
     </div>
+    <div id="chat-messages" class="h-80 space-y-3 overflow-y-auto p-5 text-sm">
+        <div class="rounded-2xl border border-yellow-400/25 bg-black p-4 text-white/75">Hi, I can explain the application process, product details, and quotation/payment flow.</div>
+    </div>
+    <form id="chat-form" class="flex gap-3 border-t border-yellow-400/20 p-4">
+        <input id="chat-input" class="min-w-0 flex-1 rounded-full border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300" placeholder="Ask about Takaful products">
+        <button class="rounded-full bg-yellow-400 px-5 text-zinc-950 hover:bg-yellow-300"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+</div>
 
-    <script>
-        (function () {
-            const menu = document.getElementById('mobile-menu');
-            const panel = document.getElementById('mobile-menu-panel');
-            const openBtn = document.getElementById('mobile-menu-open');
-            const closeBtn = document.getElementById('mobile-menu-close');
-            const backdrop = document.getElementById('mobile-menu-backdrop');
-            const links = document.querySelectorAll('.mobile-menu-link');
-            if (!menu || !panel || !openBtn || !closeBtn || !backdrop) return;
+<script>
+    document.querySelectorAll('.page-menu-open').forEach((button) => {
+        button.addEventListener('click', () => {
+            const menu = document.querySelector('.page-mobile-menu');
+            menu.classList.toggle('hidden');
+            document.body.classList.toggle('overflow-hidden', !menu.classList.contains('hidden'));
+        });
+    });
 
-            function openMenu() {
-                menu.classList.remove('hidden');
-                menu.setAttribute('aria-hidden', 'false');
-                openBtn.setAttribute('aria-expanded', 'true');
-                document.documentElement.classList.add('menu-open');
-                document.body.classList.add('menu-open');
-                void panel.offsetWidth;
-                panel.classList.remove('translate-x-full', 'opacity-80');
-                panel.classList.add('translate-x-0', 'opacity-100');
-            }
-
-            function closeMenu() {
-                panel.classList.add('translate-x-full', 'opacity-80');
-                panel.classList.remove('translate-x-0', 'opacity-100');
-                openBtn.setAttribute('aria-expanded', 'false');
-                window.setTimeout(function () {
-                    menu.classList.add('hidden');
-                    menu.setAttribute('aria-hidden', 'true');
-                    document.documentElement.classList.remove('menu-open');
-                    document.body.classList.remove('menu-open');
-                }, 180);
-            }
-
-            openBtn.addEventListener('click', openMenu);
-            closeBtn.addEventListener('click', closeMenu);
-            backdrop.addEventListener('click', closeMenu);
-            links.forEach(function (link) {
-                link.addEventListener('click', closeMenu);
-            });
-            document.addEventListener('keydown', function (event) {
-                if (event.key === 'Escape' && !menu.classList.contains('hidden')) {
-                    closeMenu();
-                }
-            });
-        })();
-    </script>
-
-    <script>
-        (function () {
-            const bookingButtons = document.querySelectorAll('[data-open-booking]');
-            const modal = document.getElementById('booking-modal');
-            const closeBtn = document.getElementById('booking-close');
-            const productInput = document.getElementById('productType');
-            const productName = document.getElementById('modal-product-name');
-            if (!bookingButtons.length || !modal) return;
-
-            bookingButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    if (window.Alpine) return;
-                    const selected = button.dataset.openBooking || 'General Takaful Consultation';
-                    if (productInput) productInput.value = selected;
-                    if (productName) productName.textContent = selected;
-                    modal.style.display = 'flex';
-                    modal.removeAttribute('x-cloak');
-                    document.body.classList.add('modal-open');
-                });
-            });
-
-            function closeFallback() {
-                if (window.Alpine) return;
-                modal.style.display = 'none';
-                document.body.classList.remove('modal-open');
-            }
-
-            if (closeBtn) closeBtn.addEventListener('click', closeFallback);
-            modal.addEventListener('click', function (event) {
-                if (event.target === modal) closeFallback();
-            });
-        })();
-    </script>
-
-    <script>
-        (function () {
-            const mobileCardQuery = window.matchMedia('(max-width: 767px)');
-            const productCards = document.querySelectorAll('[data-brochure-url]');
-            if (!productCards.length) return;
-
-            function shouldIgnoreTap(target) {
-                return Boolean(target.closest('a, button, input, select, textarea, label'));
-            }
-
-            productCards.forEach(function (card) {
-                card.addEventListener('click', function (event) {
-                    const brochureUrl = card.dataset.brochureUrl;
-                    if (!mobileCardQuery.matches || !brochureUrl || shouldIgnoreTap(event.target)) return;
-                    window.open(brochureUrl, '_blank', 'noopener');
-                });
-            });
-        })();
-    </script>
-
-    <script>
-        (function () {
-            const toggle = document.getElementById('chat-toggle');
-            const panel = document.getElementById('chat-panel');
-            const closeBtn = document.getElementById('chat-close');
-            const form = document.getElementById('chat-form');
-            const input = document.getElementById('chat-input');
-            const sendBtn = document.getElementById('chat-send');
-            const messages = document.getElementById('chat-messages');
-            const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
-
-            const history = [];
-            let opened = false;
-
-            function openPanel() {
-                panel.classList.remove('hidden');
-                panel.classList.add('flex');
-                if (!opened) {
-                    appendMessage('assistant', "Hi! I'm your Takaful assistant. Ask me about our PruBSN brochure products, Hibah planning, or how to book a consultation.");
-                    opened = true;
-                }
-                setTimeout(function () { input.focus(); }, 50);
-            }
-            function closePanel() {
-                panel.classList.add('hidden');
-                panel.classList.remove('flex');
-            }
-
-            function appendMessage(role, text) {
-                const wrap = document.createElement('div');
-                wrap.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
-                const bubble = document.createElement('div');
-                bubble.className = role === 'user'
-                    ? 'max-w-[84%] rounded-2xl rounded-br-sm bg-yellow-400 px-4 py-3 text-zinc-950 whitespace-pre-wrap break-words'
-                    : 'max-w-[86%] rounded-2xl rounded-bl-sm border border-yellow-400/25 bg-[#151515] px-4 py-3 text-zinc-200 whitespace-pre-wrap break-words';
-                bubble.textContent = text;
-                wrap.appendChild(bubble);
-                messages.appendChild(wrap);
-                messages.scrollTop = messages.scrollHeight;
-                return bubble;
-            }
-
-            function appendTyping() {
-                const wrap = document.createElement('div');
-                wrap.className = 'flex justify-start';
-                wrap.id = 'chat-typing';
-                const bubble = document.createElement('div');
-                bubble.className = 'rounded-2xl rounded-bl-sm border border-yellow-400/25 bg-[#151515] px-4 py-3 text-zinc-400 italic';
-                bubble.textContent = 'Typing...';
-                wrap.appendChild(bubble);
-                messages.appendChild(wrap);
-                messages.scrollTop = messages.scrollHeight;
-            }
-            function removeTyping() {
-                const t = document.getElementById('chat-typing');
-                if (t) t.remove();
-            }
-
-            toggle.addEventListener('click', function () {
-                if (panel.classList.contains('hidden')) openPanel(); else closePanel();
-            });
-            closeBtn.addEventListener('click', closePanel);
-
-            function resizeInput() {
-                input.style.height = 'auto';
-                input.style.height = Math.min(input.scrollHeight, 112) + 'px';
-            }
-
-            input.addEventListener('input', resizeInput);
-
-            input.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    form.requestSubmit();
-                }
-            });
-
-            form.addEventListener('submit', async function (e) {
-                e.preventDefault();
-                const text = input.value.trim();
-                if (!text) return;
-
-                appendMessage('user', text);
-                history.push({ role: 'user', text: text });
-                input.value = '';
-                resizeInput();
-                input.disabled = true;
-                sendBtn.disabled = true;
-                appendTyping();
-
-                try {
-                    const res = await fetch('/api/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            [csrfHeader]: csrfToken
-                        },
-                        body: JSON.stringify({ message: text, history: history.slice(-6) })
-                    });
-                    removeTyping();
-
-                    let payload = null;
-                    try { payload = await res.json(); } catch (parseErr) { payload = null; }
-
-                    if (!res.ok) {
-                        const msg = (payload && payload.reply)
-                            || (res.status === 429 ? "You're sending messages a bit too fast. Please wait a minute and try again." : 'Something went wrong. Please try again.');
-                        appendMessage('assistant', msg);
-                        return;
-                    }
-
-                    const reply = payload && payload.reply ? payload.reply : '...';
-                    appendMessage('assistant', reply);
-                    history.push({ role: 'assistant', text: reply });
-                } catch (err) {
-                    removeTyping();
-                    appendMessage('assistant', 'Connection error. Please try again in a moment.');
-                } finally {
-                    input.disabled = false;
-                    sendBtn.disabled = false;
-                    input.focus();
-                }
-            });
-        })();
-    </script>
-
-    <script>
-        function reviewCarousel() {
-            return {
-                activeIndex: 0,
-                visibleCount: 4,
-                swipeStartX: 0,
-                swipeStartY: 0,
-                reviews: [
-                    {
-                        initial: 'A',
-                        name: 'Aiman Hakim',
-                        product: 'PruBSN AnugerahMax',
-                        text: 'The AnugerahMax brochure felt easier to understand after the consultation. Muqmeen helped me compare protection and legacy needs without rushing the decision.'
-                    },
-                    {
-                        initial: 'N',
-                        name: 'Nur Afiqah',
-                        product: 'PruBSN Aspirasi',
-                        text: 'I wanted a clearer savings path for future family goals. The advisor explained Aspirasi in practical terms and showed what to review before committing.'
-                    },
-                    {
-                        initial: 'S',
-                        name: 'Sarah Ismail',
-                        product: 'PruBSN WarisanGold',
-                        text: 'WarisanGold made more sense once inheritance and beneficiary concerns were explained simply. The follow-up notes in my account were useful.'
-                    },
-                    {
-                        initial: 'F',
-                        name: 'Farhan Rahman',
-                        product: 'PruBSN Kritikal Care360',
-                        text: 'The consultation helped me focus on recovery support and income continuity. I could ask direct questions before deciding what suited my family.'
-                    },
-                    {
-                        initial: 'M',
-                        name: 'Mira Zulkifli',
-                        product: 'PruBSN Anggun',
-                        text: 'I liked that Anggun was discussed around my actual life stage, not as a generic product. The brochure details were easier to digest afterwards.'
-                    },
-                    {
-                        initial: 'H',
-                        name: 'Haziq Danish',
-                        product: 'PruBSN Asas360',
-                        text: 'Asas360 was a good starting point for my first takaful review. The advisor kept the explanation simple and helped me plan the next step.'
-                    }
-                ],
-                init() {
-                    this.updateVisibleCount();
-                    window.addEventListener('resize', () => this.updateVisibleCount());
-                },
-                updateVisibleCount() {
-                    if (window.innerWidth >= 1280) {
-                        this.visibleCount = 4;
-                    } else if (window.innerWidth >= 768) {
-                        this.visibleCount = 2;
-                    } else {
-                        this.visibleCount = 1;
-                    }
-                },
-                visibleReviews() {
-                    return Array.from({ length: this.visibleCount }, (_, offset) => {
-                        const index = (this.activeIndex + offset) % this.reviews.length;
-                        return this.reviews.at(index);
-                    });
-                },
-                next() {
-                    this.activeIndex = (this.activeIndex + 1) % this.reviews.length;
-                },
-                prev() {
-                    this.activeIndex = (this.activeIndex - 1 + this.reviews.length) % this.reviews.length;
-                },
-                goTo(index) {
-                    this.activeIndex = index;
-                },
-                startSwipe(event) {
-                    if (window.innerWidth >= 768 || !event.changedTouches.length) return;
-                    this.swipeStartX = event.changedTouches[0].clientX;
-                    this.swipeStartY = event.changedTouches[0].clientY;
-                },
-                finishSwipe(event) {
-                    if (window.innerWidth >= 768 || !event.changedTouches.length) return;
-                    const touch = event.changedTouches[0];
-                    const deltaX = touch.clientX - this.swipeStartX;
-                    const deltaY = touch.clientY - this.swipeStartY;
-                    if (Math.abs(deltaX) < 45 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
-                    deltaX < 0 ? this.next() : this.prev();
-                }
-            };
+    const questions = [
+        'Which plan fits my family needs?',
+        'Do I need Hibah and medical cover?',
+        'Should I review my old policy first?',
+        'How much income protection is enough?',
+        'What documents should I prepare?'
+    ];
+    const target = document.getElementById('typewriter-question');
+    let qIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+    function typeQuestion() {
+        const text = questions[qIndex];
+        target.textContent = text.slice(0, charIndex);
+        if (!deleting && charIndex < text.length) {
+            charIndex++;
+            setTimeout(typeQuestion, 45);
+        } else if (!deleting) {
+            deleting = true;
+            setTimeout(typeQuestion, 2200);
+        } else if (charIndex > 0) {
+            charIndex--;
+            setTimeout(typeQuestion, 25);
+        } else {
+            deleting = false;
+            qIndex = (qIndex + 1) % questions.length;
+            setTimeout(typeQuestion, 250);
         }
+    }
+    typeQuestion();
 
-        function bookingFlow() {
-            return {
-                bookingOpen: false,
-                selectedProduct: '',
-                selectedTip: '5',
-                questionKey: 0,
-                heroQuestion: 'Do I have enough family protection?',
-                heroQuestions: [
-                    'Do I have enough family protection?',
-                    'What gap does my medical card miss?',
-                    'How much cover fits my budget?',
-                    'Can Hibah help my family faster?',
-                    'Should I review my old policy first?',
-                    'How do I protect my parents wisely?',
-                    'What if my income stops suddenly?',
-                    'Which plan fits a young family?',
-                    'Do I need Hibah and medical cover?',
-                    'What should I prepare before booking?'
-                ],
-                initBooking() {
-                    const productInput = document.getElementById('productType');
-                    const tipInput = document.querySelector('input[name="tipAmount"]');
-                    if (productInput && productInput.value) this.selectedProduct = productInput.value;
-                    if (tipInput && tipInput.value) this.selectedTip = tipInput.value;
-                    window.setInterval(() => this.rotateHeroQuestion(), 7000);
-                    if (document.body.dataset.selectedProduct) {
-                        this.selectedProduct = document.body.dataset.selectedProduct;
-                        this.bookingOpen = true;
-                    }
-                    if (document.body.dataset.formError === 'true') {
-                        this.selectedProduct = this.selectedProduct || 'Consultation';
-                        this.bookingOpen = true;
-                    }
-                    this.$watch('bookingOpen', value => {
-                        document.body.classList.toggle('modal-open', value);
-                    });
-                    document.body.classList.toggle('modal-open', this.bookingOpen);
-                },
-                openBooking(productName) {
-                    this.selectedProduct = productName;
-                    this.bookingOpen = true;
-                },
-                closeBooking() {
-                    this.bookingOpen = false;
-                },
-                rotateHeroQuestion() {
-                    if (!this.heroQuestions.length) return;
-                    let next = this.heroQuestion;
-                    while (next === this.heroQuestion && this.heroQuestions.length > 1) {
-                        next = this.heroQuestions[Math.floor(Math.random() * this.heroQuestions.length)];
-                    }
-                    this.heroQuestion = next;
-                    this.questionKey++;
-                }
-            };
-        }
-    </script>
+    const chatPanel = document.getElementById('chat-panel');
+    document.getElementById('chat-toggle').addEventListener('click', () => chatPanel.classList.toggle('hidden'));
+    document.getElementById('chat-close').addEventListener('click', () => chatPanel.classList.add('hidden'));
+    document.getElementById('chat-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const input = document.getElementById('chat-input');
+        if (!input.value.trim()) return;
+        const messages = document.getElementById('chat-messages');
+        const userText = input.value.trim();
+        messages.insertAdjacentHTML('beforeend', `<div class="ml-auto max-w-[85%] rounded-2xl bg-yellow-400 p-4 text-zinc-950">${userText.replaceAll('<','&lt;')}</div>`);
+        input.value = '';
+        const token = document.querySelector('meta[name="_csrf"]').content;
+        const header = document.querySelector('meta[name="_csrf_header"]').content;
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', [header]: token},
+            body: JSON.stringify({message: userText, history: []})
+        });
+        const data = await response.json();
+        messages.insertAdjacentHTML('beforeend', `<div class="max-w-[85%] rounded-2xl border border-yellow-400/25 bg-black p-4 text-white/75">${(data.reply || data.message || 'Please try again.').replaceAll('<','&lt;')}</div>`);
+        messages.scrollTop = messages.scrollHeight;
+    });
+</script>
 </body>
 </html>

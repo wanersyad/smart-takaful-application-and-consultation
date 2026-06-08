@@ -23,9 +23,9 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "lead_id", nullable = false)
-    private Lead lead;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quotation_id", unique = true)
+    private Quotation quotation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
@@ -68,8 +68,8 @@ public class Payment {
 
     public Long getId() { return id; }
 
-    public Lead getLead() { return lead; }
-    public void setLead(Lead lead) { this.lead = lead; }
+    public Quotation getQuotation() { return quotation; }
+    public void setQuotation(Quotation quotation) { this.quotation = quotation; }
 
     public Customer getCustomer() { return customer; }
     public void setCustomer(Customer customer) { this.customer = customer; }

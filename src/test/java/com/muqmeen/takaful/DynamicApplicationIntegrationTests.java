@@ -1,0 +1,266 @@
+package com.muqmeen.takaful;
+
+import com.muqmeen.takaful.domain.ApplicationStatus;
+import com.muqmeen.takaful.domain.ConsultationApplication;
+import com.muqmeen.takaful.domain.Customer;
+import com.muqmeen.takaful.domain.Product;
+import com.muqmeen.takaful.domain.ProductCoverageItem;
+import com.muqmeen.takaful.domain.Quotation;
+import com.muqmeen.takaful.repository.ConsultationApplicationRepository;
+import com.muqmeen.takaful.repository.PaymentRepository;
+import com.muqmeen.takaful.repository.ProductRepository;
+import com.muqmeen.takaful.service.ApplicationService;
+import com.muqmeen.takaful.service.CustomerService;
+import com.muqmeen.takaful.service.PaymentService;
+import com.muqmeen.takaful.service.QuotationService;
+import com.muqmeen.takaful.service.QuotationService.QuotationItemInput;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest(properties = {
+        "toyyibpay.mode=mock",
+        "toyyibpay.secret-key=test-secret",
+        "file-storage.mode=local",
+        "file-storage.local-upload-dir=target/test-uploads"
+})
+@AutoConfigureMockMvc
+@ActiveProfiles("dev")
+class DynamicApplicationIntegrationTests {
+
+    @Autowired private MockMvc mockMvc;
+    @Autowired private CustomerService customerService;
+    @Autowired private ProductRepository productRepository;
+    @Autowired private ConsultationApplicationRepository applicationRepository;
+    @Autowired private ApplicationService applicationService;
+    @Autowired private QuotationService quotationService;
+    @Autowired private PaymentService paymentService;
+    @Autowired private PaymentRepository paymentRepository;
+
+    @BeforeEach
+    void clean() {
+        paymentRepository.deleteAll();
+        applicationRepository.deleteAll();
+        productRepository.deleteAll();
+    }
+
+    @Test
+    void anonymousCanBrowseProductsButApplicationRequiresLogin() throws Exception {
+        Product product = saveProduct("Dynamic Medical");
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Dynamic Medical")))
+                .andExpect(content().string(not(containsString("Paid Tips"))))
+                .andExpect(content().string(not(containsString("Our Client Reviews"))));
+
+        mockMvc.perform(get("/products/" + product.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Hospital income benefit")));
+
+        mockMvc.perform(get("/applications/new").param("productId", product.getId().toString()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
+    void adminCreatesStructuredProductAndPublicPageReadsDatabaseRows() throws Exception {
+        mockMvc.perform(post("/admin/products")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf())
+                        .param("name", "PruBSN Dynamic")
+                        .param("categoryLabel", "Family Protection")
+                        .param("summary", "Database summary")
+                        .param("detailedDescription", "Database detailed description")
+                        .param("eligibility", "Malaysian residents")
+                        .param("coveragePurpose", "Family continuity")
+                        .param("termsNotes", "Subject to underwriting")
+                        .param("iconClass", "fa-shield-halved")
+                        .param("active", "true")
+                        .param("benefitsText", "Benefit one\nBenefit two")
+                        .param("coverageText", "Hospital income benefit | Helps during admission")
+                        .param("requirementsText", "IC front and back")
+                        .param("documentsText", "English brochure | /brochures/example.pdf | Brochure"))
+                .andExpect(status().is3xxRedirection());
+
+        Product saved = productRepository.findByName("PruBSN Dynamic").orElseThrow();
+        mockMvc.perform(get("/products/" + saved.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Benefit one")))
+                .andExpect(content().string(containsString("Hospital income benefit")))
+                .andExpect(content().string(containsString("IC front and back")));
+    }
+
+    @Test
+    void customerUpdatesProfileCreatesDraftSubmitsApplicationAndSeesItInAccount() throws Exception {
+        Product product = saveProduct("PruBSN Application");
+        Customer customer = customer("flow");
+
+        mockMvc.perform(post("/account/profile")
+                        .with(user(customer.getEmail()).roles("USER"))
+                        .with(csrf())
+                        .param("homeAddress", "123 Jalan Takaful")
+                        .param("occupation", "Teacher")
+                        .param("positionTitle", "Senior Teacher")
+                        .param("employerName", "School")
+                        .param("workplaceAddress", "School Address")
+                        .param("annualIncome", "60000")
+                        .param("bankName", "Maybank")
+                        .param("bankAccountNumber", "123456789")
+                        .param("heightCm", "170")
+                        .param("weightKg", "70"))
+                .andExpect(status().is3xxRedirection());
+
+        ConsultationApplication draft = applicationService.start(customer, product.getId());
+        mockMvc.perform(multipart("/applications/" + draft.getId())
+                        .file(image("icFront", "front.png"))
+                        .file(image("icBack", "back.png"))
+                        .with(request -> { request.setMethod("POST"); return request; })
+                        .with(user(customer.getEmail()).roles("USER"))
+                        .with(csrf())
+                        .param("action", "submit")
+                        .param("signatureDataUrl", signature())
+                        .param("applicantFullName", "Flow User")
+                        .param("email", customer.getEmail())
+                        .param("phoneNumber", "60123456789")
+                        .param("homeAddress", "123 Jalan Takaful")
+                        .param("occupation", "Teacher")
+                        .param("positionTitle", "Senior Teacher")
+                        .param("employerName", "School")
+                        .param("workplaceAddress", "School Address")
+                        .param("annualIncome", "60000")
+                        .param("bankName", "Maybank")
+                        .param("bankAccountNumber", "123456789")
+                        .param("heightCm", "170")
+                        .param("weightKg", "70")
+                        .param("nominee1FullName", "Nominee User")
+                        .param("nominee1IcNumber", "900101011111")
+                        .param("nominee1Relationship", "Spouse")
+                        .param("nominee1HomeAddress", "Nominee Address")
+                        .param("nominee1Occupation", "Engineer")
+                        .param("nominee1PhoneNumber", "60122222222"))
+                .andExpect(status().is3xxRedirection());
+
+        mockMvc.perform(get("/account").with(user(customer.getEmail()).roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("PruBSN Application")))
+                .andExpect(content().string(containsString("SUBMITTED")));
+    }
+
+    @Test
+    void customerCannotReadAnotherCustomersApplication() throws Exception {
+        Product product = saveProduct("Private Product");
+        Customer owner = customer("owner");
+        Customer other = customer("other");
+        ConsultationApplication application = applicationService.start(owner, product.getId());
+
+        mockMvc.perform(get("/applications/" + application.getId())
+                        .with(user(other.getEmail()).roles("USER")))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void adminReviewsApplicationCreatesQuotationAndMockPaymentUpdatesStatus() throws Exception {
+        Product product = saveProduct("Quoted Product");
+        Customer customer = customer("quoted");
+        ConsultationApplication application = submittedApplication(customer, product);
+
+        mockMvc.perform(get("/admin/dashboard").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Quoted Product")));
+
+        mockMvc.perform(post("/admin/applications/" + application.getId() + "/status")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf())
+                        .param("status", "UNDER_REVIEW"))
+                .andExpect(status().is3xxRedirection());
+
+        Quotation quotation = quotationService.save(application, "Reviewed",
+                List.of(new QuotationItemInput("Base contribution", "Monthly plan", new BigDecimal("120.00"), true)));
+        quotation = quotationService.publish(quotation.getId());
+
+        String redirect = paymentService.prepareQuotationPayment(quotation).redirectUrl();
+        mockMvc.perform(get(redirect))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("ToyyibPay Mock")));
+    }
+
+    @Test
+    void adminRoutesRemainAdminOnly() throws Exception {
+        mockMvc.perform(get("/admin/dashboard"))
+                .andExpect(status().is3xxRedirection());
+        mockMvc.perform(get("/admin/dashboard").with(user("user@example.com").roles("USER")))
+                .andExpect(status().is3xxRedirection());
+        mockMvc.perform(get("/admin/dashboard").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
+    }
+
+    private Product saveProduct(String name) {
+        Product product = new Product();
+        product.setName(name);
+        product.setCategoryLabel("Medical");
+        product.setSummary("Dynamic product summary");
+        product.setDescription("Dynamic product description");
+        product.setDetailedDescription("Full dynamic product detail");
+        product.setIconClass("fa-heart-pulse");
+        product.setActive(true);
+        product.setFeatured(true);
+        ProductCoverageItem coverageItem = new ProductCoverageItem();
+        coverageItem.setProduct(product);
+        coverageItem.setItemName("Hospital income benefit");
+        coverageItem.setItemDescription("Helps during admission");
+        product.getCoverageItems().add(coverageItem);
+        return productRepository.save(product);
+    }
+
+    private Customer customer(String prefix) {
+        return customerService.register(prefix + " User", prefix + "." + UUID.randomUUID() + "@example.com", "60123456789", "password123");
+    }
+
+    private ConsultationApplication submittedApplication(Customer customer, Product product) {
+        ConsultationApplication application = applicationService.start(customer, product.getId());
+        application.setApplicantFullName(customer.getFullName());
+        application.setEmail(customer.getEmail());
+        application.setPhoneNumber(customer.getPhoneNumber());
+        application.setHomeAddress("Address");
+        application.setOccupation("Teacher");
+        application.setPositionTitle("Senior Teacher");
+        application.setEmployerName("School");
+        application.setWorkplaceAddress("Workplace");
+        application.setAnnualIncome(new BigDecimal("60000"));
+        application.setBankName("Maybank");
+        application.setBankAccountNumber("123456789");
+        application.setHeightCm(new BigDecimal("170"));
+        application.setWeightKg(new BigDecimal("70"));
+        application.setStatus(ApplicationStatus.SUBMITTED);
+        return applicationRepository.save(application);
+    }
+
+    private MockMultipartFile image(String name, String filename) {
+        return new MockMultipartFile(name, filename, "image/png", new byte[] {1, 2, 3, 4});
+    }
+
+    private String signature() {
+        return "data:image/png;base64,iVBORw0KGgo=";
+    }
+}

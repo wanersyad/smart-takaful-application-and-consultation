@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application - Muqmeen Group</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+    <a href="/account" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to account</a>
+    <div class="mt-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+            <p class="text-white/60">Application #<span th:text="${application.id}">1</span></p>
+            <h1 class="text-4xl font-semibold text-yellow-300" th:text="${application.product.name}">Product</h1>
+            <p class="mt-2"><span class="rounded-full border border-yellow-400/25 bg-yellow-400/10 px-3 py-1 text-sm text-yellow-200" th:text="${application.status}">DRAFT</span></p>
+        </div>
+        <div class="flex gap-3">
+            <a th:if="${application.editableByCustomer}" th:href="@{/applications/{id}/edit(id=${application.id})}" class="rounded-full bg-yellow-400 px-5 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Edit Draft</a>
+            <form th:if="${application.status.name() == 'DRAFT'}" th:action="@{/applications/{id}/delete(id=${application.id})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button class="rounded-full bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-500">Delete Draft</button></form>
+        </div>
+    </div>
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <h2 class="text-xl font-semibold text-yellow-300">Applicant Snapshot</h2>
+            <dl class="mt-5 grid gap-3 text-sm">
+                <div><dt class="text-white/45">Name</dt><dd th:text="${application.applicantFullName}">Name</dd></div>
+                <div><dt class="text-white/45">Email</dt><dd th:text="${application.email}">Email</dd></div>
+                <div><dt class="text-white/45">Phone</dt><dd th:text="${application.phoneNumber}">Phone</dd></div>
+                <div><dt class="text-white/45">Home address</dt><dd th:text="${application.homeAddress}">Address</dd></div>
+                <div><dt class="text-white/45">Work</dt><dd><span th:text="${application.occupation}">Occupation</span>, <span th:text="${application.positionTitle}">Position</span> at <span th:text="${application.employerName}">Employer</span></dd></div>
+                <div><dt class="text-white/45">Bank</dt><dd><span th:text="${application.bankName}">Bank</span> - <span th:text="${application.bankAccountNumber}">Account</span></dd></div>
+                <div><dt class="text-white/45">Measurements</dt><dd><span th:text="${application.heightCm}">0</span> cm / <span th:text="${application.weightKg}">0</span> kg</dd></div>
+            </dl>
+        </section>
+        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <h2 class="text-xl font-semibold text-yellow-300">Documents and Nominees</h2>
+            <div class="mt-5 flex flex-wrap gap-3">
+                <a th:if="${application.icFrontFile != null}" th:href="@{/files/{id}(id=${application.icFrontFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">IC Front</a>
+                <a th:if="${application.icBackFile != null}" th:href="@{/files/{id}(id=${application.icBackFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">IC Back</a>
+                <a th:if="${application.signatureFile != null}" th:href="@{/files/{id}(id=${application.signatureFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">Signature</a>
+            </div>
+            <div class="mt-6 space-y-4">
+                <article th:each="nominee : ${application.nominees}" class="rounded-2xl bg-black p-4">
+                    <p class="font-semibold text-yellow-300" th:text="${nominee.fullName}">Nominee</p>
+                    <p class="text-sm text-white/65"><span th:text="${nominee.icNumber}">IC</span> / <span th:text="${nominee.relationship}">Relationship</span> / <span th:text="${nominee.phoneNumber}">Phone</span></p>
+                </article>
+            </div>
+        </section>
+    </div>
+    <section th:if="${application.quotation != null}" class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+        <h2 class="text-xl font-semibold text-yellow-300">Quotation</h2>
+        <p class="mt-2 text-white/65">Status: <span th:text="${application.quotation.status}">DRAFT</span></p>
+        <div class="mt-5 space-y-3">
+            <div th:each="item : ${application.quotation.items}" class="grid gap-2 rounded-2xl bg-black p-4 sm:grid-cols-[1fr,auto]">
+                <div><p class="font-semibold" th:text="${item.itemName}">Item</p><p class="text-sm text-white/60" th:text="${item.description}">Description</p></div>
+                <p class="font-semibold text-yellow-300">RM <span th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</span></p>
+            </div>
+        </div>
+        <div class="mt-6 flex items-center justify-between">
+            <p class="text-2xl font-semibold text-yellow-300">Total RM <span th:text="${#numbers.formatDecimal(application.quotation.selectedTotal(), 1, 2)}">0.00</span></p>
+            <form th:if="${application.quotation.status == 'PUBLISHED'}" th:action="@{/quotations/{id}/pay(id=${application.quotation.id})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Proceed to Payment</button>
+            </form>
+        </div>
+    </section>
+</main>
+</body>
+</html>

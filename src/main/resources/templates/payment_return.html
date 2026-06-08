@@ -1,37 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Status - Muqmeen Group</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Return - Muqmeen Group</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body class="bg-zinc-50 min-h-screen flex items-center justify-center p-4">
-    <main class="brand-shell rounded-xl p-10 text-center max-w-md w-full">
-        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-5">
-            <i class="fa-solid fa-receipt text-2xl text-zinc-950"></i>
-        </div>
-        <h1 class="text-2xl font-semibold text-zinc-950">Payment Status Received</h1>
-        <p class="text-sm text-zinc-500 mt-2">
-            We are confirming the final status through ToyyibPay's secure callback.
-        </p>
-        <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-4 text-left text-sm mt-6 space-y-2">
-            <p class="flex justify-between">
-                <span class="text-zinc-500">Bill Code</span>
-                <span class="font-mono text-zinc-800" th:text="${billCode ?: '-'}">-</span>
-            </p>
-            <p class="flex justify-between">
-                <span class="text-zinc-500">Return Status</span>
-                <span class="font-semibold text-zinc-800" th:text="${statusId ?: '-'}">-</span>
-            </p>
-        </div>
-        <a href="/account" class="mt-6 inline-flex w-full justify-center rounded-lg bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold py-3 smooth-transition">
-            View My Account
-        </a>
-    </main>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<main class="mx-auto flex min-h-screen max-w-xl items-center px-4">
+    <div class="w-full rounded-3xl border border-yellow-400/25 bg-[#111] p-8 text-center">
+        <h1 class="text-3xl font-semibold text-yellow-300">Payment Return Received</h1>
+        <p class="mt-3 text-white/70">We received the gateway return for bill <span th:text="${billCode}">bill</span>. Final status is confirmed by callback.</p>
+        <a href="/account" class="mt-8 inline-flex rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950">Back to Account</a>
+    </div>
+</main>
 </body>
 </html>
