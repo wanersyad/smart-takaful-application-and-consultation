@@ -113,6 +113,42 @@ class DynamicApplicationIntegrationTests {
                 .andExpect(content().string(containsString("Benefit one")))
                 .andExpect(content().string(containsString("Hospital income benefit")))
                 .andExpect(content().string(containsString("IC front and back")));
+
+        mockMvc.perform(post("/admin/products/" + saved.getId())
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf())
+                        .param("name", "PruBSN Dynamic Updated")
+                        .param("categoryLabel", "Updated Protection")
+                        .param("summary", "Updated database summary")
+                        .param("detailedDescription", "Updated detailed description")
+                        .param("eligibility", "Updated eligibility")
+                        .param("coveragePurpose", "Updated family continuity")
+                        .param("termsNotes", "Updated terms")
+                        .param("iconClass", "fa-heart-pulse")
+                        .param("active", "true")
+                        .param("benefitsText", "Updated benefit")
+                        .param("coverageText", "Updated hospital benefit | Updated admission note")
+                        .param("requirementsText", "Updated IC requirement")
+                        .param("documentsText", "Updated brochure | /brochures/updated.pdf | Brochure"))
+                .andExpect(status().is3xxRedirection());
+
+        mockMvc.perform(get("/products/" + saved.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("PruBSN Dynamic Updated")))
+                .andExpect(content().string(containsString("Updated benefit")))
+                .andExpect(content().string(not(containsString("Benefit one"))));
+
+        mockMvc.perform(post("/admin/products/" + saved.getId() + "/delete")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection());
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("PruBSN Dynamic Updated"))));
+        mockMvc.perform(get("/products/" + saved.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/#products"));
     }
 
     @Test
