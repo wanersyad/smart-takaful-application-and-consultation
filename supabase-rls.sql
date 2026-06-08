@@ -50,11 +50,3 @@ on conflict (id) do update
 set public = excluded.public,
     file_size_limit = excluded.file_size_limit,
     allowed_mime_types = excluded.allowed_mime_types;
-
-alter table if exists storage.objects enable row level security;
-
-drop policy if exists "deny direct anon takaful object access" on storage.objects;
-create policy "deny direct anon takaful object access"
-on storage.objects for all to anon
-using (false)
-with check (false);
