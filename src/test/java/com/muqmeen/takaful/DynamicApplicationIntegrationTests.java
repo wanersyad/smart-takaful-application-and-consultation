@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -242,6 +243,54 @@ class DynamicApplicationIntegrationTests {
         mockMvc.perform(get("/applications/" + application.getId())
                         .with(user(other.getEmail()).roles("USER")))
                 .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void customerCanSaveAndDeleteDraftButCannotEditSubmittedApplication() throws Exception {
+        Product product = saveProduct("Draft Lifecycle Product");
+        Customer customer = customer("draft-flow");
+        ConsultationApplication draft = applicationService.start(customer, product.getId());
+
+        mockMvc.perform(post("/applications/" + draft.getId())
+                        .with(user(customer.getEmail()).roles("USER"))
+                        .with(csrf())
+                        .param("action", "draft")
+                        .param("applicantFullName", "Draft Customer")
+                        .param("email", customer.getEmail())
+                        .param("phoneNumber", "60123456789")
+                        .param("homeAddress", "Draft Home"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/applications/" + draft.getId()));
+
+        ConsultationApplication savedDraft = applicationService.findById(draft.getId()).orElseThrow();
+        assertEquals(ApplicationStatus.DRAFT, savedDraft.getStatus());
+        assertEquals("Draft Customer", savedDraft.getApplicantFullName());
+
+        mockMvc.perform(get("/account").with(user(customer.getEmail()).roles("USER")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Draft Lifecycle Product")))
+                .andExpect(content().string(containsString("DRAFT")));
+
+        mockMvc.perform(post("/applications/" + draft.getId() + "/delete")
+                        .with(user(customer.getEmail()).roles("USER"))
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/account"));
+        assertFalse(applicationRepository.findById(draft.getId()).isPresent());
+
+        ConsultationApplication submitted = submittedApplication(customer, product);
+        mockMvc.perform(get("/applications/" + submitted.getId() + "/edit").with(user(customer.getEmail()).roles("USER")))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/applications/" + submitted.getId()));
+
+        mockMvc.perform(post("/applications/" + submitted.getId())
+                        .with(user(customer.getEmail()).roles("USER"))
+                        .with(csrf())
+                        .param("action", "draft")
+                        .param("applicantFullName", "Should Not Change"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/applications/" + submitted.getId() + "/edit"));
+        assertEquals("draft-flow User", applicationService.findById(submitted.getId()).orElseThrow().getApplicantFullName());
     }
 
     @Test
