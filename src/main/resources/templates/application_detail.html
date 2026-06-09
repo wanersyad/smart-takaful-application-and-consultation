@@ -51,25 +51,25 @@
         </div>
     </section>
     <section class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-        <h2 class="text-xl font-semibold text-yellow-300">Submitted Data Flow</h2>
+        <h2 class="text-xl font-semibold text-yellow-300">What happens next</h2>
         <div class="mt-5 grid gap-4 md:grid-cols-3">
             <div class="rounded-2xl bg-black p-4">
-                <p class="text-xs uppercase tracking-wide text-yellow-300">Input</p>
-                <p class="mt-2 text-sm text-white/65">Application form, IC images, signature, claim bank details, and nominee details.</p>
+                <p class="text-xs uppercase tracking-wide text-yellow-300">Submitted</p>
+                <p class="mt-2 text-sm text-white/65">Your application, IC images, signature, bank, and nominee details have been received.</p>
             </div>
             <div class="rounded-2xl bg-black p-4">
-                <p class="text-xs uppercase tracking-wide text-yellow-300">Stored Records</p>
-                <p class="mt-2 text-sm text-white/65">Applicant snapshot, nominee rows, private file metadata, and application status.</p>
+                <p class="text-xs uppercase tracking-wide text-yellow-300">Under review</p>
+                <p class="mt-2 text-sm text-white/65">Our agent reviews your details and may request a correction if something needs updating.</p>
             </div>
             <div class="rounded-2xl bg-black p-4">
-                <p class="text-xs uppercase tracking-wide text-yellow-300">Output</p>
-                <p class="mt-2 text-sm text-white/65">Customer status tracking, admin review, correction request, and quotation when ready.</p>
+                <p class="text-xs uppercase tracking-wide text-yellow-300">Quotation</p>
+                <p class="mt-2 text-sm text-white/65">Once approved, you'll receive a quotation here and can continue to payment.</p>
             </div>
         </div>
     </section>
     <div class="mt-8 grid gap-6 lg:grid-cols-2">
         <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-            <h2 class="text-xl font-semibold text-yellow-300">Applicant Snapshot</h2>
+            <h2 class="text-xl font-semibold text-yellow-300">Your Application Details</h2>
             <dl class="mt-5 grid gap-3 text-sm">
                 <div><dt class="text-white/45">Name</dt><dd th:text="${app.applicantFullName}">Name</dd></div>
                 <div><dt class="text-white/45">Email</dt><dd th:text="${app.email}">Email</dd></div>

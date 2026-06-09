@@ -440,7 +440,7 @@ class DynamicApplicationIntegrationTests {
 
         mockMvc.perform(get("/applications/" + submitted.getId()).with(user(customer.getEmail()).roles("USER")))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Submitted Data Flow")))
+                .andExpect(content().string(containsString("What happens next")))
                 .andExpect(content().string(containsString("Annual income")))
                 .andExpect(content().string(containsString("Claim bank details")))
                 .andExpect(content().string(containsString("Private Documents and Nominees")))
@@ -545,7 +545,7 @@ class DynamicApplicationIntegrationTests {
         mockMvc.perform(get("/applications/" + application.getId() + "/edit").with(user(customer.getEmail()).roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Correction Request")))
-                .andExpect(content().string(containsString("Customer Input")))
+                .andExpect(content().string(containsString("Complete the form")))
                 .andExpect(content().string(containsString("Maklumat bank tuntutan")));
 
         mockMvc.perform(post("/admin/applications/" + application.getId() + "/status")

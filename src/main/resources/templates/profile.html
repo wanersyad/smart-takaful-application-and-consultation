@@ -25,7 +25,7 @@
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
         <div class="sm:col-span-2">
             <p class="text-xs uppercase tracking-[0.24em] text-yellow-300">Account details</p>
-            <p class="mt-1 text-sm text-white/55">Used for sign-in, application snapshots, and admin review.</p>
+            <p class="mt-1 text-sm text-white/55">Used for sign-in and to keep your applications up to date.</p>
         </div>
         <label class="grid gap-2 text-sm text-white/80">Full name<input name="fullName" required maxlength="120" th:value="${customer.fullName}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
         <label class="grid gap-2 text-sm text-white/80">Email address<input name="email" required type="email" maxlength="160" th:value="${customer.email}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
@@ -33,7 +33,7 @@
         <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Profile picture<input name="profilePicture" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white"></label>
         <div class="sm:col-span-2 pt-2">
             <p class="text-xs uppercase tracking-[0.24em] text-yellow-300">Application defaults</p>
-            <p class="mt-1 text-sm text-white/55">These details prefill new applications, while each submitted application keeps its own snapshot.</p>
+            <p class="mt-1 text-sm text-white/55">These details help pre-fill your new applications so you don't have to re-enter them.</p>
         </div>
         <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Home address<textarea name="homeAddress" rows="3" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${profile.homeAddress}"></textarea></label>
         <label class="grid gap-2 text-sm text-white/80">Occupation<input name="occupation" th:value="${profile.occupation}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>

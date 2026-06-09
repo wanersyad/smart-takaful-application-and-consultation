@@ -17,7 +17,7 @@ public class SiteContentService {
 
     private static final List<ContentDefinition> DEFINITIONS = List.of(
             def("hero.title", "Hero", "Main headline", "textarea", "Your Trusted Takaful Partner"),
-            def("hero.subtitle", "Hero", "Hero subtitle", "textarea", "Compare protection, Hibah, medical, and education planning with Muqmeen Group. Apply through a structured, trackable system and let the agent review your real needs."),
+            def("hero.subtitle", "Hero", "Hero subtitle", "textarea", "Shariah-compliant protection, Hibah, medical, and education planning with Muqmeen Group. Apply online and let our agents guide you to the plan that fits your family."),
             def("hero.questions", "Hero", "Rotating customer questions, one per line", "textarea", """
                     Which plan fits my family needs?
                     Do I need Hibah and medical cover?
@@ -30,13 +30,13 @@ public class SiteContentService {
             def("metrics.applications.label", "Metrics", "Application metric label", "text", "Applications"),
             def("metrics.products.label", "Metrics", "Product metric label", "text", "Active Products"),
             def("metrics.quoted.label", "Metrics", "Quotation/payment metric label", "text", "Quoted / Paid"),
-            def("products.eyebrow", "Products", "Products eyebrow", "text", "Dynamic Product Records"),
+            def("products.eyebrow", "Products", "Products eyebrow", "text", "Our Plans"),
             def("products.title", "Products", "Products heading", "text", "Protection plans built around your family"),
-            def("products.subtitle", "Products", "Products intro", "textarea", "Every card below is read from the product database, including details, benefits, requirements, and documents."),
-            def("products.empty.title", "Products", "Empty product title", "text", "No products yet"),
-            def("products.empty.body", "Products", "Empty product body", "textarea", "An admin must create product records before customers can apply."),
+            def("products.subtitle", "Products", "Products intro", "textarea", "Explore our Takaful plans and find the right coverage, benefits, and protection for your needs."),
+            def("products.empty.title", "Products", "Empty product title", "text", "Plans coming soon"),
+            def("products.empty.body", "Products", "Empty product body", "textarea", "Our Takaful plans will be available here shortly. Please check back soon."),
             def("faq.eyebrow", "FAQ", "FAQ eyebrow", "text", "FAQ"),
-            def("faq.title", "FAQ", "FAQ heading", "text", "Application flow questions"),
+            def("faq.title", "FAQ", "FAQ heading", "text", "Frequently asked questions"),
             def("faq.items", "FAQ", "FAQ rows, one question|answer per line", "textarea", """
                     What happens after I submit an application? | The admin reviews your documents, profile snapshot, bank details, measurements, and nominee information. If everything is clear, the admin creates a quotation for you.
                     Do I pay during the application? | No. Payment only happens after the agent reviews your application and publishes a quotation with selected payable items.
