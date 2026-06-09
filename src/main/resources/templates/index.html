@@ -138,8 +138,8 @@
         <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <div class="rounded-[2rem] border border-yellow-400/25 bg-[#111] p-8 sm:p-10">
                 <div class="text-center">
-                    <h2 class="text-4xl font-semibold text-yellow-300" th:text="${content.value('contact.title')}">Get A Free Consultation Now</h2>
-                    <p class="mt-3 text-white/70" th:text="${content.value('contact.subtitle')}">Send a focused product question and the Muqmeen team will follow up by email.</p>
+                    <h2 class="text-4xl font-semibold text-yellow-300" th:text="${content.value('contact.title')}">Have a question? Get in touch</h2>
+                    <p class="mt-3 text-white/70" th:text="${content.value('contact.subtitle')}">Ask us anything about our Takaful plans and our team will get back to you by email.</p>
                 </div>
                 <form th:action="@{/contact}" method="post" class="mt-8 grid gap-5 sm:grid-cols-2">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

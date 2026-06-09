@@ -438,6 +438,15 @@ body .bg-zinc-100,
   background-color: #101010 !important;
 }
 
+/* Signature pad must stay a true white surface so the dark pen stroke is visible,
+   overriding the dark-site .bg-white rule above. */
+.muqmeen-dark-site .signature-canvas,
+.signature-canvas {
+  background-color: #ffffff !important;
+  cursor: crosshair;
+  touch-action: none;
+}
+
 body .bg-yellow-50,
 body .bg-yellow-100,
 body .bg-amber-100,

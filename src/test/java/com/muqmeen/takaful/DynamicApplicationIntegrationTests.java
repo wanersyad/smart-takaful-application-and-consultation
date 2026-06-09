@@ -228,7 +228,7 @@ class DynamicApplicationIntegrationTests {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Dynamic Medical")))
-                .andExpect(content().string(containsString("Active Products")))
+                .andExpect(content().string(containsString("Active Plans")))
                 .andExpect(content().string(not(containsString("30+"))))
                 .andExpect(content().string(not(containsString("70+"))))
                 .andExpect(content().string(not(containsString("Paid Tips"))))
@@ -440,7 +440,7 @@ class DynamicApplicationIntegrationTests {
 
         mockMvc.perform(get("/applications/" + submitted.getId()).with(user(customer.getEmail()).roles("USER")))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("What happens next")))
+                .andExpect(content().string(containsString("What Happens Next")))
                 .andExpect(content().string(containsString("Annual income")))
                 .andExpect(content().string(containsString("Claim bank details")))
                 .andExpect(content().string(containsString("Private Documents and Nominees")))
@@ -546,7 +546,7 @@ class DynamicApplicationIntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Correction Request")))
                 .andExpect(content().string(containsString("Complete the form")))
-                .andExpect(content().string(containsString("Maklumat bank tuntutan")));
+                .andExpect(content().string(containsString("Claim bank name")));
 
         mockMvc.perform(post("/admin/applications/" + application.getId() + "/status")
                         .with(user("admin").roles("ADMIN"))
