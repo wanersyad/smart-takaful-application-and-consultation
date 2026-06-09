@@ -767,15 +767,6 @@ body [class*="hover:text-zinc-900"]:not([class*="hover:bg-yellow"]):hover,
     line-height: 0.98 !important;
   }
 
-  .hero-agent-image {
-    object-position: center top;
-  }
-
-  .hero-support-badge {
-    transform: scale(0.9);
-    transform-origin: left top;
-  }
-
   #products,
   #faq,
   #contact {
