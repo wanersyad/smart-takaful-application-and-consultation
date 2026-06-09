@@ -50,7 +50,7 @@ public class DemoDataInitializer implements ApplicationRunner {
                 "PruBSN Kritikal Care360",
                 "Critical Illness",
                 "Critical illness protection for recovery and income continuity planning.",
-                "Stores coverage purpose, eligibility notes, and requirements in database rows so the product detail can be demonstrated dynamically.",
+                "Supports a structured review of recovery needs, income continuity concerns, eligibility notes, and required application documents.",
                 "fa-heart-pulse",
                 List.of("Critical illness planning discussion", "Recovery support focus", "Post-review quotation payment flow"),
                 List.of(
@@ -79,7 +79,7 @@ public class DemoDataInitializer implements ApplicationRunner {
         product.setDetailedDescription(detail);
         product.setEligibility("Subject to customer age, health, occupation, and underwriting review.");
         product.setCoveragePurpose("The agent reviews the customer profile and application snapshot before creating a suitable quotation.");
-        product.setTermsNotes("This demo record is database-seeded only when DEMO_SEED_ENABLED=true in the dev profile.");
+        product.setTermsNotes("Final eligibility, contribution amount, and selectable coverage items are confirmed by the agent after application review.");
         product.setIconClass(iconClass);
         product.setActive(true);
         product.setFeatured(true);

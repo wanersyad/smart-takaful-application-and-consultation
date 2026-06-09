@@ -38,16 +38,16 @@ Docker is the easiest path for a new machine because it avoids installing Java, 
 docker compose up --build
 ```
 
-The app will start on `http://localhost:8080` using the `dev` profile, H2 in-memory database, mock ToyyibPay, and local admin defaults:
+The app will start on `http://localhost:8080` using the `dev` profile, H2 in-memory database, local ToyyibPay simulation, and local admin defaults:
 
 ```text
 username: admin
 password: password
 ```
 
-The included Compose file is intentionally local-dev only, so it always uses the `dev` profile, H2, and mock ToyyibPay. Railway/client deployment should use Railway environment variables rather than this local Compose file.
+The included Compose file is intentionally local-dev only, so it always uses the `dev` profile, H2, and simulated ToyyibPay. Railway/client deployment should use Railway environment variables rather than this local Compose file.
 
-For a client Mac setup and boss-demo checklist, see `CLIENT_MAC_SETUP.md`.
+For a client Mac setup and presentation checklist, see `CLIENT_MAC_SETUP.md`.
 
 Useful Docker commands:
 
@@ -110,13 +110,13 @@ Environment variables are listed in `.env.example`. Copy it to a local `.env` fi
 - `FILE_STORAGE_MODE` - `local` for Docker/dev uploads or `supabase` for private Supabase Storage
 - `LOCAL_UPLOAD_DIR` - local upload folder used by Docker/dev
 - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_STORAGE_BUCKET` - private Supabase Storage settings
-- `DEMO_SEED_ENABLED` - dev-only optional sample product seed; keep `false` for Railway/prod
+- `DEMO_SEED_ENABLED` - dev-only optional starter product seed; keep `false` for Railway/prod
 
 Spring Boot reads these env vars directly, so Railway env management works without committed secrets.
 
-## Demo Seed and Supabase Hardening
+## Local Starter Data and Supabase Hardening
 
-Production should start from real admin-created product records, not hardcoded products. For a quick local demo, set `SPRING_PROFILES_ACTIVE=dev` and `DEMO_SEED_ENABLED=true`; if the product table is empty, the app inserts sample structured products with benefits, coverage items, requirements, and documents.
+Production should start from real admin-created product records, not hardcoded products. For an offline local walkthrough, set `SPRING_PROFILES_ACTIVE=dev` and `DEMO_SEED_ENABLED=true`; if the product table is empty, the app inserts starter structured products with benefits, coverage items, requirements, and documents. Keep `DEMO_SEED_ENABLED=false` on Railway.
 
 After Railway/Supabase creates the dynamic tables through Hibernate, run `supabase-rls.sql` in the Supabase SQL Editor. It enables RLS on the public tables, creates the private storage bucket, and denies direct anon Data API/Storage access so sensitive customer/application rows remain accessible through the Java server routes only.
 
@@ -126,7 +126,7 @@ Customers can browse products publicly, but starting an application requires a c
 
 Customers can maintain profile data and upload a profile picture. Applications store their own submitted snapshot: applicant details, IC front/back images, work and income information, bank details, height/weight, nominee information, and signature image.
 
-Payment happens only after admin review. The admin creates and publishes a quotation with selected payable items, then the customer starts ToyyibPay payment from the quotation. Dev/Docker uses mock ToyyibPay; sandbox/live can be configured later through environment variables.
+Payment happens only after admin review. The admin creates and publishes a quotation with selected payable items, then the customer starts ToyyibPay payment from the quotation. Dev/Docker uses the local ToyyibPay simulation; sandbox/live can be configured later through environment variables.
 
 Public contact enquiries are stored in `contact_inquiries` and visible on the admin dashboard, even when external email delivery fails.
 
@@ -174,7 +174,7 @@ takaful-web-java/
 3. Customer profiles and application intake - complete
 4. Structured admin product CRUD - complete
 5. Admin review and quotation builder - complete
-6. Quotation-linked ToyyibPay mock - complete locally
+6. Quotation-linked local ToyyibPay simulation - complete locally
 7. Gemini chatbot - complete
 
 Spring Security protects `/admin/**` for admins and `/account/**`, `/applications/**`, `/quotations/**`, and `/files/**` for authenticated users. Public browsing, signup/login, product detail pages, payment return/callback routes, contact, and chat remain accessible as needed.
