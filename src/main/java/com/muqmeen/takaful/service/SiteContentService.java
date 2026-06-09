@@ -46,7 +46,25 @@ public class SiteContentService {
             def("chat.title", "Chat", "Chat title", "text", "Takaful Assistant"),
             def("chat.subtitle", "Chat", "Chat subtitle", "text", "Ask about our products"),
             def("chat.greeting", "Chat", "Chat opening message", "textarea", "Hi, I can explain the application process, product details, and quotation/payment flow."),
-            def("chat.placeholder", "Chat", "Chat input placeholder", "text", "Ask about Takaful products")
+            def("chat.placeholder", "Chat", "Chat input placeholder", "text", "Ask about Takaful products"),
+            def("chat.knowledge", "Chat", "Assistant knowledge base facts", "textarea", """
+                    ABOUT MUQMEEN GROUP
+                    Muqmeen Group is a Takaful brokerage based in Malaysia, working with PruBSN as an authorized agency. The team focuses on Shariah-compliant family protection, medical coverage, and inheritance planning through Hibah.
+
+                    WHAT IS TAKAFUL
+                    Takaful is the Shariah-compliant alternative to conventional insurance. Participants contribute to a shared pool used to help fellow participants in times of need, while avoiding riba, gharar, and maysir.
+
+                    PRODUCT FOCUS
+                    Product pages are managed from database records. Each product can include category, summary, detailed description, eligibility, coverage purpose, benefits, coverage items, requirements, notes, images, and optional brochure documents.
+
+                    APPLICATION PROCESS
+                    Customers can browse products publicly. To apply or request consultation, they sign in and complete a structured application with applicant details, IC front and back images, home and work information, income, bank details, height, weight, nominee information, and a drawn signature. Customers may save a draft before submitting.
+
+                    ADMIN REVIEW AND QUOTATION
+                    After submission, the agent/admin reviews the application, requests more information if needed, and creates an adjustable quotation. Payment happens only after the quotation is published, not during consultation submission.
+
+                    HOW TO APPLY
+                    On the landing page, choose a product, view its database-backed details, and click the consultation/application button. The customer account shows profile data, application history, statuses, quotations, and payment state.""")
     );
 
     private final SiteContentBlockRepository repository;

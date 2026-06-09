@@ -26,6 +26,7 @@ import com.muqmeen.takaful.service.PaymentService;
 import com.muqmeen.takaful.service.ProductService;
 import com.muqmeen.takaful.service.QuotationService;
 import com.muqmeen.takaful.service.QuotationService.QuotationItemInput;
+import com.muqmeen.takaful.service.chat.ChatKnowledgeBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,7 @@ class DynamicApplicationIntegrationTests {
     @Autowired private ProductService productService;
     @Autowired private PaymentRepository paymentRepository;
     @Autowired private StoredFileRepository storedFileRepository;
+    @Autowired private ChatKnowledgeBase chatKnowledgeBase;
     @MockitoBean private ContactEmailService contactEmailService;
 
     @BeforeEach
@@ -205,7 +207,8 @@ class DynamicApplicationIntegrationTests {
                         .with(user("admin").roles("ADMIN"))
                         .with(csrf())
                         .param("content_hero.title", "Database Managed Takaful Portal")
-                        .param("content_products.title", "Products from Supabase Records"))
+                        .param("content_products.title", "Products from Supabase Records")
+                        .param("content_chat.knowledge", "CUSTOM CHAT KNOWLEDGE: Applications store applicant snapshots in database rows."))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/content"));
 
@@ -214,6 +217,8 @@ class DynamicApplicationIntegrationTests {
                 .andExpect(content().string(containsString("Database Managed Takaful Portal")))
                 .andExpect(content().string(containsString("Products from Supabase Records")))
                 .andExpect(content().string(not(containsString("Your Trusted Takaful Partner"))));
+        assertTrue(chatKnowledgeBase.systemPrompt().contains("CUSTOM CHAT KNOWLEDGE"));
+        assertTrue(chatKnowledgeBase.systemPrompt().contains("Applications store applicant snapshots in database rows."));
     }
 
     @Test
