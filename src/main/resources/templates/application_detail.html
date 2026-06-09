@@ -50,6 +50,23 @@
             <div class="rounded-2xl bg-black p-4"><p class="font-semibold text-white">3. Payment after quote</p><p class="mt-2 text-sm text-white/60">Payment opens only after the quotation is published to your account.</p></div>
         </div>
     </section>
+    <section class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+        <h2 class="text-xl font-semibold text-yellow-300">Submitted Data Flow</h2>
+        <div class="mt-5 grid gap-4 md:grid-cols-3">
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">Input</p>
+                <p class="mt-2 text-sm text-white/65">Application form, IC images, signature, claim bank details, and nominee details.</p>
+            </div>
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">Stored Records</p>
+                <p class="mt-2 text-sm text-white/65">Applicant snapshot, nominee rows, private file metadata, and application status.</p>
+            </div>
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">Output</p>
+                <p class="mt-2 text-sm text-white/65">Customer status tracking, admin review, correction request, and quotation when ready.</p>
+            </div>
+        </div>
+    </section>
     <div class="mt-8 grid gap-6 lg:grid-cols-2">
         <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
             <h2 class="text-xl font-semibold text-yellow-300">Applicant Snapshot</h2>
@@ -58,13 +75,16 @@
                 <div><dt class="text-white/45">Email</dt><dd th:text="${app.email}">Email</dd></div>
                 <div><dt class="text-white/45">Phone</dt><dd th:text="${app.phoneNumber}">Phone</dd></div>
                 <div><dt class="text-white/45">Home address</dt><dd th:text="${app.homeAddress}">Address</dd></div>
-                <div><dt class="text-white/45">Work</dt><dd><span th:text="${app.occupation}">Occupation</span>, <span th:text="${app.positionTitle}">Position</span> at <span th:text="${app.employerName}">Employer</span></dd></div>
-                <div><dt class="text-white/45">Bank</dt><dd><span th:text="${app.bankName}">Bank</span> - <span th:text="${app.bankAccountNumber}">Account</span></dd></div>
+                <div><dt class="text-white/45">Occupation / Position</dt><dd><span th:text="${app.occupation}">Occupation</span>, <span th:text="${app.positionTitle}">Position</span></dd></div>
+                <div><dt class="text-white/45">Employer</dt><dd th:text="${app.employerName}">Employer</dd></div>
+                <div><dt class="text-white/45">Workplace address</dt><dd th:text="${app.workplaceAddress}">Workplace</dd></div>
+                <div><dt class="text-white/45">Annual income</dt><dd>RM <span th:text="${app.annualIncome}">0</span></dd></div>
+                <div><dt class="text-white/45">Claim bank details</dt><dd><span th:text="${app.bankName}">Bank</span> - <span th:text="${app.bankAccountNumber}">Account</span></dd></div>
                 <div><dt class="text-white/45">Measurements</dt><dd><span th:text="${app.heightCm}">0</span> cm / <span th:text="${app.weightKg}">0</span> kg</dd></div>
             </dl>
         </section>
         <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-            <h2 class="text-xl font-semibold text-yellow-300">Documents and Nominees</h2>
+            <h2 class="text-xl font-semibold text-yellow-300">Private Documents and Nominees</h2>
             <div class="mt-5 flex flex-wrap gap-3">
                 <a th:if="${app.icFrontFile != null}" th:href="@{/files/{id}(id=${app.icFrontFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">IC Front</a>
                 <a th:if="${app.icBackFile != null}" th:href="@{/files/{id}(id=${app.icBackFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">IC Back</a>

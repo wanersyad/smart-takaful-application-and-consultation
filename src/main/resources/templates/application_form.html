@@ -13,6 +13,34 @@
     <h1 class="mt-5 text-4xl font-semibold text-yellow-300">Takaful Application</h1>
     <p class="mt-2 text-white/65">Product: <span class="font-semibold text-white" th:text="${productName}">Product</span></p>
     <p th:if="${flashMessage}" class="mt-5 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Message</p>
+    <section class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+        <div class="grid gap-4 md:grid-cols-4">
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">1. Customer Input</p>
+                <p class="mt-2 text-sm text-white/65">Fill applicant, employment, bank, health, nominee, IC, and signature details.</p>
+            </div>
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">2. Stored Snapshot</p>
+                <p class="mt-2 text-sm text-white/65">Submitted details are saved to the database as the application record.</p>
+            </div>
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">3. Agent Review</p>
+                <p class="mt-2 text-sm text-white/65">Admin reviews the full record and can request corrections when needed.</p>
+            </div>
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">4. Quotation Later</p>
+                <p class="mt-2 text-sm text-white/65">Payment only starts after admin publishes an adjustable quotation.</p>
+            </div>
+        </div>
+        <div class="mt-5 grid gap-3 text-sm text-white/70 sm:grid-cols-2 lg:grid-cols-3">
+            <p><i class="fa-solid fa-circle-check mr-2 text-yellow-300"></i>IC depan dan belakang</p>
+            <p><i class="fa-solid fa-circle-check mr-2 text-yellow-300"></i>Alamat emel dan rumah</p>
+            <p><i class="fa-solid fa-circle-check mr-2 text-yellow-300"></i>Pekerjaan, jawatan, majikan</p>
+            <p><i class="fa-solid fa-circle-check mr-2 text-yellow-300"></i>Pendapatan tahunan</p>
+            <p><i class="fa-solid fa-circle-check mr-2 text-yellow-300"></i>Maklumat bank tuntutan</p>
+            <p><i class="fa-solid fa-circle-check mr-2 text-yellow-300"></i>Berat, tinggi, penama, tandatangan</p>
+        </div>
+    </section>
     <section th:if="${app.correctionRequest != null && !#strings.isEmpty(app.correctionRequest) && app.correctionResolvedAt == null}" class="mt-6 rounded-3xl border border-amber-400/30 bg-amber-400/10 p-6">
         <p class="text-sm uppercase tracking-wide text-amber-200">Correction Request</p>
         <h2 class="mt-2 text-2xl font-semibold text-yellow-300">Update and resubmit this application</h2>
@@ -26,17 +54,17 @@
             <label class="grid gap-2 text-sm text-white/80">Full name<input name="applicantFullName" th:value="${form.applicantFullName}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="grid gap-2 text-sm text-white/80">Email address<input name="email" type="email" th:value="${form.email}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="grid gap-2 text-sm text-white/80">Phone number<input name="phoneNumber" th:value="${form.phoneNumber}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="grid gap-2 text-sm text-white/80">Annual income<input name="annualIncome" type="number" step="0.01" th:value="${form.annualIncome}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+            <label class="grid gap-2 text-sm text-white/80">Annual income / Pendapatan tahunan<input name="annualIncome" type="number" step="0.01" th:value="${form.annualIncome}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Home address<textarea name="homeAddress" rows="3" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${form.homeAddress}"></textarea></label>
         </section>
 
         <section class="grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2">
             <h2 class="sm:col-span-2 text-2xl font-semibold text-yellow-300">Employment and Bank</h2>
-            <label class="grid gap-2 text-sm text-white/80">Occupation<input name="occupation" th:value="${form.occupation}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="grid gap-2 text-sm text-white/80">Position<input name="positionTitle" th:value="${form.positionTitle}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+            <label class="grid gap-2 text-sm text-white/80">Occupation / Pekerjaan<input name="occupation" th:value="${form.occupation}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+            <label class="grid gap-2 text-sm text-white/80">Position / Jawatan<input name="positionTitle" th:value="${form.positionTitle}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="grid gap-2 text-sm text-white/80">Employer name<input name="employerName" th:value="${form.employerName}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="grid gap-2 text-sm text-white/80">Bank name<input name="bankName" th:value="${form.bankName}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="grid gap-2 text-sm text-white/80">Bank account number<input name="bankAccountNumber" th:value="${form.bankAccountNumber}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+            <label class="grid gap-2 text-sm text-white/80">Claim bank name<input name="bankName" th:value="${form.bankName}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+            <label class="grid gap-2 text-sm text-white/80">Claim bank account number<input name="bankAccountNumber" th:value="${form.bankAccountNumber}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="grid gap-2 text-sm text-white/80">Height (cm)<input name="heightCm" type="number" step="0.1" th:value="${form.heightCm}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="grid gap-2 text-sm text-white/80">Weight (kg)<input name="weightKg" type="number" step="0.1" th:value="${form.weightKg}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Workplace address<textarea name="workplaceAddress" rows="3" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${form.workplaceAddress}"></textarea></label>
@@ -44,8 +72,8 @@
 
         <section class="grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2">
             <h2 class="sm:col-span-2 text-2xl font-semibold text-yellow-300">Documents</h2>
-            <label class="grid gap-2 text-sm text-white/80">IC front image<input name="icFront" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="grid gap-2 text-sm text-white/80">IC back image<input name="icBack" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+            <label class="grid gap-2 text-sm text-white/80">IC front image / Gambar IC depan<input name="icFront" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+            <label class="grid gap-2 text-sm text-white/80">IC back image / Gambar IC belakang<input name="icBack" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <div class="sm:col-span-2">
                 <p class="mb-2 text-sm text-white/80">Signature</p>
                 <canvas id="signature-pad" width="900" height="220" class="w-full rounded-2xl border border-yellow-400/25 bg-white"></canvas>

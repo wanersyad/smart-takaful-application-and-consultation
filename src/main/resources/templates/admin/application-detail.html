@@ -56,15 +56,39 @@
             <span th:if="${app.correctionResolvedAt != null}"> / Resubmitted <span th:text="${#temporals.format(app.correctionResolvedAt, 'yyyy-MM-dd HH:mm')}">resolved</span></span>
         </p>
     </section>
+    <section class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+        <h2 class="text-xl font-semibold text-yellow-300">Review Data Flow</h2>
+        <div class="mt-5 grid gap-4 md:grid-cols-4">
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">1. Read</p>
+                <p class="mt-2 text-sm text-white/65">Admin opens applicant data, nominees, and private documents from stored records.</p>
+            </div>
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">2. Decide</p>
+                <p class="mt-2 text-sm text-white/65">Set UNDER_REVIEW, NEEDS_INFO, REJECTED, QUOTED, or CLOSED based on review.</p>
+            </div>
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">3. Correct</p>
+                <p class="mt-2 text-sm text-white/65">Correction requests reopen customer editing without losing the stored history.</p>
+            </div>
+            <div class="rounded-2xl bg-black p-4">
+                <p class="text-xs uppercase tracking-wide text-yellow-300">4. Quote</p>
+                <p class="mt-2 text-sm text-white/65">Generate quotation after review, then publish payment to the customer.</p>
+            </div>
+        </div>
+    </section>
     <div class="mt-6 grid gap-6 lg:grid-cols-2">
         <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
             <h2 class="text-xl font-semibold text-yellow-300">Applicant Data Snapshot</h2>
             <dl class="mt-5 grid gap-3 text-sm">
+                <div><dt class="text-white/45">Full name</dt><dd th:text="${app.applicantFullName}">Name</dd></div>
                 <div><dt class="text-white/45">Email / Phone</dt><dd><span th:text="${app.email}">Email</span> / <span th:text="${app.phoneNumber}">Phone</span></dd></div>
-                <div><dt class="text-white/45">Address</dt><dd th:text="${app.homeAddress}">Address</dd></div>
-                <div><dt class="text-white/45">Occupation</dt><dd><span th:text="${app.occupation}">Occupation</span>, <span th:text="${app.positionTitle}">Position</span></dd></div>
-                <div><dt class="text-white/45">Employer</dt><dd><span th:text="${app.employerName}">Employer</span>, <span th:text="${app.workplaceAddress}">Workplace</span></dd></div>
-                <div><dt class="text-white/45">Income / Bank</dt><dd>RM <span th:text="${app.annualIncome}">0</span> / <span th:text="${app.bankName}">Bank</span> <span th:text="${app.bankAccountNumber}">Account</span></dd></div>
+                <div><dt class="text-white/45">Home address</dt><dd th:text="${app.homeAddress}">Address</dd></div>
+                <div><dt class="text-white/45">Occupation / Position</dt><dd><span th:text="${app.occupation}">Occupation</span>, <span th:text="${app.positionTitle}">Position</span></dd></div>
+                <div><dt class="text-white/45">Employer name</dt><dd th:text="${app.employerName}">Employer</dd></div>
+                <div><dt class="text-white/45">Workplace address</dt><dd th:text="${app.workplaceAddress}">Workplace</dd></div>
+                <div><dt class="text-white/45">Annual income</dt><dd>RM <span th:text="${app.annualIncome}">0</span></dd></div>
+                <div><dt class="text-white/45">Claim bank details</dt><dd><span th:text="${app.bankName}">Bank</span> <span th:text="${app.bankAccountNumber}">Account</span></dd></div>
                 <div><dt class="text-white/45">Height / Weight</dt><dd><span th:text="${app.heightCm}">0</span> cm / <span th:text="${app.weightKg}">0</span> kg</dd></div>
             </dl>
         </section>
