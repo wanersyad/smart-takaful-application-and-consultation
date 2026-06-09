@@ -43,8 +43,8 @@
             <p class="text-sm text-white/70" th:text="${customer.email}">email</p>
             <p class="text-sm text-white/70" th:text="${customer.phoneNumber}">phone</p>
             <span class="w-fit rounded-full px-3 py-1 text-xs font-semibold"
-                  th:classappend="${customer.active} ? ' border border-emerald-400/25 bg-emerald-400/10 text-emerald-300' : ' border border-red-400/35 bg-red-500/10 text-red-200'"
-                  th:text="${customer.active} ? 'Active' : 'Disabled'">Active</span>
+                  th:classappend="${customer.isActive()} ? ' border border-emerald-400/25 bg-emerald-400/10 text-emerald-300' : ' border border-red-400/35 bg-red-500/10 text-red-200'"
+                  th:text="${customer.isActive()} ? 'Active' : 'Disabled'">Active</span>
             <a th:href="@{/admin/customers/{id}(id=${customer.id})}" class="rounded-full bg-yellow-400 px-4 py-2 text-center text-sm font-semibold text-zinc-950 hover:bg-yellow-300">Open</a>
         </article>
     </section>
