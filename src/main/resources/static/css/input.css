@@ -965,3 +965,34 @@ body [class*="hover:text-zinc-900"]:not([class*="hover:bg-yellow"]):hover,
     transform: none !important;
   }
 }
+
+/* --- Navbar link hover + active states --- */
+.nav-link {
+  position: relative;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.35rem;
+  height: 2px;
+  background-color: #facc15; /* yellow-400 */
+  border-radius: 9999px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
+}
+.nav-link:hover {
+  color: #fde047; /* yellow-300 */
+}
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+.nav-link.is-active {
+  color: #fde047;
+}
+.nav-link.is-active::after {
+  transform: scaleX(1);
+}

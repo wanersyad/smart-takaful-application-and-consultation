@@ -33,11 +33,12 @@ public class ContactController {
             return "redirect:/#contact";
         }
 
+        String subject = (form.subject == null || form.subject.isBlank()) ? "General enquiry" : form.subject;
         var inquiry = contactInquiryService.create(new ContactInquiryService.ContactInput(
                 form.fullName,
                 form.email,
                 form.phoneNumber,
-                form.subject,
+                subject,
                 form.message
         ));
         try {
@@ -45,7 +46,7 @@ public class ContactController {
                     form.fullName,
                     form.email,
                     form.phoneNumber,
-                    form.subject,
+                    subject,
                     form.message
             ));
             contactInquiryService.markDelivered(inquiry.getId(), "Email delivery accepted");
@@ -71,7 +72,6 @@ public class ContactController {
         @Size(max = 40)
         private String phoneNumber;
 
-        @NotBlank(message = "Interest is required")
         @Size(max = 120)
         private String subject;
 
