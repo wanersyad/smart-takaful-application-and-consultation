@@ -55,6 +55,14 @@ public class FileStorageService {
         return store(file, customer, application, purpose);
     }
 
+    public StoredFile storeProductImage(MultipartFile file) {
+        return storeImage(file, null, null, FilePurpose.PRODUCT_IMAGE);
+    }
+
+    public StoredFile storeProductDocument(MultipartFile file) {
+        return storeDocument(file, null, null, FilePurpose.PRODUCT_DOCUMENT);
+    }
+
     public StoredFile storeSignatureDataUrl(String dataUrl, Customer customer, ConsultationApplication application) {
         if (dataUrl == null || dataUrl.isBlank()) {
             return null;
@@ -146,7 +154,8 @@ public class FileStorageService {
         if (dot >= 0 && dot < filename.length() - 1) {
             extension = "." + filename.substring(dot + 1).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
         }
-        return "customers/" + customer.getId() + "/" + LocalDate.now() + "/" + UUID.randomUUID() + extension;
+        String ownerPath = customer == null ? "products" : "customers/" + customer.getId();
+        return ownerPath + "/" + LocalDate.now() + "/" + UUID.randomUUID() + extension;
     }
 
     private void validateType(String contentType, Set<String> allowed, String message) {

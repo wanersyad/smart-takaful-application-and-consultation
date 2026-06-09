@@ -6,5 +6,6 @@ public enum FilePurpose {
     IC_BACK,
     SIGNATURE,
     SUPPORTING_DOCUMENT,
+    PRODUCT_IMAGE,
     PRODUCT_DOCUMENT
 }

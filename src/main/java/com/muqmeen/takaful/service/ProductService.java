@@ -72,6 +72,8 @@ public class ProductService {
         Hibernate.initialize(product.getCoverageItems());
         Hibernate.initialize(product.getRequirements());
         Hibernate.initialize(product.getDocuments());
+        Hibernate.initialize(product.getImageFile());
+        product.getDocuments().forEach(document -> Hibernate.initialize(document.getStoredFile()));
         return product;
     }
 }

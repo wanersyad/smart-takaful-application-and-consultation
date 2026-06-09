@@ -1,6 +1,7 @@
 package com.muqmeen.takaful.web;
 
 import com.muqmeen.takaful.domain.Customer;
+import com.muqmeen.takaful.domain.FilePurpose;
 import com.muqmeen.takaful.domain.StoredFile;
 import com.muqmeen.takaful.repository.StoredFileRepository;
 import com.muqmeen.takaful.service.CustomerService;
@@ -43,6 +44,10 @@ public class FileController {
     }
 
     private boolean canAccess(StoredFile storedFile, Authentication authentication) {
+        if (storedFile.getPurpose() == FilePurpose.PRODUCT_IMAGE
+                || storedFile.getPurpose() == FilePurpose.PRODUCT_DOCUMENT) {
+            return true;
+        }
         if (authentication == null || !authentication.isAuthenticated()) {
             return false;
         }

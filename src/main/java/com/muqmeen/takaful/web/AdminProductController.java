@@ -5,6 +5,8 @@ import com.muqmeen.takaful.domain.ProductCoverageItem;
 import com.muqmeen.takaful.domain.ProductDocument;
 import com.muqmeen.takaful.domain.ProductRequirement;
 import com.muqmeen.takaful.domain.Product;
+import com.muqmeen.takaful.domain.StoredFile;
+import com.muqmeen.takaful.service.FileStorageService;
 import com.muqmeen.takaful.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
@@ -26,9 +29,11 @@ import java.util.List;
 public class AdminProductController {
 
     private final ProductService productService;
+    private final FileStorageService fileStorageService;
 
-    public AdminProductController(ProductService productService) {
+    public AdminProductController(ProductService productService, FileStorageService fileStorageService) {
         this.productService = productService;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
@@ -54,6 +59,8 @@ public class AdminProductController {
                          @RequestParam(value = "coverageText", required = false) String coverageText,
                          @RequestParam(value = "requirementsText", required = false) String requirementsText,
                          @RequestParam(value = "documentsText", required = false) String documentsText,
+                         @RequestParam(value = "productImage", required = false) MultipartFile productImage,
+                         @RequestParam(value = "documentFiles", required = false) List<MultipartFile> documentFiles,
                          Model model,
                          RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
@@ -62,6 +69,7 @@ public class AdminProductController {
             return "admin/product-form";
         }
         applyStructuredRows(product, benefitsText, coverageText, requirementsText, documentsText);
+        attachUploadedMedia(product, productImage, documentFiles);
         Product saved = productService.save(product);
         redirectAttributes.addFlashAttribute("flashMessage",
                 "Product '" + saved.getName() + "' created.");
@@ -95,6 +103,8 @@ public class AdminProductController {
                          @RequestParam(value = "coverageText", required = false) String coverageText,
                          @RequestParam(value = "requirementsText", required = false) String requirementsText,
                          @RequestParam(value = "documentsText", required = false) String documentsText,
+                         @RequestParam(value = "productImage", required = false) MultipartFile productImage,
+                         @RequestParam(value = "documentFiles", required = false) List<MultipartFile> documentFiles,
                          Model model,
                          RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
@@ -120,6 +130,7 @@ public class AdminProductController {
                     existing.setFeatured(product.isFeatured());
                     existing.setActive(product.isActive());
                     applyStructuredRows(existing, benefitsText, coverageText, requirementsText, documentsText);
+                    attachUploadedMedia(existing, productImage, documentFiles);
                     Product saved = productService.save(existing);
                     redirectAttributes.addFlashAttribute("flashMessage",
                             "Product '" + saved.getName() + "' updated.");
@@ -182,6 +193,44 @@ public class AdminProductController {
             document.setDisplayOrder(line.order());
             return document;
         }).filter(document -> !document.getUrl().isBlank()).toList());
+    }
+
+    private void attachUploadedMedia(Product product, MultipartFile productImage, List<MultipartFile> documentFiles) {
+        StoredFile imageFile = fileStorageService.storeProductImage(productImage);
+        if (imageFile != null) {
+            product.setImageFile(imageFile);
+            product.setImageUrl("/files/" + imageFile.getId());
+        }
+        if (documentFiles == null) {
+            return;
+        }
+        List<ProductDocument> uploadedDocuments = documentFiles.stream()
+                .filter(file -> file != null && !file.isEmpty())
+                .map(file -> {
+                    StoredFile storedFile = fileStorageService.storeProductDocument(file);
+                    ProductDocument document = new ProductDocument();
+                    document.setLabel(cleanDocumentLabel(storedFile.getOriginalFilename()));
+                    document.setUrl("/files/" + storedFile.getId());
+                    document.setStoredFile(storedFile);
+                    document.setDocumentType(storedFile.getContentType());
+                    document.setDisplayOrder(product.getDocuments().size());
+                    return document;
+                })
+                .toList();
+        if (!uploadedDocuments.isEmpty()) {
+            List<ProductDocument> merged = new ArrayList<>(product.getDocuments());
+            merged.addAll(uploadedDocuments);
+            product.replaceDocuments(merged);
+        }
+    }
+
+    private String cleanDocumentLabel(String filename) {
+        String label = filename == null || filename.isBlank() ? "Product document" : filename;
+        int dot = label.lastIndexOf('.');
+        if (dot > 0) {
+            label = label.substring(0, dot);
+        }
+        return label.replace('-', ' ').replace('_', ' ').trim();
     }
 
     private List<StructuredLine> parseLines(String raw) {

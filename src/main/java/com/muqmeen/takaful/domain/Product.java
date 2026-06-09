@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -73,6 +75,10 @@ public class Product {
     @Size(max = 255)
     @Column(length = 255)
     private String imageUrl;
+
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @JoinColumn(name = "image_file_id")
+    private StoredFile imageFile;
 
     @Column(nullable = false)
     private boolean featured;
@@ -165,6 +171,9 @@ public class Product {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public StoredFile getImageFile() { return imageFile; }
+    public void setImageFile(StoredFile imageFile) { this.imageFile = imageFile; }
 
     public boolean isFeatured() { return featured; }
     public void setFeatured(boolean featured) { this.featured = featured; }

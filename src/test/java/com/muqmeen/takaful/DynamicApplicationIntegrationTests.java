@@ -4,20 +4,25 @@ import com.muqmeen.takaful.domain.ApplicationStatus;
 import com.muqmeen.takaful.domain.ConsultationApplication;
 import com.muqmeen.takaful.domain.Customer;
 import com.muqmeen.takaful.domain.CustomerProfile;
+import com.muqmeen.takaful.domain.FilePurpose;
 import com.muqmeen.takaful.domain.Payment;
 import com.muqmeen.takaful.domain.Product;
 import com.muqmeen.takaful.domain.ProductCoverageItem;
 import com.muqmeen.takaful.domain.Quotation;
+import com.muqmeen.takaful.domain.StoredFile;
 import com.muqmeen.takaful.repository.ConsultationApplicationRepository;
 import com.muqmeen.takaful.repository.ContactInquiryRepository;
+import com.muqmeen.takaful.repository.CustomerProfileRepository;
 import com.muqmeen.takaful.repository.PaymentRepository;
 import com.muqmeen.takaful.repository.ProductRepository;
 import com.muqmeen.takaful.repository.SiteContentBlockRepository;
+import com.muqmeen.takaful.repository.StoredFileRepository;
 import com.muqmeen.takaful.service.ApplicationService;
 import com.muqmeen.takaful.service.ContactEmailService;
 import com.muqmeen.takaful.service.CustomerProfileService;
 import com.muqmeen.takaful.service.CustomerService;
 import com.muqmeen.takaful.service.PaymentService;
+import com.muqmeen.takaful.service.ProductService;
 import com.muqmeen.takaful.service.QuotationService;
 import com.muqmeen.takaful.service.QuotationService.QuotationItemInput;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,12 +70,15 @@ class DynamicApplicationIntegrationTests {
     @Autowired private ProductRepository productRepository;
     @Autowired private ConsultationApplicationRepository applicationRepository;
     @Autowired private ContactInquiryRepository contactInquiryRepository;
+    @Autowired private CustomerProfileRepository customerProfileRepository;
     @Autowired private SiteContentBlockRepository siteContentBlockRepository;
     @Autowired private ApplicationService applicationService;
     @Autowired private CustomerProfileService customerProfileService;
     @Autowired private QuotationService quotationService;
     @Autowired private PaymentService paymentService;
+    @Autowired private ProductService productService;
     @Autowired private PaymentRepository paymentRepository;
+    @Autowired private StoredFileRepository storedFileRepository;
     @MockitoBean private ContactEmailService contactEmailService;
 
     @BeforeEach
@@ -80,6 +88,60 @@ class DynamicApplicationIntegrationTests {
         contactInquiryRepository.deleteAll();
         productRepository.deleteAll();
         siteContentBlockRepository.deleteAll();
+        customerProfileRepository.deleteAll();
+        storedFileRepository.deleteAll();
+    }
+
+    @Test
+    void adminUploadsProductMediaAndPublicCanReadOnlyProductFiles() throws Exception {
+        mockMvc.perform(multipart("/admin/products")
+                        .file(image("productImage", "product.png"))
+                        .file(new MockMultipartFile("documentFiles", "brochure.pdf", "application/pdf", new byte[] {5, 6, 7}))
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf())
+                        .param("name", "Media Product")
+                        .param("categoryLabel", "Family")
+                        .param("summary", "Uses uploaded media")
+                        .param("detailedDescription", "Admin uploaded the product image and brochure.")
+                        .param("iconClass", "fa-shield-halved")
+                        .param("active", "true")
+                        .param("benefitsText", "Stored product media")
+                        .param("coverageText", "Coverage | Stored from admin form")
+                        .param("requirementsText", "Completed application")
+                        .param("documentsText", "External fact sheet | https://example.com/facts.pdf | PDF"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/products"));
+
+        Product product = productService.findById(productRepository.findByName("Media Product").orElseThrow().getId()).orElseThrow();
+        assertTrue(product.getImageUrl().startsWith("/files/"));
+        assertEquals(2, product.getDocuments().size());
+        String uploadedDocumentUrl = product.getDocuments().stream()
+                .filter(document -> document.getUrl().startsWith("/files/"))
+                .findFirst()
+                .orElseThrow()
+                .getUrl();
+
+        mockMvc.perform(get("/products/" + product.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(product.getImageUrl())))
+                .andExpect(content().string(containsString(uploadedDocumentUrl)));
+
+        mockMvc.perform(get(product.getImageUrl()))
+                .andExpect(status().isOk());
+        mockMvc.perform(get(uploadedDocumentUrl))
+                .andExpect(status().isOk());
+
+        StoredFile privateFile = new StoredFile();
+        privateFile.setPurpose(FilePurpose.PROFILE_PICTURE);
+        privateFile.setOriginalFilename("private.png");
+        privateFile.setContentType("image/png");
+        privateFile.setFileSize(1);
+        privateFile.setStorageProvider("local");
+        privateFile.setStorageKey("private/missing.png");
+        storedFileRepository.save(privateFile);
+
+        mockMvc.perform(get("/files/" + privateFile.getId()))
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -11,14 +11,17 @@
 <main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
     <a href="/admin/products" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to products</a>
     <h1 class="mt-5 text-4xl font-semibold text-yellow-300" th:text="${formMode == 'create'} ? 'Create Product' : 'Edit Product'">Product</h1>
-    <form th:action="${formMode == 'create'} ? @{/admin/products} : @{/admin/products/{id}(id=${product.id})}" th:object="${product}" method="post" class="mt-8 grid gap-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+    <form th:action="${formMode == 'create'} ? @{/admin/products} : @{/admin/products/{id}(id=${product.id})}" th:object="${product}" method="post" enctype="multipart/form-data" class="mt-8 grid gap-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
         <section class="grid gap-5 sm:grid-cols-2">
             <label class="grid gap-2 text-sm text-white/80">Product name<input th:field="*{name}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="grid gap-2 text-sm text-white/80">Category<label class="sr-only">Category</label><input th:field="*{categoryLabel}" placeholder="Family Protection" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Short summary<textarea th:field="*{summary}" rows="3" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
             <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Detailed description<textarea th:field="*{detailedDescription}" rows="5" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
-            <label class="grid gap-2 text-sm text-white/80">Image URL<input th:field="*{imageUrl}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
+            <label class="grid gap-2 text-sm text-white/80">Product image
+                <input name="productImage" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white">
+                <span class="text-xs text-white/45">Upload a JPG, PNG, or WebP. Existing image stays if you leave this empty.</span>
+            </label>
             <label class="grid gap-2 text-sm text-white/80">Icon choice
                 <select th:field="*{iconClass}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-yellow-300">
                     <option value="fa-shield-halved">Shield</option>
@@ -75,10 +78,14 @@
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 class="text-xl font-semibold text-white">Documents</h2>
-                        <p class="text-sm text-white/55">Optional brochure links. Product information above remains the source of truth.</p>
+                        <p class="text-sm text-white/55">Upload brochures or add optional links. Product information above remains the source of truth.</p>
                     </div>
                     <button type="button" class="add-row rounded-full border border-yellow-400/30 px-4 py-2 text-sm font-semibold text-yellow-300 hover:bg-yellow-400 hover:text-zinc-950"><i class="fa-solid fa-plus mr-2"></i>Add Document</button>
                 </div>
+                <label class="mt-4 grid gap-2 text-sm text-white/80">Upload product documents
+                    <input name="documentFiles" type="file" multiple accept="image/png,image/jpeg,image/webp,application/pdf" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
+                    <span class="text-xs text-white/45">Uploaded files become public product documents through the app, while the storage bucket remains private.</span>
+                </label>
                 <div class="rows mt-4 grid gap-3"></div>
             </div>
         </section>

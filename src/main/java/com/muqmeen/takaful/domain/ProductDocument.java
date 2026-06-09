@@ -28,6 +28,10 @@ public class ProductDocument {
     @Column(nullable = false, length = 500)
     private String url;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stored_file_id")
+    private StoredFile storedFile;
+
     @Column(length = 40)
     private String documentType;
 
@@ -40,6 +44,8 @@ public class ProductDocument {
     public void setLabel(String label) { this.label = label; }
     public String getUrl() { return url; }
     public void setUrl(String url) { this.url = url; }
+    public StoredFile getStoredFile() { return storedFile; }
+    public void setStoredFile(StoredFile storedFile) { this.storedFile = storedFile; }
     public String getDocumentType() { return documentType; }
     public void setDocumentType(String documentType) { this.documentType = documentType; }
     public int getDisplayOrder() { return displayOrder; }
