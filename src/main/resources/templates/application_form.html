@@ -47,9 +47,31 @@
         <p class="mt-3 text-white/80" th:text="${app.correctionRequest}">Correction request</p>
     </section>
 
-    <form th:action="@{/applications/{id}(id=${app.id})}" method="post" enctype="multipart/form-data" class="mt-8 space-y-6">
+    <form id="application-wizard" th:action="@{/applications/{id}(id=${app.id})}" method="post" enctype="multipart/form-data" class="mt-8 space-y-6">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <section class="grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2">
+
+        <!-- Progress stepper -->
+        <ol id="wizard-stepper" class="grid grid-cols-4 gap-2 rounded-3xl border border-yellow-400/25 bg-[#111] p-4 text-center">
+            <li class="wizard-tab" data-step-tab="0">
+                <span class="step-dot mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-yellow-400/40 text-sm font-semibold">1</span>
+                <span class="mt-2 block text-xs text-white/60 sm:text-sm">Applicant</span>
+            </li>
+            <li class="wizard-tab" data-step-tab="1">
+                <span class="step-dot mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-yellow-400/40 text-sm font-semibold">2</span>
+                <span class="mt-2 block text-xs text-white/60 sm:text-sm">Employment</span>
+            </li>
+            <li class="wizard-tab" data-step-tab="2">
+                <span class="step-dot mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-yellow-400/40 text-sm font-semibold">3</span>
+                <span class="mt-2 block text-xs text-white/60 sm:text-sm">Documents</span>
+            </li>
+            <li class="wizard-tab" data-step-tab="3">
+                <span class="step-dot mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-yellow-400/40 text-sm font-semibold">4</span>
+                <span class="mt-2 block text-xs text-white/60 sm:text-sm">Nominees</span>
+            </li>
+        </ol>
+        <p class="text-sm text-white/50">Step <span id="wizard-current">1</span> of 4 — <span id="wizard-title">Applicant Details</span></p>
+
+        <section class="wizard-step grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2" data-step="0">
             <h2 class="sm:col-span-2 text-2xl font-semibold text-yellow-300">Applicant Details</h2>
             <label class="grid gap-2 text-sm text-white/80">Full name<input name="applicantFullName" th:value="${form.applicantFullName}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="grid gap-2 text-sm text-white/80">Email address<input name="email" type="email" th:value="${form.email}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
@@ -58,7 +80,7 @@
             <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Home address<textarea name="homeAddress" rows="3" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${form.homeAddress}"></textarea></label>
         </section>
 
-        <section class="grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2">
+        <section class="wizard-step hidden grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2" data-step="1">
             <h2 class="sm:col-span-2 text-2xl font-semibold text-yellow-300">Employment and Bank</h2>
             <label class="grid gap-2 text-sm text-white/80">Occupation / Pekerjaan<input name="occupation" th:value="${form.occupation}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="grid gap-2 text-sm text-white/80">Position / Jawatan<input name="positionTitle" th:value="${form.positionTitle}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
@@ -70,7 +92,7 @@
             <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Workplace address<textarea name="workplaceAddress" rows="3" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${form.workplaceAddress}"></textarea></label>
         </section>
 
-        <section class="grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2">
+        <section class="wizard-step hidden grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6 sm:grid-cols-2" data-step="2">
             <h2 class="sm:col-span-2 text-2xl font-semibold text-yellow-300">Documents</h2>
             <label class="grid gap-2 text-sm text-white/80">IC front image / Gambar IC depan<input name="icFront" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="grid gap-2 text-sm text-white/80">IC back image / Gambar IC belakang<input name="icBack" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
@@ -82,7 +104,7 @@
             </div>
         </section>
 
-        <section class="grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+        <section class="wizard-step hidden grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6" data-step="3">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="text-2xl font-semibold text-yellow-300">Nominee Information</h2>
@@ -128,9 +150,13 @@
             </article>
         </section>
 
-        <div class="flex flex-col gap-3 sm:flex-row">
-            <button name="action" value="draft" class="rounded-full border border-yellow-400/30 px-6 py-4 font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300">Save Draft</button>
-            <button name="action" value="submit" class="rounded-full bg-yellow-400 px-6 py-4 font-semibold text-zinc-950 hover:bg-yellow-300">Submit Application</button>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button type="button" id="wizard-back" class="rounded-full border border-yellow-400/30 px-6 py-4 font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300 disabled:cursor-not-allowed disabled:opacity-40" disabled><i class="fa-solid fa-arrow-left mr-2"></i>Back</button>
+            <div class="flex flex-col gap-3 sm:flex-row">
+                <button type="button" id="wizard-next" class="rounded-full bg-yellow-400 px-6 py-4 font-semibold text-zinc-950 hover:bg-yellow-300">Next<i class="fa-solid fa-arrow-right ml-2"></i></button>
+                <button type="submit" name="action" value="draft" class="wizard-final hidden rounded-full border border-yellow-400/30 px-6 py-4 font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300">Save Draft</button>
+                <button type="submit" name="action" value="submit" class="wizard-final hidden rounded-full bg-yellow-400 px-6 py-4 font-semibold text-zinc-950 hover:bg-yellow-300">Submit Application</button>
+            </div>
         </div>
     </form>
 </main>
@@ -164,6 +190,65 @@ document.querySelectorAll('.remove-nominee').forEach((button) => button.addEvent
     updateNomineeButton();
 }));
 updateNomineeButton();
+
+// --- Stepped wizard ---
+(function () {
+    const form = document.getElementById('application-wizard');
+    const steps = Array.from(form.querySelectorAll('.wizard-step'));
+    const tabs = Array.from(document.querySelectorAll('.wizard-tab'));
+    const titles = ['Applicant Details', 'Employment and Bank', 'Documents', 'Nominees'];
+    const backBtn = document.getElementById('wizard-back');
+    const nextBtn = document.getElementById('wizard-next');
+    const finals = Array.from(form.querySelectorAll('.wizard-final'));
+    const currentLabel = document.getElementById('wizard-current');
+    const titleLabel = document.getElementById('wizard-title');
+    let index = 0;
+
+    function render() {
+        steps.forEach((step, i) => step.classList.toggle('hidden', i !== index));
+        tabs.forEach((tab, i) => {
+            const dot = tab.querySelector('.step-dot');
+            const done = i < index;
+            const active = i === index;
+            dot.classList.toggle('bg-yellow-400', active || done);
+            dot.classList.toggle('text-zinc-950', active || done);
+            dot.classList.toggle('text-white/70', !active && !done);
+            tab.querySelector('span:last-child').classList.toggle('text-yellow-300', active);
+        });
+        backBtn.disabled = index === 0;
+        const onLast = index === steps.length - 1;
+        nextBtn.classList.toggle('hidden', onLast);
+        finals.forEach((b) => b.classList.toggle('hidden', !onLast));
+        currentLabel.textContent = index + 1;
+        titleLabel.textContent = titles[index];
+        window.scrollTo({ top: form.offsetTop - 20, behavior: 'smooth' });
+    }
+
+    function validateStep() {
+        const fields = steps[index].querySelectorAll('input, textarea, select');
+        for (const field of fields) {
+            if (!field.checkValidity()) {
+                field.reportValidity();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (!validateStep()) return;
+        if (index < steps.length - 1) { index++; render(); }
+    });
+    backBtn.addEventListener('click', () => {
+        if (index > 0) { index--; render(); }
+    });
+    // Clicking a completed step tab jumps back to it.
+    tabs.forEach((tab, i) => tab.addEventListener('click', () => {
+        if (i < index) { index = i; render(); }
+    }));
+
+    render();
+})();
 </script>
 </body>
 </html>
