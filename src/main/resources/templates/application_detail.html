@@ -15,7 +15,7 @@
         <div>
             <p class="text-white/60">Application #<span th:text="${app.id}">1</span></p>
             <h1 class="text-4xl font-semibold text-yellow-300" th:text="${productName}">Product</h1>
-            <p class="mt-2"><span class="rounded-full border border-yellow-400/25 bg-yellow-400/10 px-3 py-1 text-sm text-yellow-200" th:text="${app.status}">DRAFT</span></p>
+            <p class="mt-2"><span class="status-badge rounded-full px-3 py-1 text-sm font-semibold" th:classappend="'status-' + ${#strings.toLowerCase(app.status)}" th:text="${app.status}">DRAFT</span></p>
         </div>
         <div class="flex gap-3">
             <a th:if="${app.editableByCustomer}" th:href="@{/applications/{id}/edit(id=${app.id})}" class="rounded-full bg-yellow-400 px-5 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Edit Draft</a>

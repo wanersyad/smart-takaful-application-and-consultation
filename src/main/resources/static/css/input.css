@@ -996,3 +996,50 @@ body [class*="hover:text-zinc-900"]:not([class*="hover:bg-yellow"]):hover,
 .nav-link.is-active::after {
   transform: scaleX(1);
 }
+
+/* --- Themed native form controls (dark/yellow) --- */
+.muqmeen-dark-site select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23facc15'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.06l3.71-3.83a.75.75 0 1 1 1.08 1.04l-4.25 4.39a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.1rem;
+  padding-right: 2.75rem;
+}
+.muqmeen-dark-site select option {
+  background-color: #111111;
+  color: #ffffff;
+}
+/* Number input spinners: subtle, on-theme */
+.muqmeen-dark-site input[type="number"]::-webkit-inner-spin-button,
+.muqmeen-dark-site input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+  height: 1.4rem;
+  filter: invert(82%) sepia(64%) saturate(700%) hue-rotate(358deg) brightness(101%) contrast(96%);
+  cursor: pointer;
+}
+
+/* --- Semantic status badge colors --- */
+.status-badge { border-width: 1px; }
+.status-paid, .status-quoted, .status-closed {
+  border-color: rgba(52, 211, 153, 0.3);
+  background-color: rgba(52, 211, 153, 0.1);
+  color: #6ee7b7;
+}
+.status-rejected {
+  border-color: rgba(248, 113, 113, 0.4);
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+}
+.status-needs_info, .status-payment_pending {
+  border-color: rgba(251, 191, 36, 0.35);
+  background-color: rgba(251, 191, 36, 0.1);
+  color: #fcd34d;
+}
+.status-draft, .status-submitted, .status-under_review {
+  border-color: rgba(250, 204, 21, 0.25);
+  background-color: rgba(250, 204, 21, 0.08);
+  color: #fde68a;
+}

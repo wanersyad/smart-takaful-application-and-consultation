@@ -8,15 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<nav th:replace="~{fragments/layout :: admin-nav('content')}"></nav>
 <main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
     <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <div class="flex flex-wrap gap-3 text-sm">
-                <a href="/admin/dashboard" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Applications</a>
-                <a href="/admin/customers" class="text-white/70 hover:text-yellow-200"><i class="fa-solid fa-users mr-2"></i>Customers</a>
-                <a href="/admin/products" class="text-white/70 hover:text-yellow-200"><i class="fa-solid fa-boxes-stacked mr-2"></i>Products</a>
-            </div>
-            <h1 class="mt-5 text-4xl font-semibold text-yellow-300">Manage Site Content</h1>
+            <h1 class="text-4xl font-semibold text-yellow-300">Manage Site Content</h1>
             <p class="mt-2 text-white/65">Edit public landing copy, FAQ rows, chat text, and labels from the database.</p>
         </div>
         <a href="/" class="rounded-full border border-yellow-400/30 px-6 py-3 text-center font-semibold text-yellow-200 hover:bg-yellow-400/10 hover:text-yellow-300"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>View Site</a>

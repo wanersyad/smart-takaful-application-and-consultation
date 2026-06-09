@@ -55,6 +55,46 @@
     </div>
 </nav>
 
+<!--
+  Admin navigation. Usage: <nav th:replace="~{fragments/layout :: admin-nav('applications')}"></nav>
+  active key: 'applications' | 'customers' | 'products' | 'content'
+-->
+<nav th:fragment="admin-nav(active)" class="sticky top-0 z-40 border-b border-yellow-400/20 bg-[#0d0d0d]/95 backdrop-blur">
+    <div class="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+        <a href="/admin/dashboard" class="flex items-center gap-3">
+            <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="Muqmeen Group logo" class="h-11 w-11 object-contain">
+            <span class="logo-wordmark text-sm text-yellow-400">MUQMEEN <span class="logo-wordmark-strong text-yellow-300">ADMIN</span></span>
+        </a>
+        <button type="button" class="page-menu-open flex h-11 w-11 items-center justify-center rounded-full border border-yellow-400/25 text-yellow-300 hover:bg-yellow-400/10 md:hidden" aria-label="Open navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="hidden items-center gap-2 text-sm font-medium md:flex">
+            <a href="/admin/dashboard" class="nav-link rounded-full px-4 py-2 text-white/80" th:classappend="${active == 'applications'} ? ' is-active text-yellow-300' : ''">Applications</a>
+            <a href="/admin/customers" class="nav-link rounded-full px-4 py-2 text-white/80" th:classappend="${active == 'customers'} ? ' is-active text-yellow-300' : ''">Customers</a>
+            <a href="/admin/products" class="nav-link rounded-full px-4 py-2 text-white/80" th:classappend="${active == 'products'} ? ' is-active text-yellow-300' : ''">Products</a>
+            <a href="/admin/content" class="nav-link rounded-full px-4 py-2 text-white/80" th:classappend="${active == 'content'} ? ' is-active text-yellow-300' : ''">Content</a>
+            <a href="/" class="nav-link rounded-full px-4 py-2 text-white/50">View Site</a>
+            <form th:action="@{/logout}" method="post" class="ml-2">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-yellow-300"><i class="fa-solid fa-right-from-bracket mr-1"></i>Logout</button>
+            </form>
+        </div>
+    </div>
+    <div class="page-mobile-menu hidden border-t border-yellow-400/15 px-4 pb-4 md:hidden">
+        <div class="grid gap-2 rounded-2xl border border-yellow-400/15 bg-white/[0.03] p-2 text-sm">
+            <a href="/admin/dashboard" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Applications</a>
+            <a href="/admin/customers" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Customers</a>
+            <a href="/admin/products" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Products</a>
+            <a href="/admin/content" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Content</a>
+            <a href="/" class="rounded-xl px-4 py-3 text-white/60 hover:bg-yellow-400/10 hover:text-yellow-300">View Site</a>
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="w-full rounded-xl bg-yellow-400 px-4 py-3 text-center font-semibold text-zinc-950 hover:bg-yellow-300">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
 <!-- Shared footer. Usage: <footer th:replace="~{fragments/layout :: footer}"></footer> -->
 <footer th:fragment="footer" class="border-t border-yellow-400/15 bg-[#0d0d0d]">
     <div class="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 py-12 text-center sm:px-6 lg:px-8">

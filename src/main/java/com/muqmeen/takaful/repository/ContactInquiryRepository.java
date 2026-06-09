@@ -9,5 +9,7 @@ public interface ContactInquiryRepository extends JpaRepository<ContactInquiry, 
 
     List<ContactInquiry> findTop5ByOrderByCreatedAtDesc();
 
+    List<ContactInquiry> findTop10ByStatusNotOrderByCreatedAtDesc(String status);
+
     long countByStatus(String status);
 }

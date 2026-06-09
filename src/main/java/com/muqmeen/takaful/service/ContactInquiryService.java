@@ -52,9 +52,14 @@ public class ContactInquiryService {
         return contactInquiryRepository.save(inquiry);
     }
 
+    public void delete(Long id) {
+        contactInquiryRepository.findById(id).ifPresent(contactInquiryRepository::delete);
+    }
+
     @Transactional(readOnly = true)
     public List<ContactInquiry> recent() {
-        return contactInquiryRepository.findTop5ByOrderByCreatedAtDesc();
+        // Only open enquiries — resolving one removes it from the dashboard list.
+        return contactInquiryRepository.findTop10ByStatusNotOrderByCreatedAtDesc("RESOLVED");
     }
 
     @Transactional(readOnly = true)

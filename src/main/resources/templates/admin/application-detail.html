@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<nav th:replace="~{fragments/layout :: admin-nav('')}"></nav>
 <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
     <a href="/admin/dashboard" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to applications</a>
     <p th:if="${flashMessage}" class="mt-5 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
@@ -34,7 +35,7 @@
         </div>
     </div>
     <section class="mt-6 grid gap-4 md:grid-cols-4">
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Status</p><p class="mt-2 text-xl font-semibold text-yellow-300" th:text="${app.status}">SUBMITTED</p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Status</p><p class="mt-2"><span class="status-badge rounded-full px-3 py-1 text-base font-semibold" th:classappend="'status-' + ${#strings.toLowerCase(app.status)}" th:text="${app.status}">SUBMITTED</span></p></div>
         <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Product</p><p class="mt-2 font-semibold" th:text="${productName}">Product</p></div>
         <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Quotation</p><p class="mt-2 font-semibold" th:text="${quotation.status}">DRAFT</p></div>
         <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Payable Total</p><p class="mt-2 text-xl font-semibold text-yellow-300">RM <span th:text="${#numbers.formatDecimal(quotation.selectedTotal(), 1, 2)}">0.00</span></p></div>
