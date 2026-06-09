@@ -294,6 +294,14 @@ class DynamicApplicationIntegrationTests {
                 .andExpect(status().is3xxRedirection());
 
         Product saved = productRepository.findByName("PruBSN Dynamic").orElseThrow();
+        mockMvc.perform(get("/admin/products/" + saved.getId()).with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Product Data Flow")))
+                .andExpect(content().string(containsString("Core Information")))
+                .andExpect(content().string(containsString("Benefit one")))
+                .andExpect(content().string(containsString("Hospital income benefit")))
+                .andExpect(content().string(containsString("English brochure")));
+
         mockMvc.perform(get("/products/" + saved.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Benefit one")))

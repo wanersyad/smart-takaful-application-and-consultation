@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.name} + ' - Product Record'">Product Record</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+            <a href="/admin/products" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to products</a>
+            <p class="mt-6 text-sm uppercase tracking-[0.25em] text-white/45">Product Record #<span th:text="${product.id}">1</span></p>
+            <h1 class="mt-2 text-4xl font-semibold text-yellow-300" th:text="${product.name}">Product</h1>
+            <p class="mt-3 max-w-3xl text-white/65" th:text="${product.summary != null && !#strings.isEmpty(product.summary) ? product.summary : product.description}">Summary</p>
+        </div>
+        <div class="flex flex-col gap-3 sm:flex-row">
+            <a th:href="@{/products/{id}(id=${product.id})}" target="_blank" class="rounded-full border border-yellow-400/30 px-6 py-3 text-center font-semibold text-yellow-200 hover:bg-yellow-400/10 hover:text-yellow-300"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>Public View</a>
+            <a th:href="@{/admin/products/{id}/edit(id=${product.id})}" class="rounded-full bg-yellow-400 px-6 py-3 text-center font-semibold text-zinc-950 hover:bg-yellow-300"><i class="fa-solid fa-pen-to-square mr-2"></i>Edit Product</a>
+        </div>
+    </div>
+
+    <section class="mt-8 grid gap-4 md:grid-cols-4">
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Category</p><p class="mt-2 font-semibold text-white" th:text="${product.categoryLabel ?: 'Not set'}">Category</p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Visibility</p><p class="mt-2 font-semibold" th:classappend="${product.active} ? ' text-emerald-300' : ' text-white/55'" th:text="${product.active} ? 'Public' : 'Archived / Hidden'">Public</p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Featured</p><p class="mt-2 font-semibold" th:text="${product.featured} ? 'Yes' : 'No'">Yes</p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Documents</p><p class="mt-2 font-semibold text-yellow-300" th:text="${#lists.size(product.documents)}">0</p></div>
+    </section>
+
+    <section class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+        <h2 class="text-xl font-semibold text-yellow-300">Product Data Flow</h2>
+        <div class="mt-5 grid gap-4 md:grid-cols-4">
+            <div class="rounded-2xl bg-black p-4"><p class="text-xs uppercase tracking-wide text-yellow-300">Create</p><p class="mt-2 text-sm text-white/65">Admin enters product details, rows, media, and documents.</p></div>
+            <div class="rounded-2xl bg-black p-4"><p class="text-xs uppercase tracking-wide text-yellow-300">Read</p><p class="mt-2 text-sm text-white/65">This page displays the saved database record and child rows.</p></div>
+            <div class="rounded-2xl bg-black p-4"><p class="text-xs uppercase tracking-wide text-yellow-300">Update</p><p class="mt-2 text-sm text-white/65">Edit product fields and replace structured benefits, coverage, requirements, and documents.</p></div>
+            <div class="rounded-2xl bg-black p-4"><p class="text-xs uppercase tracking-wide text-yellow-300">Archive</p><p class="mt-2 text-sm text-white/65">Hide product publicly while keeping the admin record for history.</p></div>
+        </div>
+    </section>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-[0.9fr,1.1fr]">
+        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <h2 class="text-xl font-semibold text-yellow-300">Core Information</h2>
+            <dl class="mt-5 grid gap-4 text-sm">
+                <div><dt class="text-white/45">Short summary</dt><dd class="mt-1 whitespace-pre-line text-white/75" th:text="${product.summary ?: product.description ?: 'Not provided'}">Summary</dd></div>
+                <div><dt class="text-white/45">Detailed description</dt><dd class="mt-1 whitespace-pre-line text-white/75" th:text="${product.detailedDescription ?: 'Not provided'}">Detail</dd></div>
+                <div><dt class="text-white/45">Eligibility</dt><dd class="mt-1 whitespace-pre-line text-white/75" th:text="${product.eligibility ?: 'Not provided'}">Eligibility</dd></div>
+                <div><dt class="text-white/45">Coverage purpose</dt><dd class="mt-1 whitespace-pre-line text-white/75" th:text="${product.coveragePurpose ?: 'Not provided'}">Purpose</dd></div>
+                <div><dt class="text-white/45">Terms and notes</dt><dd class="mt-1 whitespace-pre-line text-white/75" th:text="${product.termsNotes ?: 'Not provided'}">Notes</dd></div>
+            </dl>
+        </section>
+
+        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <h2 class="text-xl font-semibold text-yellow-300">Media and References</h2>
+            <div class="mt-5 grid gap-4">
+                <div th:if="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}">
+                    <p class="mb-2 text-sm text-white/45">Product image</p>
+                    <img th:src="${product.imageUrl}" alt="" class="aspect-[16/10] w-full rounded-2xl object-cover">
+                </div>
+                <div th:if="${product.imageUrl == null || #strings.isEmpty(product.imageUrl)}" class="flex aspect-[16/10] items-center justify-center rounded-2xl border border-yellow-400/20 bg-black text-5xl text-yellow-300">
+                    <i class="fa-solid" th:classappend="${product.iconClass}"></i>
+                </div>
+                <dl class="grid gap-3 text-sm">
+                    <div><dt class="text-white/45">Icon</dt><dd><i class="fa-solid mr-2 text-yellow-300" th:classappend="${product.iconClass}"></i><span th:text="${product.iconClass ?: 'Not set'}">Icon</span></dd></div>
+                    <div><dt class="text-white/45">Image URL / file route</dt><dd class="break-all text-white/70" th:text="${product.imageUrl ?: 'Not provided'}">Image</dd></div>
+                    <div><dt class="text-white/45">Legacy brochure URL</dt><dd class="break-all text-white/70" th:text="${product.brochureUrl ?: 'Not used'}">Brochure</dd></div>
+                </dl>
+            </div>
+        </section>
+    </div>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-3">
+        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <h2 class="text-xl font-semibold text-yellow-300">Benefits</h2>
+            <ul class="mt-4 space-y-3 text-white/70">
+                <li th:if="${#lists.isEmpty(product.benefits)}">No benefits entered.</li>
+                <li th:each="benefit : ${product.benefits}" class="flex gap-3"><i class="fa-solid fa-check mt-1 text-yellow-300"></i><span th:text="${benefit.benefitText}">Benefit</span></li>
+            </ul>
+        </section>
+        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <h2 class="text-xl font-semibold text-yellow-300">Coverage Items</h2>
+            <div class="mt-4 space-y-4">
+                <p th:if="${#lists.isEmpty(product.coverageItems)}" class="text-white/70">No coverage items entered.</p>
+                <article th:each="item : ${product.coverageItems}" class="rounded-2xl border border-yellow-400/15 bg-black p-4">
+                    <h3 class="font-semibold text-white" th:text="${item.itemName}">Item</h3>
+                    <p class="mt-1 text-sm leading-6 text-white/65" th:text="${item.itemDescription ?: 'No description'}">Description</p>
+                </article>
+            </div>
+        </section>
+        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <h2 class="text-xl font-semibold text-yellow-300">Requirements</h2>
+            <ul class="mt-4 space-y-3 text-white/70">
+                <li th:if="${#lists.isEmpty(product.requirements)}">No requirements entered.</li>
+                <li th:each="requirement : ${product.requirements}" class="flex gap-3"><i class="fa-solid fa-file-circle-check mt-1 text-yellow-300"></i><span th:text="${requirement.requirementText}">Requirement</span></li>
+            </ul>
+        </section>
+    </div>
+
+    <section class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+        <h2 class="text-xl font-semibold text-yellow-300">Product Documents</h2>
+        <div class="mt-5 grid gap-3">
+            <p th:if="${#lists.isEmpty(product.documents)}" class="rounded-2xl bg-black p-4 text-white/55">No documents attached.</p>
+            <a th:each="document : ${product.documents}" th:href="${document.url}" target="_blank" class="grid gap-2 rounded-2xl border border-yellow-400/20 bg-black p-4 text-sm hover:bg-yellow-400/10 sm:grid-cols-[1fr,1fr,auto] sm:items-center">
+                <span class="font-semibold text-yellow-300" th:text="${document.label}">Document</span>
+                <span class="break-all text-white/55" th:text="${document.url}">URL</span>
+                <span class="w-fit rounded-full border border-yellow-400/20 px-3 py-1 text-xs text-white/65" th:text="${document.documentType ?: 'Document'}">Type</span>
+            </a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

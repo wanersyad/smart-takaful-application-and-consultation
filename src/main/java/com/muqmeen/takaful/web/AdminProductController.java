@@ -42,6 +42,20 @@ public class AdminProductController {
         return "admin/products";
     }
 
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        return productService.findById(id)
+                .map(product -> {
+                    model.addAttribute("product", product);
+                    return "admin/product-detail";
+                })
+                .orElseGet(() -> {
+                    redirectAttributes.addFlashAttribute("flashMessage",
+                            "Product #" + id + " no longer exists.");
+                    return "redirect:/admin/products";
+                });
+    }
+
     @GetMapping("/new")
     public String newProductForm(Model model) {
         Product blank = new Product();
