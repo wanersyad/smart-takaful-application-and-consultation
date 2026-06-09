@@ -355,6 +355,9 @@ class DynamicApplicationIntegrationTests {
                         .file(image("profilePicture", "profile.png"))
                         .with(user(customer.getEmail()).roles("USER"))
                         .with(csrf())
+                        .param("fullName", "Flow Updated User")
+                        .param("email", customer.getEmail())
+                        .param("phoneNumber", "60199887766")
                         .param("homeAddress", "123 Jalan Takaful")
                         .param("occupation", "Teacher")
                         .param("positionTitle", "Senior Teacher")
@@ -366,6 +369,10 @@ class DynamicApplicationIntegrationTests {
                         .param("heightCm", "170")
                         .param("weightKg", "70"))
                 .andExpect(status().is3xxRedirection());
+
+        Customer updatedCustomer = customerService.findById(customer.getId()).orElseThrow();
+        assertEquals("Flow Updated User", updatedCustomer.getFullName());
+        assertEquals("60199887766", updatedCustomer.getPhoneNumber());
 
         CustomerProfile profile = customerProfileService.getOrCreate(customer);
         mockMvc.perform(get("/files/" + profile.getProfilePicture().getId()).with(user(customer.getEmail()).roles("USER")))
@@ -422,6 +429,7 @@ class DynamicApplicationIntegrationTests {
 
         mockMvc.perform(get("/account").with(user(customer.getEmail()).roles("USER")))
                 .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Flow Updated User")))
                 .andExpect(content().string(containsString("PruBSN Application")))
                 .andExpect(content().string(containsString("SUBMITTED")));
 

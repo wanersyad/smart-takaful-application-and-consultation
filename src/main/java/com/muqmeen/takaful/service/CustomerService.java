@@ -59,6 +59,24 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
+    public Customer updateAccountDetails(Customer customer, String fullName, String email, String phoneNumber) {
+        String normalizedEmail = normalizeEmail(email);
+        if (fullName == null || fullName.isBlank()) {
+            throw new IllegalArgumentException("Full name is required.");
+        }
+        if (normalizedEmail == null || normalizedEmail.isBlank()) {
+            throw new IllegalArgumentException("Email address is required.");
+        }
+        if (customerRepository.existsByEmailIgnoreCaseAndIdNot(normalizedEmail, customer.getId())) {
+            throw new DuplicateCustomerException("An account with this email already exists.");
+        }
+
+        customer.setFullName(fullName.trim());
+        customer.setEmail(normalizedEmail);
+        customer.setPhoneNumber(normalizePhoneNumber(phoneNumber));
+        return customerRepository.save(customer);
+    }
+
     public Optional<Customer> currentCustomer(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return Optional.empty();

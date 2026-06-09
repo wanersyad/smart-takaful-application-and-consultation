@@ -8,7 +8,10 @@ import com.muqmeen.takaful.service.ApplicationService;
 import com.muqmeen.takaful.service.CustomerProfileService;
 import com.muqmeen.takaful.service.CustomerProfileService.ProfileUpdate;
 import com.muqmeen.takaful.service.CustomerService;
+import com.muqmeen.takaful.service.CustomerService.DuplicateCustomerException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,9 +74,26 @@ public class AccountController {
                                 Authentication authentication,
                                 RedirectAttributes redirectAttributes) {
         Customer customer = currentCustomer(authentication);
-        customerProfileService.update(customer, form.toUpdate(), profilePicture);
+        try {
+            customer = customerService.updateAccountDetails(customer, form.fullName, form.email, form.phoneNumber);
+            customerProfileService.update(customer, form.toUpdate(), profilePicture);
+            refreshAuthentication(authentication, customer);
+        } catch (DuplicateCustomerException | IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("flashMessage", ex.getMessage());
+            return "redirect:/account/profile";
+        }
         redirectAttributes.addFlashAttribute("flashMessage", "Profile updated.");
         return "redirect:/account/profile";
+    }
+
+    private void refreshAuthentication(Authentication authentication, Customer customer) {
+        UsernamePasswordAuthenticationToken refreshed = new UsernamePasswordAuthenticationToken(
+                customer.getEmail(),
+                authentication.getCredentials(),
+                authentication.getAuthorities()
+        );
+        refreshed.setDetails(authentication.getDetails());
+        SecurityContextHolder.getContext().setAuthentication(refreshed);
     }
 
     private Customer currentCustomer(Authentication authentication) {
@@ -82,6 +102,9 @@ public class AccountController {
     }
 
     public static class ProfileForm {
+        public String fullName;
+        public String email;
+        public String phoneNumber;
         public String homeAddress;
         public String occupation;
         public String positionTitle;
@@ -108,6 +131,9 @@ public class AccountController {
             );
         }
 
+        public void setFullName(String fullName) { this.fullName = fullName; }
+        public void setEmail(String email) { this.email = email; }
+        public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
         public void setHomeAddress(String homeAddress) { this.homeAddress = homeAddress; }
         public void setOccupation(String occupation) { this.occupation = occupation; }
         public void setPositionTitle(String positionTitle) { this.positionTitle = positionTitle; }
