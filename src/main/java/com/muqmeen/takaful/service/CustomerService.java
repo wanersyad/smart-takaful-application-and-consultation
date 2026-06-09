@@ -1,10 +1,14 @@
 package com.muqmeen.takaful.service;
 
 import com.muqmeen.takaful.domain.Customer;
+import com.muqmeen.takaful.domain.StoredFile;
 import com.muqmeen.takaful.repository.CustomerRepository;
+import com.muqmeen.takaful.repository.PasswordResetTokenRepository;
+import com.muqmeen.takaful.repository.StoredFileRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
 import java.util.List;
@@ -15,10 +19,44 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationService applicationService;
+    private final CustomerProfileService customerProfileService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final StoredFileRepository storedFileRepository;
+    private final FileStorageService fileStorageService;
 
-    public CustomerService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
+    public CustomerService(CustomerRepository customerRepository,
+                           PasswordEncoder passwordEncoder,
+                           ApplicationService applicationService,
+                           CustomerProfileService customerProfileService,
+                           PasswordResetTokenRepository passwordResetTokenRepository,
+                           StoredFileRepository storedFileRepository,
+                           FileStorageService fileStorageService) {
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
+        this.applicationService = applicationService;
+        this.customerProfileService = customerProfileService;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.storedFileRepository = storedFileRepository;
+        this.fileStorageService = fileStorageService;
+    }
+
+    /**
+     * Permanently removes a customer and everything tied to them: applications (with their
+     * nominees, quotations, payments, and uploaded files), the customer profile and its
+     * picture, unused password reset tokens, and any remaining customer-owned stored files.
+     */
+    @Transactional
+    public void deleteCustomer(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+        applicationService.deleteApplicationsForCustomer(customer);
+        customerProfileService.deleteForCustomer(customer);
+        passwordResetTokenRepository.deleteAll(passwordResetTokenRepository.findAllByCustomer(customer));
+        for (StoredFile file : storedFileRepository.findByCustomer(customer)) {
+            fileStorageService.delete(file);
+        }
+        customerRepository.delete(customer);
     }
 
     public Customer register(String fullName, String email, String phoneNumber, String password) {

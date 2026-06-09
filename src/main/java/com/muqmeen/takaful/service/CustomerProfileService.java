@@ -54,6 +54,17 @@ public class CustomerProfileService {
         return customerProfileRepository.save(profile);
     }
 
+    public void deleteForCustomer(Customer customer) {
+        customerProfileRepository.findByCustomer(customer).ifPresent(profile -> {
+            StoredFile picture = profile.getProfilePicture();
+            profile.setProfilePicture(null);
+            if (picture != null) {
+                fileStorageService.delete(picture);
+            }
+            customerProfileRepository.delete(profile);
+        });
+    }
+
     public record ProfileUpdate(
             String homeAddress,
             String occupation,

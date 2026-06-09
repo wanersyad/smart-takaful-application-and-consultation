@@ -52,6 +52,13 @@ public class AdminApplicationController {
         return "admin/dashboard";
     }
 
+    @PostMapping("/applications/{id}/delete")
+    public String deleteApplication(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        applicationService.deleteApplication(id);
+        redirectAttributes.addFlashAttribute("flashMessage", "Application deleted.");
+        return "redirect:/admin/dashboard";
+    }
+
     @PostMapping("/contact-inquiries/{id}/resolve")
     public String resolveInquiry(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         contactInquiryService.markResolved(id);

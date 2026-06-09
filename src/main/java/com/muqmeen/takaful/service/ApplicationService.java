@@ -120,6 +120,40 @@ public class ApplicationService {
         applicationRepository.delete(application);
     }
 
+    public void deleteApplication(Long id) {
+        ConsultationApplication application = applicationRepository.findById(id)
+                .map(this::initializeDetails)
+                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+        deleteApplicationInternal(application);
+    }
+
+    /**
+     * Deletes an application and everything it owns: nominees, quotation (items + payment),
+     * and the stored IC/signature/uploaded files (both metadata rows and their bytes).
+     * Used by admin cleanup and by {@link #deleteApplicationsForCustomer(Customer)}.
+     */
+    void deleteApplicationInternal(ConsultationApplication application) {
+        // Detach the file references the application points at so the cascade delete of the
+        // owning rows does not collide with the FK columns on consultation_applications.
+        application.setIcFrontFile(null);
+        application.setIcBackFile(null);
+        application.setSignatureFile(null);
+        List<StoredFile> ownedFiles = new ArrayList<>(application.getFiles());
+        application.getFiles().clear();
+        for (StoredFile file : ownedFiles) {
+            fileStorageService.delete(file);
+        }
+        applicationRepository.delete(application);
+    }
+
+    public void deleteApplicationsForCustomer(Customer customer) {
+        List<ConsultationApplication> applications =
+                applicationRepository.findAllByCustomerOrderByCreatedAtDesc(customer);
+        for (ConsultationApplication application : applications) {
+            deleteApplicationInternal(initializeDetails(application));
+        }
+    }
+
     public ConsultationApplication updateStatus(Long id, ApplicationStatus status) {
         return updateStatus(id, status, null, null);
     }

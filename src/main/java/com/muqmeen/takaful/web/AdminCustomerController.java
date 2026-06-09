@@ -82,4 +82,13 @@ public class AdminCustomerController {
         });
         return "redirect:/admin/customers/" + id;
     }
+
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        String name = customerService.findById(id).map(Customer::getFullName).orElse("Customer");
+        customerService.deleteCustomer(id);
+        redirectAttributes.addFlashAttribute("flashMessage",
+                name + " and all related applications, files, and quotations were deleted.");
+        return "redirect:/admin/customers";
+    }
 }

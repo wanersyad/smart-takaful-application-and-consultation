@@ -87,6 +87,41 @@ public class FileStorageService {
         return storedFileRepository.save(storedFile);
     }
 
+    public void delete(StoredFile storedFile) {
+        if (storedFile == null) {
+            return;
+        }
+        deleteBytes(storedFile);
+        storedFileRepository.delete(storedFile);
+    }
+
+    private void deleteBytes(StoredFile storedFile) {
+        if (storedFile.getStorageKey() == null) {
+            return;
+        }
+        if ("supabase".equals(storedFile.getStorageProvider())) {
+            if (properties.getSupabaseUrl().isBlank() || properties.getSupabaseServiceRoleKey().isBlank()) {
+                return;
+            }
+            try {
+                restClient.delete()
+                        .uri(properties.getSupabaseUrl() + "/storage/v1/object/" + properties.getSupabaseBucket() + "/" + storedFile.getStorageKey())
+                        .header("Authorization", "Bearer " + properties.getSupabaseServiceRoleKey())
+                        .header("apikey", properties.getSupabaseServiceRoleKey())
+                        .retrieve()
+                        .toBodilessEntity();
+            } catch (RuntimeException ignored) {
+                // Best effort: a missing object should not block record deletion.
+            }
+            return;
+        }
+        try {
+            Files.deleteIfExists(Path.of(properties.getLocalUploadDir()).resolve(storedFile.getStorageKey()));
+        } catch (IOException ignored) {
+            // Best effort: leave orphaned bytes rather than fail the deletion.
+        }
+    }
+
     public byte[] readBytes(StoredFile storedFile) {
         if ("supabase".equals(storedFile.getStorageProvider())) {
             return restClient.get()
