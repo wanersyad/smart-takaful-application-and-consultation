@@ -4,6 +4,16 @@ module.exports = {
     "./src/main/resources/templates/**/*.html",
     "./src/main/java/**/*.java"
   ],
+  // Status classes are applied via Thymeleaf th:classappend with a dynamic value
+  // ('status-' + status), so the literal names never appear in scanned source. Safelist
+  // them so the production build keeps the rules even if scanning differs from local.
+  safelist: [
+    "status-badge",
+    "status-paid", "status-quoted", "status-closed",
+    "status-rejected",
+    "status-needs_info", "status-payment_pending",
+    "status-draft", "status-submitted", "status-under_review"
+  ],
   theme: {
     extend: {
       colors: {
