@@ -12,6 +12,7 @@ import com.muqmeen.takaful.repository.ConsultationApplicationRepository;
 import com.muqmeen.takaful.repository.ContactInquiryRepository;
 import com.muqmeen.takaful.repository.PaymentRepository;
 import com.muqmeen.takaful.repository.ProductRepository;
+import com.muqmeen.takaful.repository.SiteContentBlockRepository;
 import com.muqmeen.takaful.service.ApplicationService;
 import com.muqmeen.takaful.service.ContactEmailService;
 import com.muqmeen.takaful.service.CustomerProfileService;
@@ -64,6 +65,7 @@ class DynamicApplicationIntegrationTests {
     @Autowired private ProductRepository productRepository;
     @Autowired private ConsultationApplicationRepository applicationRepository;
     @Autowired private ContactInquiryRepository contactInquiryRepository;
+    @Autowired private SiteContentBlockRepository siteContentBlockRepository;
     @Autowired private ApplicationService applicationService;
     @Autowired private CustomerProfileService customerProfileService;
     @Autowired private QuotationService quotationService;
@@ -77,6 +79,28 @@ class DynamicApplicationIntegrationTests {
         applicationRepository.deleteAll();
         contactInquiryRepository.deleteAll();
         productRepository.deleteAll();
+        siteContentBlockRepository.deleteAll();
+    }
+
+    @Test
+    void adminCanUpdateSiteContentAndLandingReflectsDatabaseValue() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Your Trusted Takaful Partner")));
+
+        mockMvc.perform(post("/admin/content")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf())
+                        .param("content_hero.title", "Database Managed Takaful Portal")
+                        .param("content_products.title", "Products from Supabase Records"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/content"));
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Database Managed Takaful Portal")))
+                .andExpect(content().string(containsString("Products from Supabase Records")))
+                .andExpect(content().string(not(containsString("Your Trusted Takaful Partner"))));
     }
 
     @Test

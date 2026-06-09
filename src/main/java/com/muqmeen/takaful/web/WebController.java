@@ -7,6 +7,7 @@ import com.muqmeen.takaful.service.LandingMetricsService;
 import com.muqmeen.takaful.service.PaymentService;
 import com.muqmeen.takaful.service.ProductService;
 import com.muqmeen.takaful.service.QuotationService;
+import com.muqmeen.takaful.service.SiteContentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -28,24 +29,31 @@ public class WebController {
     private final PaymentService paymentService;
     private final QuotationService quotationService;
     private final LandingMetricsService landingMetricsService;
+    private final SiteContentService siteContentService;
 
     public WebController(ProductService productService,
                          CustomerService customerService,
                          PaymentService paymentService,
                          QuotationService quotationService,
-                         LandingMetricsService landingMetricsService) {
+                         LandingMetricsService landingMetricsService,
+                         SiteContentService siteContentService) {
         this.productService = productService;
         this.customerService = customerService;
         this.paymentService = paymentService;
         this.quotationService = quotationService;
         this.landingMetricsService = landingMetricsService;
+        this.siteContentService = siteContentService;
     }
 
     @GetMapping("/")
     public String landingPage(Authentication authentication, Model model) {
         Optional<Customer> customer = customerService.currentCustomer(authentication);
+        SiteContentService.LandingContent landingContent = siteContentService.landingContent();
         model.addAttribute("products", productService.listActiveForLanding());
         model.addAttribute("metrics", landingMetricsService.current());
+        model.addAttribute("content", landingContent);
+        model.addAttribute("questionPrompts", landingContent.questionPrompts());
+        model.addAttribute("faqItems", landingContent.faqItems());
         model.addAttribute("customerSignedIn", customer.isPresent());
         customer.ifPresent(c -> model.addAttribute("currentCustomer", c));
         return "index";

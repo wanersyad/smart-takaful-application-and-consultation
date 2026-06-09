@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Content - Muqmeen Admin</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <a href="/admin/dashboard" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Applications</a>
+            <h1 class="mt-5 text-4xl font-semibold text-yellow-300">Manage Site Content</h1>
+            <p class="mt-2 text-white/65">Edit public landing copy, FAQ rows, chat text, and labels from the database.</p>
+        </div>
+        <a href="/" class="rounded-full border border-yellow-400/30 px-6 py-3 text-center font-semibold text-yellow-200 hover:bg-yellow-400/10 hover:text-yellow-300"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>View Site</a>
+    </div>
+
+    <p th:if="${flashMessage}" class="mt-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
+
+    <form th:action="@{/admin/content}" method="post" class="mt-8 space-y-6">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <section th:each="block, iter : ${blocks}" class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.25em] text-white/45" th:text="${block.sectionName}">Section</p>
+                    <label th:for="${'content_' + iter.index}" class="mt-2 block text-lg font-semibold text-yellow-300" th:text="${block.label}">Label</label>
+                </div>
+                <code class="w-fit rounded-full border border-yellow-400/20 bg-black px-3 py-1 text-xs text-white/50" th:text="${block.contentKey}">content.key</code>
+            </div>
+            <input th:if="${block.inputType == 'text'}"
+                   th:id="${'content_' + iter.index}"
+                   th:name="${'content_' + block.contentKey}"
+                   th:value="${block.contentValue}"
+                   class="mt-4 w-full rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300">
+            <textarea th:if="${block.inputType != 'text'}"
+                      th:id="${'content_' + iter.index}"
+                      th:name="${'content_' + block.contentKey}"
+                      rows="5"
+                      class="mt-4 w-full rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"
+                      th:text="${block.contentValue}"></textarea>
+        </section>
+
+        <div class="sticky bottom-4 rounded-full border border-yellow-400/25 bg-black/90 p-3 text-right backdrop-blur">
+            <button class="rounded-full bg-yellow-400 px-7 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">
+                <i class="fa-solid fa-floppy-disk mr-2"></i>Save Content
+            </button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

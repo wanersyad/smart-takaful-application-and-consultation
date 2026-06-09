@@ -13,6 +13,7 @@ alter table if exists public.consultation_applications enable row level security
 alter table if exists public.application_nominees enable row level security;
 alter table if exists public.stored_files enable row level security;
 alter table if exists public.contact_inquiries enable row level security;
+alter table if exists public.site_content_blocks enable row level security;
 alter table if exists public.quotations enable row level security;
 alter table if exists public.quotation_items enable row level security;
 alter table if exists public.payments enable row level security;
@@ -31,6 +32,9 @@ create policy "deny direct anon file access" on public.stored_files for all to a
 
 drop policy if exists "deny direct anon contact inquiry access" on public.contact_inquiries;
 create policy "deny direct anon contact inquiry access" on public.contact_inquiries for all to anon using (false) with check (false);
+
+drop policy if exists "deny direct anon site content access" on public.site_content_blocks;
+create policy "deny direct anon site content access" on public.site_content_blocks for all to anon using (false) with check (false);
 
 drop policy if exists "deny direct anon quotation access" on public.quotations;
 create policy "deny direct anon quotation access" on public.quotations for all to anon using (false) with check (false);

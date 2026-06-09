@@ -15,7 +15,10 @@
             <h1 class="mt-5 text-4xl font-semibold text-yellow-300">Manage Takaful Products</h1>
             <p class="mt-2 text-white/65">Create, read, update, and archive database-backed products.</p>
         </div>
-        <a href="/admin/products/new" class="rounded-full bg-yellow-400 px-6 py-3 text-center font-semibold text-zinc-950 hover:bg-yellow-300"><i class="fa-solid fa-plus mr-2"></i>Add Product</a>
+        <div class="flex flex-col gap-3 sm:flex-row">
+            <a href="/admin/content" class="rounded-full border border-yellow-400/30 px-6 py-3 text-center font-semibold text-yellow-200 hover:bg-yellow-400/10 hover:text-yellow-300"><i class="fa-solid fa-pen-nib mr-2"></i>Site Content</a>
+            <a href="/admin/products/new" class="rounded-full bg-yellow-400 px-6 py-3 text-center font-semibold text-zinc-950 hover:bg-yellow-300"><i class="fa-solid fa-plus mr-2"></i>Add Product</a>
+        </div>
     </div>
     <p th:if="${flashMessage}" class="mt-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
     <section class="mt-8 overflow-hidden rounded-3xl border border-yellow-400/25 bg-[#111]">
