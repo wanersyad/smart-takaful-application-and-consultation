@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers - Muqmeen Admin</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+            <a href="/admin/dashboard" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Applications</a>
+            <h1 class="mt-5 text-4xl font-semibold text-yellow-300">Manage Customers</h1>
+            <p class="mt-2 text-white/65">Read customer accounts, profile data, application history, and account status.</p>
+        </div>
+        <form action="/admin/customers" method="get" class="flex gap-3">
+            <input name="q" th:value="${query}" placeholder="Search name, email, phone" class="min-w-0 rounded-full border border-yellow-400/25 bg-black px-5 py-3 text-white outline-none focus:border-yellow-300">
+            <button class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300"><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</button>
+        </form>
+    </div>
+    <p th:if="${flashMessage}" class="mt-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
+
+    <section class="mt-8 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Shown</p><p class="mt-2 text-3xl font-semibold text-yellow-300" th:text="${#lists.size(customers)}">0</p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Active</p><p class="mt-2 text-3xl font-semibold text-white" th:text="${activeCustomers}">0</p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Disabled</p><p class="mt-2 text-3xl font-semibold text-white" th:text="${disabledCustomers}">0</p></div>
+    </section>
+
+    <section class="mt-8 overflow-hidden rounded-3xl border border-yellow-400/25 bg-[#111]">
+        <div class="hidden grid-cols-[1.2fr,1.3fr,.8fr,.7fr,.7fr] border-b border-yellow-400/15 px-5 py-4 text-xs font-semibold uppercase tracking-wide text-white/60 md:grid">
+            <span>Name</span><span>Email</span><span>Phone</span><span>Status</span><span>Action</span>
+        </div>
+        <div th:if="${#lists.isEmpty(customers)}" class="p-12 text-center text-white/65">
+            <i class="fa-regular fa-user mb-3 block text-4xl"></i>No customers found.
+        </div>
+        <article th:each="customer : ${customers}" class="grid gap-3 border-b border-yellow-400/10 p-5 last:border-b-0 md:grid-cols-[1.2fr,1.3fr,.8fr,.7fr,.7fr] md:items-center">
+            <div>
+                <p class="font-semibold text-white" th:text="${customer.fullName}">Customer</p>
+                <p class="text-xs text-white/45">Joined <span th:text="${#temporals.format(customer.createdAt, 'yyyy-MM-dd')}">date</span></p>
+            </div>
+            <p class="text-sm text-white/70" th:text="${customer.email}">email</p>
+            <p class="text-sm text-white/70" th:text="${customer.phoneNumber}">phone</p>
+            <span class="w-fit rounded-full px-3 py-1 text-xs font-semibold"
+                  th:classappend="${customer.active} ? ' border border-emerald-400/25 bg-emerald-400/10 text-emerald-300' : ' border border-red-400/35 bg-red-500/10 text-red-200'"
+                  th:text="${customer.active} ? 'Active' : 'Disabled'">Active</span>
+            <a th:href="@{/admin/customers/{id}(id=${customer.id})}" class="rounded-full bg-yellow-400 px-4 py-2 text-center text-sm font-semibold text-zinc-950 hover:bg-yellow-300">Open</a>
+        </article>
+    </section>
+</main>
+</body>
+</html>

@@ -20,6 +20,7 @@ import com.muqmeen.takaful.repository.StoredFileRepository;
 import com.muqmeen.takaful.service.ApplicationService;
 import com.muqmeen.takaful.service.ContactEmailService;
 import com.muqmeen.takaful.service.CustomerProfileService;
+import com.muqmeen.takaful.service.CustomerProfileService.ProfileUpdate;
 import com.muqmeen.takaful.service.CustomerService;
 import com.muqmeen.takaful.service.PaymentService;
 import com.muqmeen.takaful.service.ProductService;
@@ -142,6 +143,56 @@ class DynamicApplicationIntegrationTests {
 
         mockMvc.perform(get("/files/" + privateFile.getId()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void adminCanManageCustomerAccountAndDisableSignIn() throws Exception {
+        Product product = saveProduct("Customer Flow Product");
+        Customer customer = customer("managed-customer");
+        customerProfileService.update(customer, new ProfileUpdate(
+                "Customer home address",
+                "Engineer",
+                "Lead Engineer",
+                "Dynamic Employer",
+                "Workplace address",
+                new BigDecimal("84000"),
+                "Maybank",
+                "1234567890",
+                new BigDecimal("171"),
+                new BigDecimal("72")
+        ), null);
+        ConsultationApplication application = submittedApplication(customer, product);
+
+        mockMvc.perform(get("/admin/customers")
+                        .with(user("admin").roles("ADMIN"))
+                        .param("q", customer.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(customer.getFullName())))
+                .andExpect(content().string(containsString(customer.getEmail())))
+                .andExpect(content().string(containsString("Active")));
+
+        mockMvc.perform(get("/admin/customers/" + customer.getId())
+                        .with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Customer home address")))
+                .andExpect(content().string(containsString("Customer Flow Product")))
+                .andExpect(content().string(containsString(application.getStatus().name())));
+
+        mockMvc.perform(post("/admin/customers/" + customer.getId() + "/status")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf())
+                        .param("active", "false"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/customers/" + customer.getId()));
+        assertFalse(customerService.findById(customer.getId()).orElseThrow().isActive());
+
+        mockMvc.perform(post("/login")
+                        .with(csrf())
+                        .param("username", customer.getEmail())
+                        .param("password", "password123")
+                        .param("redirect", "/account"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?error"));
     }
 
     @Test

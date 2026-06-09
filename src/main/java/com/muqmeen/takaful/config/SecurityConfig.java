@@ -96,6 +96,7 @@ public class SecurityConfig {
             return customerRepository.findByEmailIgnoreCase(username)
                     .map(customer -> User.withUsername(customer.getEmail())
                             .password(customer.getPasswordHash())
+                            .disabled(!customer.isActive())
                             .roles("USER")
                             .build())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));

@@ -45,6 +45,8 @@ public class Customer {
     @Column(nullable = false)
     private String passwordHash;
 
+    private Boolean active = true;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -55,6 +57,9 @@ public class Customer {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
+        if (this.active == null) {
+            this.active = true;
+        }
     }
 
     @PreUpdate
@@ -75,6 +80,10 @@ public class Customer {
 
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+    public boolean isActive() { return active == null || active; }
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 

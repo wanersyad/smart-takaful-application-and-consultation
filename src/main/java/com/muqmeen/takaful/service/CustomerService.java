@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,6 +38,25 @@ public class CustomerService {
     public Optional<Customer> findByEmail(String email) {
         if (email == null || email.isBlank()) return Optional.empty();
         return customerRepository.findByEmailIgnoreCase(normalizeEmail(email));
+    }
+
+    public List<Customer> listForAdmin(String query) {
+        String normalizedQuery = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
+        return customerRepository.findAllByOrderByCreatedAtDesc().stream()
+                .filter(customer -> normalizedQuery.isBlank()
+                        || customer.getFullName().toLowerCase(Locale.ROOT).contains(normalizedQuery)
+                        || customer.getEmail().toLowerCase(Locale.ROOT).contains(normalizedQuery)
+                        || customer.getPhoneNumber().contains(normalizedQuery))
+                .toList();
+    }
+
+    public Optional<Customer> findById(Long id) {
+        return customerRepository.findById(id);
+    }
+
+    public Customer setActive(Customer customer, boolean active) {
+        customer.setActive(active);
+        return customerRepository.save(customer);
     }
 
     public Optional<Customer> currentCustomer(Authentication authentication) {
