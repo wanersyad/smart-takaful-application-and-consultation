@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -109,6 +110,18 @@ public class SecurityConfig {
         return (request, response, authentication) -> {
             boolean admin = authentication.getAuthorities().stream()
                     .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+
+            // Keep the two portals separate: the admin account may only sign in through the
+            // dedicated /admin/login page, and customers may only use the public /login page.
+            // A mismatch is treated as a failed login (session dropped, redirected with error).
+            boolean adminPortal = "admin".equals(request.getParameter("portal"));
+            if (admin != adminPortal) {
+                request.getSession().invalidate();
+                SecurityContextHolder.clearContext();
+                response.sendRedirect(request.getContextPath() + (adminPortal ? "/admin/login?error" : "/login?error"));
+                return;
+            }
+
             String redirect = request.getParameter("redirect");
             if (admin && isSafeAdminRedirect(redirect)) {
                 response.sendRedirect(redirect);
