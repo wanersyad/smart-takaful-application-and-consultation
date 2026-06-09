@@ -190,11 +190,11 @@
                 </div>
                 <form th:action="@{/contact}" method="post" class="mt-8 grid gap-5 sm:grid-cols-2">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <label class="grid gap-2 text-sm font-medium text-white/80">Name<input name="name" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"></label>
+                    <label class="grid gap-2 text-sm font-medium text-white/80">Name<input name="fullName" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"></label>
                     <label class="grid gap-2 text-sm font-medium text-white/80">Email<input name="email" type="email" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"></label>
-                    <label class="grid gap-2 text-sm font-medium text-white/80">Phone / WhatsApp<input name="phone" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"></label>
+                    <label class="grid gap-2 text-sm font-medium text-white/80">Phone / WhatsApp<input name="phoneNumber" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"></label>
                     <label class="grid gap-2 text-sm font-medium text-white/80">Interest
-                        <select name="interest" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-yellow-300 outline-none focus:border-yellow-300">
+                        <select name="subject" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-yellow-300 outline-none focus:border-yellow-300">
                             <option>General Takaful Consultation</option>
                             <option th:each="product : ${products}" th:text="${product.name}">Product</option>
                         </select>
