@@ -73,6 +73,34 @@ public class ToyyibPayClient {
         return new ToyyibPayBill(billCode, paymentUrl(billCode));
     }
 
+    /**
+     * Server-to-server verification of a bill's real status. ToyyibPay's standard FPX/card
+     * callback does not include a hash, so we never trust the callback params alone — we ask
+     * ToyyibPay directly whether the bill was paid. Returns true only if a settled (status 1)
+     * transaction exists for this bill code.
+     */
+    public boolean isBillPaid(String billCode) {
+        if (billCode == null || billCode.isBlank() || !properties.isConfiguredForGateway()) {
+            return false;
+        }
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("userSecretKey", properties.getSecretKey());
+        form.add("billCode", billCode);
+        try {
+            String response = restClient.post()
+                    .uri(properties.getBaseUrl() + "/index.php/api/getBillTransactions")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(form)
+                    .retrieve()
+                    .body(String.class);
+            List<Map<String, String>> rows = objectMapper.readValue(response, new TypeReference<>() {});
+            // billpaymentStatus: 1 = success, 2 = pending, 3 = fail.
+            return rows.stream().anyMatch(row -> "1".equals(row.get("billpaymentStatus")));
+        } catch (IOException | RuntimeException ex) {
+            return false;
+        }
+    }
+
     public String paymentUrl(String billCode) {
         if (properties.isMockMode()) {
             return "/payment/mock/" + billCode;

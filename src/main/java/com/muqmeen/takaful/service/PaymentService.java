@@ -95,18 +95,26 @@ public class PaymentService {
         String status = params.getOrDefault("status", params.get("status_id"));
         String orderId = params.get("order_id");
         String refNo = params.get("refno");
-        String hash = params.get("hash");
+        String billCode = params.get("billcode");
 
-        if (!isValidHash(status, orderId, refNo, hash)) {
-            return false;
-        }
-
-        Payment payment = paymentRepository.findByExternalReferenceNo(orderId);
-        if (payment == null && params.get("billcode") != null) {
-            payment = paymentRepository.findByBillCode(params.get("billcode"));
+        Payment payment = orderId == null ? null : paymentRepository.findByExternalReferenceNo(orderId);
+        if (payment == null && billCode != null) {
+            payment = paymentRepository.findByBillCode(billCode);
         }
         if (payment == null) {
             return false;
+        }
+
+        // ToyyibPay's standard FPX/card callback carries no hash, so we never trust the posted
+        // status. In gateway (sandbox/live) mode we confirm the real status server-to-server.
+        // Mock mode keeps the self-consistent hash check.
+        if (toyyibPayProperties.isMockMode()) {
+            if (!isValidHash(status, orderId, refNo, params.get("hash"))) {
+                return false;
+            }
+        } else {
+            String verifyBillCode = billCode != null ? billCode : payment.getBillCode();
+            status = toyyibPayClient.isBillPaid(verifyBillCode) ? "1" : "3";
         }
 
         applyStatus(payment, status, refNo, summarize(params));
