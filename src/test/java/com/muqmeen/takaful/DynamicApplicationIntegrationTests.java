@@ -426,6 +426,11 @@ class DynamicApplicationIntegrationTests {
                 .andExpect(status().isForbidden());
         mockMvc.perform(get("/files/" + submitted.getIcFrontFile().getId()).with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
+        mockMvc.perform(get("/admin/applications/" + submitted.getId()).with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Stored File Metadata")))
+                .andExpect(content().string(containsString("IC_FRONT")))
+                .andExpect(content().string(containsString("Storage key")));
 
         mockMvc.perform(get("/account").with(user(customer.getEmail()).roles("USER")))
                 .andExpect(status().isOk())
