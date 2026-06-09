@@ -319,7 +319,6 @@ select option {
 }
 
 #products article,
-#reviews article,
 #faq article,
 body table,
 .brand-shell {
@@ -327,7 +326,6 @@ body table,
 }
 
 #products article:hover,
-#reviews article:hover,
 #faq article:hover,
 .brand-shell:hover {
   transform: translateY(-0.18rem);
@@ -779,15 +777,13 @@ body [class*="hover:text-zinc-900"]:not([class*="hover:bg-yellow"]):hover,
   }
 
   #products,
-  #reviews,
   #faq,
   #contact {
     padding-top: 4.25rem !important;
     padding-bottom: 4.25rem !important;
   }
 
-  #products > div,
-  #reviews > div {
+  #products > div {
     padding-left: 1.35rem !important;
     padding-right: 1.35rem !important;
   }
@@ -835,14 +831,6 @@ body [class*="hover:text-zinc-900"]:not([class*="hover:bg-yellow"]):hover,
   .product-card-actions button {
     padding-top: 0.75rem !important;
     padding-bottom: 0.75rem !important;
-  }
-
-  .review-carousel-grid {
-    touch-action: pan-y;
-  }
-
-  #reviews article p {
-    min-height: auto !important;
   }
 
   .mobile-card-table,
@@ -915,7 +903,6 @@ body [class*="hover:text-zinc-900"]:not([class*="hover:bg-yellow"]):hover,
   button:hover,
   a:hover,
   #products article:hover,
-  #reviews article:hover,
   #faq article:hover,
   .brand-shell:hover,
   #chat-toggle:hover {
@@ -972,7 +959,6 @@ body [class*="hover:text-zinc-900"]:not([class*="hover:bg-yellow"]):hover,
   select:focus,
   textarea:focus,
   #products article:hover,
-  #reviews article:hover,
   #faq article:hover,
   .brand-shell:hover,
   #chat-toggle:hover {
