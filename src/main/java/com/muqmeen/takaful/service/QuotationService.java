@@ -28,11 +28,12 @@ public class QuotationService {
     }
 
     public Quotation getOrCreate(ConsultationApplication application) {
-        return quotationRepository.findByApplication(application).orElseGet(() -> {
-            Quotation quotation = new Quotation();
-            quotation.setApplication(application);
-            return quotationRepository.save(quotation);
+        Quotation quotation = quotationRepository.findByApplication(application).orElseGet(() -> {
+            Quotation created = new Quotation();
+            created.setApplication(application);
+            return quotationRepository.save(created);
         });
+        return initializeDetails(quotation);
     }
 
     public Quotation save(ConsultationApplication application, String adminNotes, List<QuotationItemInput> items) {
