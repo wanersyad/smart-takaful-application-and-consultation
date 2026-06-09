@@ -157,6 +157,21 @@ public class AdminProductController {
                 });
     }
 
+    @PostMapping("/{id}/remove-image")
+    public String removeImage(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        productService.findById(id).ifPresent(product -> {
+            StoredFile image = product.getImageFile();
+            product.setImageFile(null);
+            product.setImageUrl(null);
+            productService.save(product);
+            if (image != null) {
+                fileStorageService.delete(image);
+            }
+            redirectAttributes.addFlashAttribute("flashMessage", "Product image removed.");
+        });
+        return "redirect:/admin/products/" + id + "/edit";
+    }
+
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         productService.findById(id).ifPresent(product -> {

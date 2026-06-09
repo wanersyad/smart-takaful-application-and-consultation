@@ -18,10 +18,21 @@
             <label class="grid gap-2 text-sm text-white/80">Category<label class="sr-only">Category</label><input th:field="*{categoryLabel}" placeholder="Family Protection" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
             <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Short summary<textarea th:field="*{summary}" rows="3" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
             <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Detailed description<textarea th:field="*{detailedDescription}" rows="5" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
-            <label class="grid gap-2 text-sm text-white/80">Product image
+            <div class="grid gap-2 text-sm text-white/80">
+                <span>Product image</span>
+                <div th:if="${formMode == 'edit' and product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}" class="flex items-center gap-3 rounded-2xl border border-yellow-400/15 bg-black p-3">
+                    <img th:src="${product.imageUrl}" alt="Current product image" class="h-16 w-24 rounded-lg object-cover">
+                    <button type="submit" formnovalidate
+                            th:formaction="@{/admin/products/{id}/remove-image(id=${product.id})}"
+                            formmethod="post"
+                            onclick="return confirm('Remove the current product image? Customers will see the icon placeholder until you upload a new one.');"
+                            class="rounded-full border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-200 hover:bg-red-500 hover:text-white">
+                        <i class="fa-solid fa-trash-can mr-1"></i>Remove image
+                    </button>
+                </div>
                 <input name="productImage" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white">
                 <span class="text-xs text-white/45">Upload a JPG, PNG, or WebP. Existing image stays if you leave this empty.</span>
-            </label>
+            </div>
             <label class="grid gap-2 text-sm text-white/80">Icon choice
                 <select th:field="*{iconClass}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-yellow-300">
                     <option value="fa-shield-halved">Shield</option>
