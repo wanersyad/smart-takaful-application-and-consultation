@@ -86,6 +86,23 @@ public class AccountController {
         return "redirect:/account/profile";
     }
 
+    @PostMapping("/account/delete")
+    public String deleteAccount(Authentication authentication,
+                                jakarta.servlet.http.HttpServletRequest request,
+                                RedirectAttributes redirectAttributes) {
+        Customer customer = currentCustomer(authentication);
+        customerService.deleteCustomer(customer.getId());
+        // Log the now-deleted user out.
+        SecurityContextHolder.clearContext();
+        try {
+            request.getSession().invalidate();
+        } catch (IllegalStateException ignored) {
+            // session already gone
+        }
+        redirectAttributes.addFlashAttribute("flashMessage", "Your account has been permanently deleted.");
+        return "redirect:/";
+    }
+
     private void refreshAuthentication(Authentication authentication, Customer customer) {
         UsernamePasswordAuthenticationToken refreshed = new UsernamePasswordAuthenticationToken(
                 customer.getEmail(),

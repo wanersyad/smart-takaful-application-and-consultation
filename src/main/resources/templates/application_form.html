@@ -4,11 +4,12 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Draft - Muqmeen Group</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
-<nav th:replace="~{fragments/layout :: nav('account')}"></nav>
+<nav th:replace="~{fragments/layout :: siteNav('account')}"></nav>
 <main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
     <a th:href="@{/applications/{id}(id=${app.id})}" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to application</a>
     <h1 class="mt-5 text-4xl font-semibold text-yellow-300">Takaful Application</h1>

@@ -7,54 +7,27 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>Muqmeen Group - Smart Takaful Application</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body id="home" class="muqmeen-dark-site min-h-screen bg-[#050505] text-white antialiased">
-<nav class="sticky top-0 z-40 border-b border-yellow-400/20 bg-[#0d0d0d]/95 backdrop-blur">
-    <div class="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-        <a href="#home" class="flex items-center gap-3">
-            <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="Muqmeen Group logo" class="h-12 w-12 object-contain">
-            <span class="logo-wordmark text-sm text-yellow-400">MUQMEEN <span class="logo-wordmark-strong text-yellow-300">GROUP</span></span>
-        </a>
-        <button type="button" class="page-menu-open flex h-11 w-11 items-center justify-center rounded-full border border-yellow-400/25 text-yellow-300 hover:bg-yellow-400/10 md:hidden" aria-label="Open navigation">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-        <div class="hidden items-center gap-2 text-sm font-medium md:flex">
-            <a href="#home" class="nav-link is-active rounded-full px-4 py-2 text-yellow-300">Home</a>
-            <a href="#products" class="nav-link rounded-full px-4 py-2 text-white/80">Products</a>
-            <a href="#faq" class="nav-link rounded-full px-4 py-2 text-white/80">FAQ</a>
-            <a href="#contact" class="nav-link rounded-full px-4 py-2 text-white/80">Contact</a>
-            <a th:if="${customerSignedIn}" href="/account" class="ml-2 rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-yellow-300">Account</a>
-            <a th:unless="${customerSignedIn}" href="/login?redirect=/#products" class="ml-2 rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-yellow-300">Log In</a>
-        </div>
-    </div>
-    <div class="page-mobile-menu hidden border-t border-yellow-400/15 px-4 pb-4 md:hidden">
-        <div class="grid gap-2 rounded-2xl border border-yellow-400/15 bg-white/[0.03] p-2 text-sm">
-            <a href="#home" class="rounded-xl px-4 py-3 text-yellow-300 hover:bg-yellow-400/10">Home</a>
-            <a href="#products" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Products</a>
-            <a href="#faq" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">FAQ</a>
-            <a href="#contact" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Contact</a>
-            <a th:if="${customerSignedIn}" href="/account" class="rounded-xl bg-yellow-400 px-4 py-3 text-center font-semibold text-zinc-950 hover:bg-yellow-300">Account</a>
-            <a th:unless="${customerSignedIn}" href="/login?redirect=/#products" class="rounded-xl bg-yellow-400 px-4 py-3 text-center font-semibold text-zinc-950 hover:bg-yellow-300">Log In</a>
-        </div>
-    </div>
-</nav>
+<nav th:replace="~{fragments/layout :: siteNav('home')}"></nav>
 
 <main>
-    <section class="bg-black">
+    <section id="hero" class="bg-black">
         <div class="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col items-center justify-center gap-8 px-4 py-16 text-center sm:px-6 lg:px-8">
             <h1 class="text-5xl font-bold leading-none text-yellow-400 sm:text-6xl lg:text-7xl" th:text="${content.value('hero.title')}">Your Trusted Takaful Partner</h1>
             <p class="max-w-2xl text-lg font-medium leading-8 text-white/75">
                 <span th:text="${content.value('hero.subtitle')}">Shariah-compliant protection, Hibah, medical, and education planning with Muqmeen Group. Apply online and let our agents guide you to the plan that fits your family.</span>
             </p>
             <div class="flex w-full max-w-2xl flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-                <a href="#products" class="flex items-center justify-center whitespace-nowrap rounded-full bg-yellow-400 px-8 py-4 font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-yellow-300">Explore Plans</a>
-                <div class="flex flex-1 items-center rounded-full border border-yellow-400/30 bg-white/[0.02] px-7 py-4 text-left text-base text-white/90">
+                <div class="flex min-h-[3.75rem] flex-1 items-center rounded-full border border-yellow-400/30 bg-white/[0.02] px-7 py-4 text-left text-base text-white/90">
                     <span id="typewriter-question" th:text="${#lists.isEmpty(questionPrompts) ? '' : questionPrompts[0]}">Which plan fits my family needs?</span>
                 </div>
+                <a href="#products" class="flex min-h-[3.75rem] items-center justify-center whitespace-nowrap rounded-full bg-yellow-400 px-8 py-4 font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-yellow-300">Explore Plans</a>
             </div>
             <div class="mt-6 grid w-full max-w-4xl grid-cols-2 gap-3 rounded-[2rem] border border-yellow-400/25 bg-white/[0.02] p-3 sm:grid-cols-4">
                 <div class="rounded-[1.5rem] bg-yellow-400/10 p-5 text-center">
@@ -74,6 +47,14 @@
                     <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65" th:text="${content.value('metrics.quoted.label')}">Quoted / Paid</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section id="about" class="scroll-mt-28 bg-black py-20">
+        <div class="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+            <p class="text-sm font-semibold uppercase tracking-[0.35em] text-yellow-400" th:text="${content.value('about.eyebrow')}">About Us</p>
+            <h2 class="mt-4 text-4xl font-semibold text-yellow-300" th:text="${content.value('about.title')}">Who is Muqmeen Group?</h2>
+            <p class="mt-6 text-lg leading-8 text-white/75" th:text="${content.value('about.body')}">About Muqmeen Group.</p>
         </div>
     </section>
 
@@ -150,18 +131,7 @@
     </section>
 </main>
 
-<footer class="border-t border-yellow-400/15 bg-[#0d0d0d]">
-    <div class="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 py-12 text-center sm:px-6 lg:px-8">
-        <a href="#home" class="flex items-center gap-3">
-            <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="Muqmeen Group logo" class="h-12 w-12 object-contain">
-            <span class="logo-wordmark text-base text-yellow-400">MUQMEEN <span class="logo-wordmark-strong text-yellow-300">GROUP</span></span>
-        </a>
-        <div class="mt-2 w-full border-t border-white/10 pt-6 text-xs text-white/45">
-            <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2026</span> Muqmeen Group. All rights reserved.</p>
-            <p class="mt-1">Authorized Takaful agency in partnership with PruBSN.</p>
-        </div>
-    </div>
-</footer>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 
 <button id="chat-toggle" class="fixed bottom-6 right-6 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-400 text-2xl text-zinc-950 shadow-2xl hover:bg-yellow-300" aria-label="Open chat">
     <i class="fa-solid fa-comments"></i>
@@ -191,6 +161,31 @@
             document.body.classList.toggle('overflow-hidden', !menu.classList.contains('hidden'));
         });
     });
+
+    // Scroll-spy: highlight the nav link for the section currently in view.
+    (function () {
+        const sections = ['hero', 'about', 'products', 'faq', 'contact'];
+        const links = {};
+        document.querySelectorAll('.nav-link').forEach((a) => {
+            const href = a.getAttribute('href') || '';
+            const id = href.includes('#') ? href.split('#').pop() : (href === '/' ? 'hero' : '');
+            if (sections.includes(id)) links[id] = a;
+        });
+        function setActive(id) {
+            sections.forEach((s) => {
+                if (links[s]) links[s].classList.toggle('is-active', s === id);
+            });
+        }
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) setActive(entry.target.id);
+            });
+        }, { rootMargin: '-45% 0px -50% 0px' });
+        sections.forEach((s) => {
+            const el = document.getElementById(s);
+            if (el) observer.observe(el);
+        });
+    })();
 
     const questions = /*[[${questionPrompts}]]*/ ['Which plan fits my family needs?'];
     const target = document.getElementById('typewriter-question');

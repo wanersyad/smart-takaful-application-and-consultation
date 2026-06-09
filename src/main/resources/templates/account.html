@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account - Muqmeen Group</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
-<nav th:replace="~{fragments/layout :: nav('account')}"></nav>
+<nav th:replace="~{fragments/layout :: siteNav('account')}"></nav>
 <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
     <p th:if="${flashMessage}" class="mb-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
     <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -26,11 +27,12 @@
         <a href="/account/profile" class="rounded-full border border-yellow-400/30 px-6 py-3 text-center font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300">Update Profile</a>
     </div>
 
-    <section class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <section class="mt-8 grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
         <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Total</p><p class="mt-2 text-3xl font-semibold" th:text="${totalApplications}">0</p></div>
         <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Drafts</p><p class="mt-2 text-3xl font-semibold" th:text="${draftApplications}">0</p></div>
         <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Review</p><p class="mt-2 text-3xl font-semibold" th:text="${reviewApplications}">0</p></div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Quoted / Paid</p><p class="mt-2 text-3xl font-semibold"><span th:text="${quotedApplications}">0</span>/<span th:text="${paidApplications}">0</span></p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Quoted</p><p class="mt-2 text-3xl font-semibold text-yellow-300" th:text="${quotedApplications}">0</p></div>
+        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Paid</p><p class="mt-2 text-3xl font-semibold text-emerald-300" th:text="${paidApplications}">0</p></div>
     </section>
 
     <section class="mt-8 overflow-hidden rounded-3xl border border-yellow-400/25 bg-[#111]">
@@ -38,7 +40,6 @@
             <span>Date</span><span>Product</span><span>Status</span><span>Quotation</span><span>Action</span>
         </div>
         <div th:if="${#lists.isEmpty(applications)}" class="p-12 text-center text-white/65">
-            <i class="fa-regular fa-folder-open mb-3 block text-4xl"></i>
             Your application records will appear here after you start a product application.
         </div>
         <article th:each="app : ${applications}" class="grid gap-3 border-b border-yellow-400/10 p-5 last:border-b-0 md:grid-cols-[1fr,1.2fr,1fr,1fr,1fr] md:items-center">
