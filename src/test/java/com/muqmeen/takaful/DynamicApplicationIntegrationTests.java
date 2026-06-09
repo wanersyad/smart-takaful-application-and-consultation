@@ -296,7 +296,7 @@ class DynamicApplicationIntegrationTests {
         Product saved = productRepository.findByName("PruBSN Dynamic").orElseThrow();
         mockMvc.perform(get("/admin/products/" + saved.getId()).with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Product Data Flow")))
+                .andExpect(content().string(containsString("Managing this product")))
                 .andExpect(content().string(containsString("Core Information")))
                 .andExpect(content().string(containsString("Benefit one")))
                 .andExpect(content().string(containsString("Hospital income benefit")))
@@ -428,7 +428,7 @@ class DynamicApplicationIntegrationTests {
                 .andExpect(status().isOk());
         mockMvc.perform(get("/admin/applications/" + submitted.getId()).with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Stored File Metadata")))
+                .andExpect(content().string(containsString("Uploaded Files")))
                 .andExpect(content().string(containsString("IC_FRONT")))
                 .andExpect(content().string(containsString("Storage key")));
 
@@ -520,8 +520,8 @@ class DynamicApplicationIntegrationTests {
 
         mockMvc.perform(get("/admin/applications/" + application.getId()).with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Review Data Flow")))
-                .andExpect(content().string(containsString("Generate quotation after review")))
+                .andExpect(content().string(containsString("Review steps")))
+                .andExpect(content().string(containsString("Build a quotation after review")))
                 .andExpect(content().string(containsString("Claim bank details")))
                 .andExpect(content().string(containsString("Workplace address")));
 
