@@ -284,36 +284,37 @@ installing Java, Maven, and Node separately. You only need **Docker Desktop** in
 The Compose setup reads all configuration from a local `.env` file, so the same command
 runs in two modes depending on what you put there.
 
-### Option A — Mirror production (see the real products, images, brochures)
+### Setup
 
-```bash
-cp .env.example .env
-# Open .env and fill in the secrets you were given:
-#   SPRING_PROFILES_ACTIVE=prod
-#   SPRING_DATASOURCE_PASSWORD=...        (Supabase database password)
-#   SUPABASE_SERVICE_ROLE_KEY=...         (Supabase service_role key)
-#   ADMIN_USERNAME / ADMIN_PASSWORD       (admin login)
-#   RESEND_API_KEY, GEMINI_API_KEY, TOYYIBPAY_* (optional features)
-docker compose up --build
-```
+1. Install **Docker Desktop** and start it.
+2. Create your environment file from the template and fill in the five secret values:
 
-Then open http://localhost:8080 — it connects to the live Supabase database and shows the
-real Takaful products, banner images, and brochures.
+   ```bash
+   cp .env.example .env
+   ```
 
-> Note: this uses the **same database as production**. Anything you create or delete locally
-> (customers, applications, products) affects the live data. Use it to view/demo, and be
-> careful with destructive actions.
+   `.env.example` already contains the real production configuration. You only need to fill
+   in the blank secret values:
 
-### Option B — Offline / self-contained (no credentials needed)
+   | Variable | What it is |
+   |---|---|
+   | `SPRING_DATASOURCE_PASSWORD` | Supabase database password |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Supabase `service_role` key (Project Settings → API) |
+   | `RESEND_API_KEY` | Resend API key (contact-form email) |
+   | `GEMINI_API_KEY` | Google AI Studio key (chatbot) |
+   | `ADMIN_PASSWORD` | Admin login password |
 
-```bash
-docker compose up --build
-```
+3. Build and run:
 
-With no `.env` (or `SPRING_PROFILES_ACTIVE=dev`), it runs a fully self-contained instance:
-an in-memory H2 database, local file storage, mock ToyyibPay, and `admin` / `password` for
-admin login. The site works but starts with no products. To populate sample products, set
-`DEMO_SEED_ENABLED=true` in `.env`.
+   ```bash
+   docker compose up --build
+   ```
+
+4. Open http://localhost:8080. It connects to the live Supabase database and shows the real
+   Takaful products, banner images, brochures, chatbot, and admin (log in at `/admin`).
+
+> This runs against the **production database and storage**. Anything you create or delete
+> (customers, applications, products) is real, live data.
 
 ### Useful commands
 
