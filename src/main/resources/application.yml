@@ -43,6 +43,12 @@ contact:
     enabled: ${CONTACT_FORMSUBMIT_ENABLED:true}
     base-url: ${CONTACT_FORMSUBMIT_BASE_URL:https://formsubmit.co/ajax}
 
+password-reset:
+  # Resend without a verified domain can only deliver to the account owner's own email.
+  # List the address(es) that can actually receive a reset link (comma-separated). Once a
+  # sending domain is verified in Resend, set this to "*" to deliver to every customer.
+  allowed-recipients: ${PASSWORD_RESET_ALLOWED_RECIPIENTS:wanersyadd@gmail.com}
+
 toyyibpay:
   mode: ${TOYYIBPAY_MODE:mock}
   secret-key: ${TOYYIBPAY_SECRET_KEY:}

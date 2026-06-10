@@ -13,8 +13,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Sends the password-reset link to the customer. Mirrors {@link ContactEmailService}: in
@@ -32,6 +34,7 @@ public class PasswordResetEmailService {
     private final String mailHost;
     private final String resendApiKey;
     private final String resendBaseUrl;
+    private final Set<String> allowedRecipients;
 
     public PasswordResetEmailService(ObjectProvider<JavaMailSender> mailSender,
                                      @Value("${contact.from:${spring.mail.username:no-reply@muqmeengroup.local}}") String from,
@@ -39,6 +42,7 @@ public class PasswordResetEmailService {
                                      @Value("${spring.mail.host:}") String mailHost,
                                      @Value("${contact.resend.api-key:}") String resendApiKey,
                                      @Value("${contact.resend.base-url:https://api.resend.com}") String resendBaseUrl,
+                                     @Value("${password-reset.allowed-recipients:}") String allowedRecipients,
                                      RestClient.Builder restClientBuilder) {
         this.mailSender = mailSender.getIfAvailable();
         this.restClient = restClientBuilder.build();
@@ -47,6 +51,34 @@ public class PasswordResetEmailService {
         this.mailHost = mailHost;
         this.resendApiKey = resendApiKey;
         this.resendBaseUrl = resendBaseUrl;
+        this.allowedRecipients = parseAllowed(allowedRecipients);
+    }
+
+    private static Set<String> parseAllowed(String csv) {
+        Set<String> set = new HashSet<>();
+        if (csv != null) {
+            for (String part : csv.split(",")) {
+                String trimmed = part.trim().toLowerCase();
+                if (!trimmed.isEmpty()) {
+                    set.add(trimmed);
+                }
+            }
+        }
+        return set;
+    }
+
+    /**
+     * Without a verified sending domain, Resend only delivers to the account owner's own email.
+     * The allow-list (password-reset.allowed-recipients) reflects that: in test mode it contains
+     * just that address, so we skip the doomed send for anyone else and let the caller show the
+     * normal "if the account exists, a link was sent" message. Once a domain is verified, set the
+     * list to "*" (or clear it) to deliver to every customer.
+     */
+    public boolean canDeliverTo(String email) {
+        if (allowedRecipients.isEmpty() || allowedRecipients.contains("*")) {
+            return true;
+        }
+        return email != null && allowedRecipients.contains(email.trim().toLowerCase());
     }
 
     public void sendResetLink(Customer customer, String resetUrl) {

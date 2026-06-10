@@ -50,6 +50,14 @@ public class PasswordResetService {
             return;
         }
 
+        // In test mode (no verified Resend domain) only the account owner's address is deliverable.
+        // Don't mint a token or attempt a send we know Resend will reject — just return so the
+        // caller shows the same neutral "if the account exists, a link was sent" response. This
+        // keeps the UX clean and avoids leaking which emails are deliverable.
+        if (!emailService.canDeliverTo(customer.get().getEmail())) {
+            return;
+        }
+
         tokenRepository.findByCustomerAndUsedAtIsNull(customer.get())
                 .forEach(token -> token.setUsedAt(LocalDateTime.now()));
 
