@@ -5,17 +5,35 @@ services:
     image: muqmeen-takaful-web:local
     ports:
       - "${PORT:-8080}:8080"
+    # All values come from a local .env file (copy .env.example -> .env).
+    # With the Supabase + Resend + ToyyibPay values filled in and
+    # SPRING_PROFILES_ACTIVE=prod, this runs against the same data as production.
+    # Leave .env minimal / SPRING_PROFILES_ACTIVE=dev to run a self-contained
+    # offline H2 instance instead.
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
       PORT: 8080
       APP_BASE_URL: ${APP_BASE_URL:-http://localhost:${PORT:-8080}}
+
+      # --- Database (only used when SPRING_PROFILES_ACTIVE=prod) ---
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-}
+
+      # --- Admin login ---
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-password}
+
+      # --- Chatbot ---
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      TOYYIBPAY_MODE: mock
-      TOYYIBPAY_SECRET_KEY: ""
-      TOYYIBPAY_CATEGORY_CODE: ""
+
+      # --- Payments (mock unless real ToyyibPay creds are provided) ---
+      TOYYIBPAY_MODE: ${TOYYIBPAY_MODE:-mock}
+      TOYYIBPAY_SECRET_KEY: ${TOYYIBPAY_SECRET_KEY:-}
+      TOYYIBPAY_CATEGORY_CODE: ${TOYYIBPAY_CATEGORY_CODE:-}
       TOYYIBPAY_BASE_URL: ${TOYYIBPAY_BASE_URL:-https://dev.toyyibpay.com}
+
+      # --- Contact email ---
       CONTACT_DELIVERY: ${CONTACT_DELIVERY:-formsubmit}
       CONTACT_RECIPIENT: ${CONTACT_RECIPIENT:-wanersyadd@gmail.com}
       CONTACT_FROM: ${CONTACT_FROM:-}
@@ -26,7 +44,15 @@ services:
       SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-587}
       SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-}
       SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD:-}
-      FILE_STORAGE_MODE: local
+
+      # --- File storage (supabase to mirror prod; local for offline dev) ---
+      FILE_STORAGE_MODE: ${FILE_STORAGE_MODE:-local}
       LOCAL_UPLOAD_DIR: /app/uploads
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      SUPABASE_STORAGE_BUCKET: ${SUPABASE_STORAGE_BUCKET:-takaful-private}
+
+      # --- Local starter data (dev/H2 only) ---
+      DEMO_SEED_ENABLED: ${DEMO_SEED_ENABLED:-false}
     volumes:
       - ./uploads:/app/uploads

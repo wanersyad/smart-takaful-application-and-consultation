@@ -278,33 +278,52 @@ http://localhost:8080
 
 ## Running With Docker
 
-Docker is the easiest path for a new machine because it avoids installing Java, Maven, and Node separately.
+Docker is the easiest path for a new machine (Mac, Windows, or Linux) because it avoids
+installing Java, Maven, and Node separately. You only need **Docker Desktop** installed.
+
+The Compose setup reads all configuration from a local `.env` file, so the same command
+runs in two modes depending on what you put there.
+
+### Option A — Mirror production (see the real products, images, brochures)
+
+```bash
+cp .env.example .env
+# Open .env and fill in the secrets you were given:
+#   SPRING_PROFILES_ACTIVE=prod
+#   SPRING_DATASOURCE_PASSWORD=...        (Supabase database password)
+#   SUPABASE_SERVICE_ROLE_KEY=...         (Supabase service_role key)
+#   ADMIN_USERNAME / ADMIN_PASSWORD       (admin login)
+#   RESEND_API_KEY, GEMINI_API_KEY, TOYYIBPAY_* (optional features)
+docker compose up --build
+```
+
+Then open http://localhost:8080 — it connects to the live Supabase database and shows the
+real Takaful products, banner images, and brochures.
+
+> Note: this uses the **same database as production**. Anything you create or delete locally
+> (customers, applications, products) affects the live data. Use it to view/demo, and be
+> careful with destructive actions.
+
+### Option B — Offline / self-contained (no credentials needed)
 
 ```bash
 docker compose up --build
 ```
 
-The included Compose setup is intentionally local-dev only:
+With no `.env` (or `SPRING_PROFILES_ACTIVE=dev`), it runs a fully self-contained instance:
+an in-memory H2 database, local file storage, mock ToyyibPay, and `admin` / `password` for
+admin login. The site works but starts with no products. To populate sample products, set
+`DEMO_SEED_ENABLED=true` in `.env`.
 
-- `dev` profile
-- H2 in-memory database
-- local upload folder
-- local ToyyibPay mock
-- local admin defaults unless overridden
-
-Useful commands:
+### Useful commands
 
 ```bash
-docker compose down
-docker compose up --build
-docker build -t muqmeen-takaful-web:local .
+docker compose down                       # stop
+docker compose up --build                 # rebuild and start
+PORT=8081 docker compose up --build       # run on a different port if 8080 is busy
 ```
 
-If port `8080` is already used:
-
-```bash
-PORT=8081 docker compose up --build
-```
+> Mac note: the images are multi-arch and run natively on Apple Silicon (M1/M2/M3) and Intel.
 
 ## Frontend Build
 
