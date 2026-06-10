@@ -15,6 +15,8 @@ import java.util.List;
 public class GeminiClient {
 
     private static final Logger log = LoggerFactory.getLogger(GeminiClient.class);
+    private static final int MAX_ATTEMPTS = 3;
+    private static final Duration RETRY_BACKOFF = Duration.ofMillis(600);
 
     private final GeminiProperties properties;
     private final RestClient restClient;
@@ -38,32 +40,55 @@ public class GeminiClient {
                 conversation
         );
 
-        try {
-            GeminiResponse response = restClient.post()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/{model}:generateContent")
-                            .queryParam("key", properties.getApiKey())
-                            .build(properties.getModel()))
-                    .body(body)
-                    .retrieve()
-                    .body(GeminiResponse.class);
+        // The free tier intermittently returns 503 ("high demand") / 429. These are transient, so
+        // retry a couple of times with a short backoff before falling back — this is what makes the
+        // chatbot feel reliable instead of randomly "unavailable" during Gemini load spikes.
+        RestClientException lastError = null;
+        for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+            try {
+                GeminiResponse response = restClient.post()
+                        .uri(uriBuilder -> uriBuilder
+                                .path("/{model}:generateContent")
+                                .queryParam("key", properties.getApiKey())
+                                .build(properties.getModel()))
+                        .body(body)
+                        .retrieve()
+                        .body(GeminiResponse.class);
 
-            if (response == null || response.candidates() == null || response.candidates().isEmpty()) {
-                throw new GeminiException("Gemini returned an empty response");
+                if (response == null || response.candidates() == null || response.candidates().isEmpty()) {
+                    throw new GeminiException("Gemini returned an empty response");
+                }
+                GeminiContent first = response.candidates().get(0).content();
+                if (first == null || first.parts() == null || first.parts().isEmpty()) {
+                    throw new GeminiException("Gemini returned no content parts");
+                }
+                String text = first.parts().get(0).text();
+                if (text == null || text.isBlank()) {
+                    throw new GeminiException("Gemini returned blank text");
+                }
+                return text.trim();
+            } catch (RestClientException e) {
+                lastError = e;
+                if (!isTransient(e) || attempt == MAX_ATTEMPTS) {
+                    break;
+                }
+                log.warn("Gemini transient error (attempt {}/{}), retrying: {}", attempt, MAX_ATTEMPTS, e.getMessage());
+                try {
+                    Thread.sleep(RETRY_BACKOFF.toMillis() * attempt);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
             }
-            GeminiContent first = response.candidates().get(0).content();
-            if (first == null || first.parts() == null || first.parts().isEmpty()) {
-                throw new GeminiException("Gemini returned no content parts");
-            }
-            String text = first.parts().get(0).text();
-            if (text == null || text.isBlank()) {
-                throw new GeminiException("Gemini returned blank text");
-            }
-            return text.trim();
-        } catch (RestClientException e) {
-            log.warn("Gemini API call failed: {}", e.getMessage());
-            throw new GeminiException("Gemini API call failed", e);
         }
+        log.warn("Gemini API call failed: {}", lastError == null ? "unknown" : lastError.getMessage());
+        throw new GeminiException("Gemini API call failed", lastError);
+    }
+
+    private static boolean isTransient(RestClientException e) {
+        String msg = e.getMessage();
+        return msg != null && (msg.contains("503") || msg.contains("429")
+                || msg.contains("UNAVAILABLE") || msg.contains("overloaded"));
     }
 
     private static RestClient buildRestClient(GeminiProperties properties) {
