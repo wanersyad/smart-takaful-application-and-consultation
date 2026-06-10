@@ -23,6 +23,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin/products")
@@ -247,8 +249,18 @@ public class AdminProductController {
                 })
                 .toList();
         if (!uploadedDocuments.isEmpty()) {
-            List<ProductDocument> merged = new ArrayList<>(product.getDocuments());
+            // Re-uploading a brochure with the same label supersedes the previous one instead of
+            // appending a duplicate. Drop any existing document that shares a label with an upload.
+            Set<String> uploadedLabels = uploadedDocuments.stream()
+                    .map(ProductDocument::getLabel)
+                    .collect(Collectors.toSet());
+            List<ProductDocument> merged = new ArrayList<>(product.getDocuments().stream()
+                    .filter(existing -> !uploadedLabels.contains(existing.getLabel()))
+                    .toList());
             merged.addAll(uploadedDocuments);
+            for (int i = 0; i < merged.size(); i++) {
+                merged.get(i).setDisplayOrder(i);
+            }
             product.replaceDocuments(merged);
         }
     }

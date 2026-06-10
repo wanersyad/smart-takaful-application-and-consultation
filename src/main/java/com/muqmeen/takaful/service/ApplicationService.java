@@ -99,8 +99,12 @@ public class ApplicationService {
 
     public List<ConsultationApplication> listForAdmin() {
         List<ConsultationApplication> applications = applicationRepository.findAllByOrderByCreatedAtDesc();
-        applications.forEach(this::initializeDetails);
-        return applications;
+        // Drafts are the customer's unsubmitted work-in-progress; the admin only reviews
+        // applications that have actually been submitted.
+        return applications.stream()
+                .filter(application -> application.getStatus() != ApplicationStatus.DRAFT)
+                .map(this::initializeDetails)
+                .toList();
     }
 
     public Optional<ConsultationApplication> findOwned(Long id, Customer customer) {
@@ -211,19 +215,35 @@ public class ApplicationService {
     private void attachFiles(ConsultationApplication application, Customer customer, MultipartFile icFront, MultipartFile icBack, String signatureDataUrl) {
         StoredFile front = fileStorageService.storeImage(icFront, customer, application, FilePurpose.IC_FRONT);
         if (front != null) {
+            replaceFile(application, application.getIcFrontFile());
             application.setIcFrontFile(front);
             application.getFiles().add(front);
         }
         StoredFile back = fileStorageService.storeImage(icBack, customer, application, FilePurpose.IC_BACK);
         if (back != null) {
+            replaceFile(application, application.getIcBackFile());
             application.setIcBackFile(back);
             application.getFiles().add(back);
         }
         StoredFile signature = fileStorageService.storeSignatureDataUrl(signatureDataUrl, customer, application);
         if (signature != null) {
+            replaceFile(application, application.getSignatureFile());
             application.setSignatureFile(signature);
             application.getFiles().add(signature);
         }
+    }
+
+    /**
+     * When a customer re-uploads an IC image or re-signs while editing a draft, the previous
+     * stored file is superseded. Remove it from the application's file list and delete both its
+     * metadata row and stored bytes so the admin view does not accumulate duplicate entries.
+     */
+    private void replaceFile(ConsultationApplication application, StoredFile previous) {
+        if (previous == null) {
+            return;
+        }
+        application.getFiles().removeIf(file -> file.getId() != null && file.getId().equals(previous.getId()));
+        fileStorageService.delete(previous);
     }
 
     private void validateSubmission(ConsultationApplication application) {

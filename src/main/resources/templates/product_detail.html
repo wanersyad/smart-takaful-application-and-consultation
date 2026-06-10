@@ -32,7 +32,6 @@
             <p class="mt-5 whitespace-pre-line leading-7 text-white/65" th:text="${product.detailedDescription}">Details</p>
             <div class="mt-7 flex flex-wrap gap-3">
                 <a th:href="${customerSignedIn} ? @{/applications/new(productId=${product.id})} : @{/login(redirect=${'/applications/new?productId=' + product.id})}" class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Apply Product</a>
-                <a href="/#contact" class="rounded-full border border-yellow-400/30 px-6 py-3 font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300">Ask Agent</a>
             </div>
         </div>
     </div>
