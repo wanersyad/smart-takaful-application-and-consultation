@@ -75,7 +75,6 @@
             <a href="/admin/customers" class="nav-link rounded-full px-4 py-2 text-white/80" th:classappend="${active == 'customers'} ? ' is-active text-yellow-300' : ''">Customers</a>
             <a href="/admin/products" class="nav-link rounded-full px-4 py-2 text-white/80" th:classappend="${active == 'products'} ? ' is-active text-yellow-300' : ''">Products</a>
             <a href="/admin/content" class="nav-link rounded-full px-4 py-2 text-white/80" th:classappend="${active == 'content'} ? ' is-active text-yellow-300' : ''">Content</a>
-            <a href="/" class="nav-link rounded-full px-4 py-2 text-white/50">View Site</a>
             <form th:action="@{/logout}" method="post" class="ml-2">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <button class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-yellow-300"><i class="fa-solid fa-right-from-bracket mr-1"></i>Logout</button>
@@ -88,7 +87,6 @@
             <a href="/admin/customers" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Customers</a>
             <a href="/admin/products" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Products</a>
             <a href="/admin/content" class="rounded-xl px-4 py-3 text-white hover:bg-yellow-400/10 hover:text-yellow-300">Content</a>
-            <a href="/" class="rounded-xl px-4 py-3 text-white/60 hover:bg-yellow-400/10 hover:text-yellow-300">View Site</a>
             <form th:action="@{/logout}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <button class="w-full rounded-xl bg-yellow-400 px-4 py-3 text-center font-semibold text-zinc-950 hover:bg-yellow-300">Logout</button>
@@ -105,15 +103,31 @@
     </div>
 </footer>
 
-<!-- Shared mobile-menu toggle script. Usage: <script th:replace="~{fragments/layout :: menu-script}"></script> -->
-<script th:fragment="menu-script">
-    document.querySelectorAll('.page-menu-open').forEach((button) => {
-        button.addEventListener('click', () => {
-            const menu = document.querySelector('.page-mobile-menu');
-            if (menu) menu.classList.toggle('hidden');
+<!-- Shared scripts (mobile menu + themed selects). Usage: <th:block th:replace="~{fragments/layout :: page-scripts}"></th:block> -->
+<th:block th:fragment="page-scripts">
+    <script>
+        document.querySelectorAll('.page-menu-open').forEach((button) => {
+            button.addEventListener('click', () => {
+                const menu = document.querySelector('.page-mobile-menu');
+                if (menu) menu.classList.toggle('hidden');
+            });
         });
-    });
-</script>
+    </script>
+    <script th:src="@{/js/theme-select.js}" defer></script>
+</th:block>
+
+<!-- Back-compat alias: older pages call menu-script. -->
+<th:block th:fragment="menu-script">
+    <script>
+        document.querySelectorAll('.page-menu-open').forEach((button) => {
+            button.addEventListener('click', () => {
+                const menu = document.querySelector('.page-mobile-menu');
+                if (menu) menu.classList.toggle('hidden');
+            });
+        });
+    </script>
+    <script th:src="@{/js/theme-select.js}" defer></script>
+</th:block>
 
 </body>
 </html>

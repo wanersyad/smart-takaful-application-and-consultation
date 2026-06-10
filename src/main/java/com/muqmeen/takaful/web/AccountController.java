@@ -87,10 +87,15 @@ public class AccountController {
     }
 
     @PostMapping("/account/delete")
-    public String deleteAccount(Authentication authentication,
+    public String deleteAccount(@RequestParam(value = "password", required = false) String password,
+                                Authentication authentication,
                                 jakarta.servlet.http.HttpServletRequest request,
                                 RedirectAttributes redirectAttributes) {
         Customer customer = currentCustomer(authentication);
+        if (!customerService.checkPassword(customer, password)) {
+            redirectAttributes.addFlashAttribute("flashMessage", "Incorrect password. Account was not deleted.");
+            return "redirect:/account/profile";
+        }
         customerService.deleteCustomer(customer.getId());
         // Log the now-deleted user out.
         SecurityContextHolder.clearContext();

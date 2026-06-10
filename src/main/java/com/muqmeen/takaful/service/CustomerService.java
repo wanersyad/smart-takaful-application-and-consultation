@@ -59,6 +59,12 @@ public class CustomerService {
         customerRepository.delete(customer);
     }
 
+    public boolean checkPassword(Customer customer, String rawPassword) {
+        return rawPassword != null
+                && customer.getPasswordHash() != null
+                && passwordEncoder.matches(rawPassword, customer.getPasswordHash());
+    }
+
     public Customer register(String fullName, String email, String phoneNumber, String password) {
         String normalizedEmail = normalizeEmail(email);
         if (customerRepository.existsByEmailIgnoreCase(normalizedEmail)) {
