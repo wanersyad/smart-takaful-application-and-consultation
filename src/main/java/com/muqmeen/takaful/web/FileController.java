@@ -31,13 +31,29 @@ public class FileController {
     }
 
     @GetMapping("/files/{id}")
-    public ResponseEntity<byte[]> download(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<?> download(@PathVariable Long id, Authentication authentication) {
         StoredFile storedFile = storedFileRepository.findById(id).orElse(null);
         if (storedFile == null) {
             return ResponseEntity.notFound().build();
         }
         if (!canAccess(storedFile, authentication)) {
             return ResponseEntity.status(403).build();
+        }
+        // Public assets (product images/brochures) are redirected straight to a short-lived
+        // Supabase signed URL so the browser fetches the bytes directly from storage. The app
+        // thread is released immediately instead of proxying potentially-large files — this is
+        // what prevents the Tomcat thread pool from being exhausted by image/PDF traffic.
+        if (isPublic(storedFile)) {
+            String signedUrl = fileStorageService.createSignedUrl(storedFile, 3600);
+            if (signedUrl != null) {
+                return ResponseEntity.status(302)
+                        .header(HttpHeaders.LOCATION, signedUrl)
+                        // Allow the browser/CDN to reuse the redirect for a while (well within the
+                        // 1h signed-URL lifetime) so we don't re-sign on every image request.
+                        .header(HttpHeaders.CACHE_CONTROL, "public, max-age=600")
+                        .build();
+            }
+            // Fall through to byte-proxying when signing is unavailable (e.g. local storage mode).
         }
         byte[] bytes;
         try {
@@ -54,9 +70,13 @@ public class FileController {
                 .body(bytes);
     }
 
+    private boolean isPublic(StoredFile storedFile) {
+        return storedFile.getPurpose() == FilePurpose.PRODUCT_IMAGE
+                || storedFile.getPurpose() == FilePurpose.PRODUCT_DOCUMENT;
+    }
+
     private boolean canAccess(StoredFile storedFile, Authentication authentication) {
-        if (storedFile.getPurpose() == FilePurpose.PRODUCT_IMAGE
-                || storedFile.getPurpose() == FilePurpose.PRODUCT_DOCUMENT) {
+        if (isPublic(storedFile)) {
             return true;
         }
         if (authentication == null || !authentication.isAuthenticated()) {

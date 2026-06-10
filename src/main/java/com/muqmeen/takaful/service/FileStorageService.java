@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -142,6 +143,40 @@ public class FileStorageService {
             return Files.readAllBytes(Path.of(properties.getLocalUploadDir()).resolve(storedFile.getStorageKey()));
         } catch (IOException ex) {
             throw new IllegalStateException("Unable to read stored file.", ex);
+        }
+    }
+
+    /**
+     * Returns a time-limited URL the browser can use to fetch this file directly from Supabase
+     * Storage, so public assets (product images/brochures) never have to be proxied byte-by-byte
+     * through the app. Returns null when not in supabase mode (caller falls back to /files/{id}).
+     */
+    public String createSignedUrl(StoredFile storedFile, int expirySeconds) {
+        if (storedFile == null
+                || !"supabase".equals(storedFile.getStorageProvider())
+                || storedFile.getStorageKey() == null
+                || properties.getSupabaseUrl().isBlank()
+                || properties.getSupabaseServiceRoleKey().isBlank()) {
+            return null;
+        }
+        try {
+            Map<String, Object> resp = restClient.post()
+                    .uri(properties.getSupabaseUrl() + "/storage/v1/object/sign/"
+                            + properties.getSupabaseBucket() + "/" + storedFile.getStorageKey())
+                    .header("Authorization", "Bearer " + properties.getSupabaseServiceRoleKey())
+                    .header("apikey", properties.getSupabaseServiceRoleKey())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("expiresIn", expirySeconds))
+                    .retrieve()
+                    .body(new org.springframework.core.ParameterizedTypeReference<Map<String, Object>>() {});
+            Object signed = resp == null ? null : resp.get("signedURL");
+            if (signed == null) {
+                return null;
+            }
+            // signedURL is a path like "/object/sign/<bucket>/<key>?token=..."; prefix the storage base.
+            return properties.getSupabaseUrl() + "/storage/v1" + signed;
+        } catch (RuntimeException ex) {
+            return null;
         }
     }
 
