@@ -7,6 +7,7 @@ import com.muqmeen.takaful.config.ToyyibPayProperties;
 import com.muqmeen.takaful.domain.Payment;
 import com.muqmeen.takaful.domain.Quotation;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -29,7 +30,11 @@ public class ToyyibPayClient {
         this.properties = properties;
         this.appProperties = appProperties;
         this.objectMapper = objectMapper;
-        this.restClient = RestClient.create();
+        // Bounded timeouts so a slow ToyyibPay call cannot hang a request thread indefinitely.
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(20000);
+        this.restClient = RestClient.builder().requestFactory(factory).build();
     }
 
     public ToyyibPayBill createBill(Quotation quotation, Payment payment) {

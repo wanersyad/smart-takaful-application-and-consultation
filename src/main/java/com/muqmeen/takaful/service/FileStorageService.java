@@ -7,6 +7,7 @@ import com.muqmeen.takaful.domain.FilePurpose;
 import com.muqmeen.takaful.domain.StoredFile;
 import com.muqmeen.takaful.repository.StoredFileRepository;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -36,7 +37,13 @@ public class FileStorageService {
     public FileStorageService(FileStorageProperties properties, StoredFileRepository storedFileRepository) {
         this.properties = properties;
         this.storedFileRepository = storedFileRepository;
-        this.restClient = RestClient.create();
+        // Bounded timeouts so a slow/unresponsive Supabase Storage call can never hang a
+        // Tomcat worker thread indefinitely (which would exhaust the pool and take the whole
+        // app down). 5s to connect, 20s to read a file.
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(20000);
+        this.restClient = RestClient.builder().requestFactory(factory).build();
     }
 
     public StoredFile storeImage(MultipartFile file, Customer customer, ConsultationApplication application, FilePurpose purpose) {
