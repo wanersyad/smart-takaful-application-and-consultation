@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Muqmeen Group - ' + (${status} == 404 ? 'Page not found' : 'Something went wrong')">Muqmeen Group</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white antialiased">
+<main class="flex min-h-screen items-center justify-center px-6">
+    <div class="w-full max-w-lg rounded-3xl border border-yellow-400/20 bg-zinc-950/60 p-10 text-center shadow-2xl">
+        <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-400/10 text-yellow-300">
+            <i class="fa-solid text-2xl"
+               th:classappend="${status} == 404 ? 'fa-compass' : 'fa-triangle-exclamation'"></i>
+        </div>
+
+        <p class="text-sm font-semibold uppercase tracking-[0.3em] text-yellow-400/70"
+           th:text="${status} != null ? 'Error ' + ${status} : 'Error'">Error</p>
+
+        <h1 class="mt-3 text-2xl font-bold text-white"
+            th:text="${status} == 404 ? 'We can''t find that page' : 'Something went wrong'">
+            Something went wrong
+        </h1>
+
+        <p class="mt-4 leading-7 text-white/65"
+           th:text="${status} == 404
+                ? 'The page you were looking for may have moved or no longer exists.'
+                : 'We hit an unexpected hiccup on our end. Please try again in a moment — your information is safe.'">
+            Please try again in a moment.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <a th:href="@{/}" class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 transition hover:bg-yellow-300">
+                <i class="fa-solid fa-house mr-2"></i>Back to home
+            </a>
+            <a href="/#contact" class="rounded-full border border-yellow-400/30 px-6 py-3 font-semibold text-white transition hover:bg-yellow-400/10 hover:text-yellow-300">
+                Contact us
+            </a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

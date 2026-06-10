@@ -3,6 +3,8 @@ package com.muqmeen.takaful.service;
 import com.muqmeen.takaful.domain.Product;
 import com.muqmeen.takaful.repository.ProductRepository;
 import org.hibernate.Hibernate;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,11 @@ public class ProductService {
         return products;
     }
 
+    // The public landing page is the most-visited page and its product list rarely changes.
+    // Cache it so repeat visitors don't trigger a Supabase round-trip per page load; the cache
+    // is cleared whenever a product is saved or archived (see evictLandingCache), so it never
+    // serves stale data. Entities are fully initialized below, so they are safe to reuse.
+    @Cacheable("landingProducts")
     public List<Product> listActiveForLanding() {
         List<Product> products = productRepository.findAllByActiveTrueAndArchivedFalseOrderByFeaturedDescNameAsc();
         products.forEach(this::initializeDetails);
@@ -51,10 +58,12 @@ public class ProductService {
                 .map(this::initializeDetails);
     }
 
+    @CacheEvict(value = "landingProducts", allEntries = true)
     public Product save(Product product) {
         return productRepository.save(product);
     }
 
+    @CacheEvict(value = "landingProducts", allEntries = true)
     public Product archiveById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));

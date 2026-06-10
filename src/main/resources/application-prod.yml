@@ -5,9 +5,18 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 2
-      connection-timeout: 10000
+      # Supabase free-tier pooler has a modest connection ceiling; keep the pool small so we
+      # never starve it, and recycle connections before the pooler drops them.
+      maximum-pool-size: 8
+      minimum-idle: 1
+      # Fail fast when no connection is free instead of pinning the request thread indefinitely.
+      connection-timeout: 8000
+      validation-timeout: 3000
+      # The pooler reclaims idle/old connections; retire ours proactively so we never hand a
+      # request a dead connection (the usual cause of an intermittent 500 under light load).
+      idle-timeout: 120000
+      max-lifetime: 300000
+      keepalive-time: 60000
       data-source-properties:
         # Supabase Transaction pooler (port 6543) does not support
         # server-side prepared statements. Tell PgJDBC never to create them.
