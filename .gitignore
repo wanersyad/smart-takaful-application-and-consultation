@@ -71,3 +71,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 yarn.lock
+
+# --- Handover / working docs & scripts (kept local, not committed) ---
+HANDOVER.md
+CLIENT_MAC_SETUP.md
+TECHNICAL_OVERVIEW.md
+AGENTS.md
+CLAUDE.md
+*.sql
+supabase/
+report-latex/
+*.tex
+*.bib
