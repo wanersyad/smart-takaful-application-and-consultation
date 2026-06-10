@@ -72,7 +72,9 @@
             <div><p class="text-sm uppercase tracking-[0.2em] text-white/45">Terms / Notes</p><p class="mt-2 whitespace-pre-line text-white/70" th:text="${product.termsNotes}">Notes</p></div>
         </div>
         <div class="mt-6 flex flex-wrap gap-3">
-            <a th:each="document : ${product.documents}" th:href="${document.url}" target="_blank" class="rounded-full border border-yellow-400/30 px-5 py-3 text-sm font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300" th:text="${document.label}">Document</a>
+            <a th:each="document : ${product.documents}" th:href="${document.url}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full border border-yellow-400/30 px-5 py-3 text-sm font-semibold text-yellow-200 transition hover:bg-yellow-400/10 hover:text-yellow-300">
+                <i class="fa-solid fa-file-pdf"></i><span>View Brochure</span>
+            </a>
         </div>
     </section>
 </main>

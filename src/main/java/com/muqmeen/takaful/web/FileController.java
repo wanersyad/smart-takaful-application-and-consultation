@@ -32,15 +32,26 @@ public class FileController {
 
     @GetMapping("/files/{id}")
     public ResponseEntity<byte[]> download(@PathVariable Long id, Authentication authentication) {
-        StoredFile storedFile = storedFileRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("File not found"));
+        StoredFile storedFile = storedFileRepository.findById(id).orElse(null);
+        if (storedFile == null) {
+            return ResponseEntity.notFound().build();
+        }
         if (!canAccess(storedFile, authentication)) {
             return ResponseEntity.status(403).build();
         }
+        byte[] bytes;
+        try {
+            bytes = fileStorageService.readBytes(storedFile);
+        } catch (RuntimeException ex) {
+            // Storage backend unavailable or object missing — return a clean 404 instead of
+            // a Whitelabel 500 error page.
+            return ResponseEntity.notFound().build();
+        }
+        String contentType = storedFile.getContentType() == null ? "application/octet-stream" : storedFile.getContentType();
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(storedFile.getContentType()))
+                .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + storedFile.getOriginalFilename() + "\"")
-                .body(fileStorageService.readBytes(storedFile));
+                .body(bytes);
     }
 
     private boolean canAccess(StoredFile storedFile, Authentication authentication) {

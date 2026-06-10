@@ -41,9 +41,14 @@ public class SiteContentService {
             def("faq.eyebrow", "FAQ", "FAQ eyebrow", "text", "FAQ"),
             def("faq.title", "FAQ", "FAQ heading", "text", "Frequently asked questions"),
             def("faq.items", "FAQ", "FAQ rows, one question|answer per line", "textarea", """
+                    What is Takaful? | Takaful is the Shariah-compliant alternative to conventional insurance. Participants contribute to a shared pool used to help one another in times of need, while avoiding riba (interest), gharar (uncertainty), and maysir (gambling).
+                    What documents do I need to apply? | You will need your IC (front and back), nominee details, bank account information, and a signature. Your profile details help pre-fill the application so you do not have to re-enter them.
                     What happens after I submit an application? | The admin reviews your documents, profile snapshot, bank details, measurements, and nominee information. If everything is clear, the admin creates a quotation for you.
                     Do I pay during the application? | No. Payment only happens after the agent reviews your application and publishes a quotation with selected payable items.
-                    Can I save a draft? | Yes. You can save an application draft before uploading all documents. Once submitted, it can only be edited again if the admin requests corrections."""),
+                    How is the quotation amount decided? | After reviewing your application, our agent prepares a quotation with the payable items suited to your chosen plan and needs. You only pay for the items included in the published quotation.
+                    Can I save a draft? | Yes. You can save an application draft before uploading all documents. Once submitted, it can only be edited again if the admin requests corrections.
+                    Is my personal data and documents secure? | Yes. Your IC images, signature, and other private documents are stored securely and are only accessible to you and our authorised admin through protected links.
+                    What is Hibah? | Hibah is a Shariah-compliant gift or inheritance arrangement that lets you pass on benefits to your nominees, helping secure your family's financial future."""),
             def("contact.title", "Contact", "Contact heading", "text", "Have a question? Get in touch"),
             def("contact.subtitle", "Contact", "Contact intro", "textarea", "Ask us anything about our Takaful plans and our team will get back to you by email."),
             def("chat.title", "Chat", "Chat title", "text", "Takaful Assistant"),
