@@ -65,6 +65,7 @@ public class CustomerService {
                 && passwordEncoder.matches(rawPassword, customer.getPasswordHash());
     }
 
+    @Transactional
     public Customer register(String fullName, String email, String phoneNumber, String password) {
         String normalizedEmail = normalizeEmail(email);
         if (customerRepository.existsByEmailIgnoreCase(normalizedEmail)) {
@@ -76,7 +77,11 @@ public class CustomerService {
         customer.setEmail(normalizedEmail);
         customer.setPhoneNumber(normalizePhoneNumber(phoneNumber));
         customer.setPasswordHash(passwordEncoder.encode(password));
-        return customerRepository.save(customer);
+        // saveAndFlush so any entity-level constraint violation (e.g. phone @Pattern) surfaces
+        // here, inside this transaction — failing the whole registration and rolling back the
+        // insert — rather than at a later flush after the controller has already signed the
+        // user in. Prevents a half-created, login-able account when validation fails.
+        return customerRepository.saveAndFlush(customer);
     }
 
     public Optional<Customer> findByEmail(String email) {

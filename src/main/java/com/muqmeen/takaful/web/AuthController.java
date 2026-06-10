@@ -80,6 +80,14 @@ public class AuthController {
             bindingResult.rejectValue("email", "duplicate", ex.getMessage());
             model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/#products"));
             return "register";
+        } catch (RuntimeException ex) {
+            // Any persistence/validation failure (e.g. an entity constraint violation at flush)
+            // rolls back the insert in the service; re-show the form instead of a 500 so the user
+            // never ends up with a half-created account and a scary error page.
+            bindingResult.reject("registrationFailed",
+                    "We could not complete your registration. Please check your details and try again.");
+            model.addAttribute("redirect", safeUserRedirectOrDefault(redirect, "/#products"));
+            return "register";
         }
     }
 
