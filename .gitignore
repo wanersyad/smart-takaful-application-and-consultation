@@ -75,6 +75,7 @@ yarn.lock
 # --- Handover / working docs & scripts (kept local, not committed) ---
 HANDOVER.md
 CLIENT_MAC_SETUP.md
+DB_CONNECTION_WALKTHROUGH.md
 TECHNICAL_OVERVIEW.md
 AGENTS.md
 CLAUDE.md
