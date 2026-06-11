@@ -28,10 +28,17 @@ package com.muqmeen.takaful.domain;
  *
  * Leave this class commented out in normal operation so it does not create an
  * unused table in production.
+ *
+ * ----------------------------------------------------------------------------
+ * TO ENABLE FOR THE DEMO:  delete the line below that says  >>> REMOVE THIS
+ * LINE TO ENABLE <<<  AND the matching one at the very bottom of the file.
+ * That uncomments the class, and on the next deploy the `demo_notes` table is
+ * created in Supabase. To turn it off again, put both lines back.
+ * ----------------------------------------------------------------------------
  * ============================================================================
  */
 
-/*
+/*  >>> REMOVE THIS LINE TO ENABLE <<<
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -76,4 +83,4 @@ public class DemoNote {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
-*/
+*/  /* >>> REMOVE THIS LINE TO ENABLE <<< */
