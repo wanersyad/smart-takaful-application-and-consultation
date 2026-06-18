@@ -49,8 +49,8 @@ public class SiteContentService {
                     Can I save a draft? | Yes. You can save an application draft before uploading all documents. Once submitted, it can only be edited again if the admin requests corrections.
                     Is my personal data and documents secure? | Yes. Your IC images, signature, and other private documents are stored securely and are only accessible to you and our authorised admin through protected links.
                     What is Hibah? | Hibah is a Shariah-compliant gift or inheritance arrangement that lets you pass on benefits to your nominees, helping secure your family's financial future."""),
-            def("contact.title", "Contact", "Contact heading", "text", "Have a question? Get in touch"),
-            def("contact.subtitle", "Contact", "Contact intro", "textarea", "Ask us anything about our Takaful plans and our team will get back to you by email."),
+            def("contact.title", "Contact", "Contact heading", "text", "Speak to a Takaful advisor"),
+            def("contact.subtitle", "Contact", "Contact intro", "textarea", "Not sure which plan fits you? Request a consultation — no need to apply for a product. An advisor will reach out the way you prefer."),
             def("chat.title", "Chat", "Chat title", "text", "Takaful Assistant"),
             def("chat.subtitle", "Chat", "Chat subtitle", "text", "Ask about our products"),
             def("chat.greeting", "Chat", "Chat opening message", "textarea", "Hi, I can explain the application process, product details, and quotation/payment flow."),
