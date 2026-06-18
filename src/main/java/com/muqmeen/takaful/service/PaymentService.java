@@ -53,20 +53,20 @@ public class PaymentService {
         }
         int amountCents = amountCents(quotation.selectedTotal());
 
+        // A real Takaful quotation must have a positive amount. A zero/blank total almost always
+        // means the admin left an amount at 0 — and we must NEVER silently mark such a quotation
+        // as PAID (that used to happen here and made quotations look paid without any payment).
+        // Reject it so the admin fixes the amount before the customer can pay.
+        if (amountCents <= 0) {
+            throw new IllegalStateException(
+                    "This quotation has no payable amount. Please ask the agent to set a price before paying.");
+        }
+
         Payment payment = new Payment();
         payment.setQuotation(quotation);
         payment.setCustomer(quotation.getApplication().getCustomer());
         payment.setExternalReferenceNo("MGQ-" + quotation.getId() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         payment.setAmountCents(amountCents);
-
-        if (amountCents <= 0) {
-            payment.setStatus("PAID");
-            quotation.setStatus("PAID");
-            quotation.getApplication().setStatus(ApplicationStatus.PAID);
-            quotationRepository.save(quotation);
-            paymentRepository.save(payment);
-            return new PaymentStart(payment, "/applications/" + quotation.getApplication().getId());
-        }
 
         payment.setStatus("PENDING");
         ToyyibPayClient.ToyyibPayBill bill = toyyibPayClient.createBill(quotation, payment);
@@ -82,12 +82,24 @@ public class PaymentService {
         return Optional.ofNullable(paymentRepository.findByBillCode(billCode)).map(this::initializeDetails);
     }
 
+    /**
+     * Handles the browser redirect back from the gateway (GET /payment/callback). The status in
+     * the URL is attacker-controllable, so we only trust it in mock mode. In live/sandbox mode we
+     * IGNORE the posted status and confirm the real outcome server-to-server with ToyyibPay — the
+     * same defence used by the POST callback. This prevents a quotation being marked PAID just
+     * because someone (or the gateway redirect) put status_id=1 in the URL.
+     */
     public Payment updateMockStatus(String billCode, String statusId) {
         Payment payment = paymentRepository.findByBillCode(billCode);
         if (payment == null) {
             throw new IllegalArgumentException("Payment not found");
         }
-        applyStatus(payment, statusId, null, "mock");
+        if (toyyibPayProperties.isMockMode()) {
+            applyStatus(payment, statusId, null, "mock");
+        } else {
+            String verified = toyyibPayClient.isBillPaid(billCode) ? "1" : "3";
+            applyStatus(payment, verified, null, "return-verified");
+        }
         return initializeDetails(paymentRepository.save(payment));
     }
 

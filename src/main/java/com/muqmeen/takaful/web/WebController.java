@@ -2,6 +2,7 @@ package com.muqmeen.takaful.web;
 
 import com.muqmeen.takaful.domain.Customer;
 import com.muqmeen.takaful.domain.Payment;
+import com.muqmeen.takaful.domain.Quotation;
 import com.muqmeen.takaful.service.CustomerService;
 import com.muqmeen.takaful.service.LandingMetricsService;
 import com.muqmeen.takaful.service.PaymentService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
 import java.util.Optional;
@@ -114,15 +116,23 @@ public class WebController {
     }
 
     @PostMapping("/quotations/{id}/pay")
-    public String payQuotation(@PathVariable Long id, Authentication authentication) {
+    public String payQuotation(@PathVariable Long id, Authentication authentication,
+                               RedirectAttributes redirectAttributes) {
         Customer customer = customerService.currentCustomer(authentication)
                 .orElseThrow(() -> new IllegalStateException("Authenticated customer not found"));
-        return quotationService.findById(id)
-                .filter(quotation -> quotation.getApplication().getCustomer().getId().equals(customer.getId()))
-                .map(paymentService::prepareQuotationPayment)
-                .map(PaymentService.PaymentStart::redirectUrl)
-                .map("redirect:"::concat)
-                .orElse("redirect:/account");
+        Optional<Quotation> owned = quotationService.findById(id)
+                .filter(quotation -> quotation.getApplication().getCustomer().getId().equals(customer.getId()));
+        if (owned.isEmpty()) {
+            return "redirect:/account";
+        }
+        try {
+            String redirectUrl = paymentService.prepareQuotationPayment(owned.get()).redirectUrl();
+            return "redirect:" + redirectUrl;
+        } catch (IllegalStateException ex) {
+            // e.g. a zero-amount quotation that cannot be paid — show the reason instead of a 500.
+            redirectAttributes.addFlashAttribute("paymentError", ex.getMessage());
+            return "redirect:/applications/" + owned.get().getApplication().getId();
+        }
     }
 
     @GetMapping("/success")

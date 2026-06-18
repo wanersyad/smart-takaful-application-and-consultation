@@ -58,6 +58,13 @@ public class QuotationService {
     public Quotation publish(Long quotationId) {
         Quotation quotation = quotationRepository.findById(quotationId)
                 .orElseThrow(() -> new IllegalArgumentException("Quotation not found"));
+        // Guard at the source: a quotation with no positive selected total must not be published,
+        // otherwise the customer would be sent to "pay" RM0 (which previously auto-completed as
+        // PAID without any real payment).
+        if (quotation.selectedTotal().signum() <= 0) {
+            throw new IllegalStateException(
+                    "Cannot publish a quotation with a total of RM0. Add at least one selected item with a price.");
+        }
         quotation.setStatus("PUBLISHED");
         quotation.setPublishedAt(LocalDateTime.now());
         quotation.getApplication().setStatus(ApplicationStatus.QUOTED);
