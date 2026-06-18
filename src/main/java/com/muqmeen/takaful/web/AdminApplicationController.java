@@ -59,19 +59,6 @@ public class AdminApplicationController {
         return "redirect:/admin/dashboard";
     }
 
-    @PostMapping("/contact-inquiries/{id}/resolve")
-    public String resolveInquiry(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        contactInquiryService.markResolved(id);
-        redirectAttributes.addFlashAttribute("flashMessage", "Enquiry resolved and cleared from the list.");
-        return "redirect:/admin/dashboard";
-    }
-
-    @PostMapping("/contact-inquiries/{id}/delete")
-    public String deleteInquiry(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        contactInquiryService.delete(id);
-        redirectAttributes.addFlashAttribute("flashMessage", "Enquiry deleted.");
-        return "redirect:/admin/dashboard";
-    }
 
     private long countStatuses(List<ConsultationApplication> applications, ApplicationStatus... statuses) {
         return applications.stream()

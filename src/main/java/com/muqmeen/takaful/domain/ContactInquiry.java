@@ -46,8 +46,24 @@ public class ContactInquiry {
     @Column(nullable = false, length = 1000)
     private String message;
 
+    // What the person wants to consult about (e.g. Family protection, Medical, Hibah). Optional.
+    @Size(max = 80)
+    @Column(length = 80)
+    private String topic;
+
+    // How they prefer to be reached back (WhatsApp / Call / Email). Optional.
+    @Size(max = 30)
+    @Column(length = 30)
+    private String preferredContact;
+
+    // Funnel status: NEW, CONTACTED, SCHEDULED, COMPLETED, CLOSED. See ConsultationStatus.
     @Column(nullable = false, length = 30)
     private String status = "NEW";
+
+    // Internal notes the agent keeps while working the lead (not shown to the customer).
+    @Size(max = 2000)
+    @Column(length = 2000)
+    private String agentNotes;
 
     @Column(length = 2000)
     private String deliverySummary;
@@ -55,6 +71,9 @@ public class ContactInquiry {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    private LocalDateTime contactedAt;
+    private LocalDateTime scheduledAt;
+    private LocalDateTime completedAt;
     private LocalDateTime resolvedAt;
 
     @PrePersist
@@ -73,11 +92,23 @@ public class ContactInquiry {
     public void setSubject(String subject) { this.subject = subject; }
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
+    public String getTopic() { return topic; }
+    public void setTopic(String topic) { this.topic = topic; }
+    public String getPreferredContact() { return preferredContact; }
+    public void setPreferredContact(String preferredContact) { this.preferredContact = preferredContact; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getAgentNotes() { return agentNotes; }
+    public void setAgentNotes(String agentNotes) { this.agentNotes = agentNotes; }
     public String getDeliverySummary() { return deliverySummary; }
     public void setDeliverySummary(String deliverySummary) { this.deliverySummary = deliverySummary; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getContactedAt() { return contactedAt; }
+    public void setContactedAt(LocalDateTime contactedAt) { this.contactedAt = contactedAt; }
+    public LocalDateTime getScheduledAt() { return scheduledAt; }
+    public void setScheduledAt(LocalDateTime scheduledAt) { this.scheduledAt = scheduledAt; }
+    public LocalDateTime getCompletedAt() { return completedAt; }
+    public void setCompletedAt(LocalDateTime completedAt) { this.completedAt = completedAt; }
     public LocalDateTime getResolvedAt() { return resolvedAt; }
     public void setResolvedAt(LocalDateTime resolvedAt) { this.resolvedAt = resolvedAt; }
 }

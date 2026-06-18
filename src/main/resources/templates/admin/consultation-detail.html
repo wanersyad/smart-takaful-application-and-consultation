@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultation - Muqmeen Group</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<nav th:replace="~{fragments/layout :: adminNav('consultations')}"></nav>
+<main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+    <a href="/admin/consultations" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to consultations</a>
+    <p th:if="${flashMessage}" class="mt-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
+
+    <div class="mt-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-semibold text-yellow-300" th:text="${consultation.fullName}">Name</h1>
+            <p class="mt-1 text-white/60" th:text="${#temporals.format(consultation.createdAt, 'EEEE, dd MMM yyyy HH:mm')}">date</p>
+        </div>
+        <span class="rounded-full border border-yellow-400/30 bg-yellow-400/10 px-4 py-2 text-sm font-semibold text-yellow-200" th:text="${consultation.status}">NEW</span>
+    </div>
+
+    <!-- Contact + request details -->
+    <section class="mt-6 grid gap-4 sm:grid-cols-2">
+        <div class="rounded-2xl border border-yellow-400/15 bg-[#111] p-5">
+            <p class="text-xs uppercase tracking-wide text-white/50">Email</p>
+            <a th:href="'mailto:' + ${consultation.email}" class="mt-1 block font-semibold text-yellow-200 hover:text-yellow-100" th:text="${consultation.email}">email</a>
+        </div>
+        <div class="rounded-2xl border border-yellow-400/15 bg-[#111] p-5">
+            <p class="text-xs uppercase tracking-wide text-white/50">Phone</p>
+            <p class="mt-1 font-semibold" th:text="${consultation.phoneNumber != null and !#strings.isEmpty(consultation.phoneNumber) ? consultation.phoneNumber : '—'}">phone</p>
+        </div>
+        <div class="rounded-2xl border border-yellow-400/15 bg-[#111] p-5">
+            <p class="text-xs uppercase tracking-wide text-white/50">Topic</p>
+            <p class="mt-1 font-semibold" th:text="${consultation.topic != null and !#strings.isEmpty(consultation.topic) ? consultation.topic : '—'}">topic</p>
+        </div>
+        <div class="rounded-2xl border border-yellow-400/15 bg-[#111] p-5">
+            <p class="text-xs uppercase tracking-wide text-white/50">Preferred contact</p>
+            <p class="mt-1 font-semibold" th:text="${consultation.preferredContact != null and !#strings.isEmpty(consultation.preferredContact) ? consultation.preferredContact : '—'}">pref</p>
+        </div>
+    </section>
+
+    <section class="mt-4 rounded-2xl border border-yellow-400/15 bg-[#111] p-5">
+        <p class="text-xs uppercase tracking-wide text-white/50">Message</p>
+        <p class="mt-2 whitespace-pre-line text-white/80" th:text="${consultation.message}">Message</p>
+    </section>
+
+    <!-- Status funnel -->
+    <section class="mt-6 rounded-3xl border border-yellow-400/20 bg-[#0d0d0d] p-6">
+        <h2 class="text-lg font-semibold text-white">Update status</h2>
+        <p class="mt-1 text-sm text-white/55">Move this lead through the funnel.</p>
+        <form th:action="@{/admin/consultations/{id}/status(id=${consultation.id})}" method="post" class="mt-4 flex flex-wrap items-center gap-3">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <select name="status" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-yellow-200">
+                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s.name() == consultation.status}">STATUS</option>
+            </select>
+            <button class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Save status</button>
+        </form>
+        <div class="mt-5 grid gap-2 text-sm text-white/55 sm:grid-cols-2">
+            <p th:if="${consultation.contactedAt != null}">Contacted: <span class="text-white/80" th:text="${#temporals.format(consultation.contactedAt, 'yyyy-MM-dd HH:mm')}"></span></p>
+            <p th:if="${consultation.scheduledAt != null}">Scheduled: <span class="text-white/80" th:text="${#temporals.format(consultation.scheduledAt, 'yyyy-MM-dd HH:mm')}"></span></p>
+            <p th:if="${consultation.completedAt != null}">Completed: <span class="text-white/80" th:text="${#temporals.format(consultation.completedAt, 'yyyy-MM-dd HH:mm')}"></span></p>
+        </div>
+    </section>
+
+    <!-- Agent notes -->
+    <section class="mt-6 rounded-3xl border border-yellow-400/20 bg-[#0d0d0d] p-6">
+        <h2 class="text-lg font-semibold text-white">Agent notes</h2>
+        <p class="mt-1 text-sm text-white/55">Private notes for your team — never shown to the customer.</p>
+        <form th:action="@{/admin/consultations/{id}/notes(id=${consultation.id})}" method="post" class="mt-4">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <textarea name="agentNotes" rows="5" placeholder="e.g. Called 11 Jun, scheduling a Zoom on Tuesday 3pm." class="w-full rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white" th:text="${consultation.agentNotes}"></textarea>
+            <button class="mt-3 rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Save notes</button>
+        </form>
+    </section>
+
+    <!-- Delete -->
+    <section class="mt-6 rounded-3xl border border-red-500/25 bg-red-500/[0.04] p-6">
+        <h2 class="text-lg font-semibold text-red-200">Delete consultation</h2>
+        <p class="mt-1 text-sm text-white/55">Permanently removes this request. This cannot be undone.</p>
+        <form th:action="@{/admin/consultations/{id}/delete(id=${consultation.id})}" method="post" class="mt-4"
+              onsubmit="return confirm('Delete this consultation permanently?');">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="rounded-full border border-red-500/40 px-6 py-3 font-semibold text-red-200 hover:bg-red-500 hover:text-white"><i class="fa-solid fa-trash-can mr-2"></i>Delete</button>
+        </form>
+    </section>
+</main>
+<div th:replace="~{fragments/layout :: page-scripts}"></div>
+</body>
+</html>

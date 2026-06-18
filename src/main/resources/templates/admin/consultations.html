@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultations - Muqmeen Group</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<nav th:replace="~{fragments/layout :: adminNav('consultations')}"></nav>
+<main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <p th:if="${flashMessage}" class="mb-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
+
+    <h1 class="text-4xl font-semibold text-yellow-300">Consultation Requests</h1>
+    <p class="mt-2 text-white/65">People who asked to speak with an advisor. Work each lead through the funnel.</p>
+
+    <div class="mt-6 flex flex-wrap items-center gap-2">
+        <a th:href="@{/admin/consultations}"
+           class="rounded-full border px-4 py-2 text-sm font-semibold transition"
+           th:classappend="${activeStatus == 'ALL'} ? ' border-yellow-400 bg-yellow-400 text-zinc-950' : ' border-yellow-400/30 text-yellow-200 hover:bg-yellow-400/10'">
+            All <span th:text="'(' + ${totalCount} + ')'">(0)</span>
+        </a>
+        <a th:each="s : ${statuses}" th:href="@{/admin/consultations(status=${s})}"
+           class="rounded-full border px-4 py-2 text-sm font-semibold transition"
+           th:classappend="${activeStatus == s.name()} ? ' border-yellow-400 bg-yellow-400 text-zinc-950' : ' border-yellow-400/30 text-yellow-200 hover:bg-yellow-400/10'"
+           th:text="${s}">STATUS</a>
+    </div>
+
+    <div class="mt-6 overflow-hidden rounded-3xl border border-yellow-400/20 bg-[#0d0d0d]">
+        <div th:if="${#lists.isEmpty(consultations)}" class="p-10 text-center text-white/55">
+            <i class="fa-regular fa-comments mb-3 text-3xl text-yellow-300/60"></i>
+            <p>No consultation requests in this view.</p>
+        </div>
+        <table th:unless="${#lists.isEmpty(consultations)}" class="w-full text-left text-sm">
+            <thead class="border-b border-yellow-400/15 text-xs uppercase tracking-wide text-white/50">
+                <tr>
+                    <th class="px-5 py-4">Received</th>
+                    <th class="px-5 py-4">Name</th>
+                    <th class="px-5 py-4">Topic</th>
+                    <th class="px-5 py-4">Prefers</th>
+                    <th class="px-5 py-4">Status</th>
+                    <th class="px-5 py-4 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+                <tr th:each="c : ${consultations}" class="hover:bg-white/[0.03]">
+                    <td class="px-5 py-4 text-white/60" th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm')}">date</td>
+                    <td class="px-5 py-4">
+                        <p class="font-semibold text-white" th:text="${c.fullName}">Name</p>
+                        <p class="text-xs text-white/50" th:text="${c.email}">email</p>
+                    </td>
+                    <td class="px-5 py-4 text-white/75" th:text="${c.topic != null and !#strings.isEmpty(c.topic) ? c.topic : '—'}">Topic</td>
+                    <td class="px-5 py-4 text-white/75" th:text="${c.preferredContact != null and !#strings.isEmpty(c.preferredContact) ? c.preferredContact : '—'}">Pref</td>
+                    <td class="px-5 py-4">
+                        <span class="rounded-full border border-yellow-400/30 bg-yellow-400/10 px-3 py-1 text-xs font-semibold text-yellow-200" th:text="${c.status}">NEW</span>
+                    </td>
+                    <td class="px-5 py-4 text-right">
+                        <a th:href="@{/admin/consultations/{id}(id=${c.id})}" class="rounded-full bg-yellow-400 px-4 py-2 text-xs font-semibold text-zinc-950 hover:bg-yellow-300">Manage</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<div th:replace="~{fragments/layout :: page-scripts}"></div>
+</body>
+</html>

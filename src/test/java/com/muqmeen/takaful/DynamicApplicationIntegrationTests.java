@@ -244,13 +244,14 @@ class DynamicApplicationIntegrationTests {
     }
 
     @Test
-    void contactFormPersistsInquiryAndAdminCanResolveIt() throws Exception {
+    void consultationRequestPersistsAndAdminCanWorkTheFunnel() throws Exception {
         mockMvc.perform(post("/contact")
                         .with(csrf())
                         .param("fullName", "Public Visitor")
                         .param("email", "visitor@example.com")
                         .param("phoneNumber", "60123456789")
-                        .param("subject", "General Takaful Consultation")
+                        .param("topic", "Family protection")
+                        .param("preferredContact", "WhatsApp")
                         .param("message", "I want to understand which product fits my family."))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/#contact"));
@@ -259,18 +260,30 @@ class DynamicApplicationIntegrationTests {
         var inquiry = contactInquiryRepository.findTop5ByOrderByCreatedAtDesc().get(0);
         assertEquals("Public Visitor", inquiry.getFullName());
         assertEquals("NEW", inquiry.getStatus());
+        assertEquals("Family protection", inquiry.getTopic());
+        assertEquals("WhatsApp", inquiry.getPreferredContact());
 
-        mockMvc.perform(get("/admin/dashboard").with(user("admin").roles("ADMIN")))
+        // The consultation appears in the admin management list.
+        mockMvc.perform(get("/admin/consultations").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Public Visitor")))
-                .andExpect(content().string(containsString("I want to understand which product fits my family.")));
+                .andExpect(content().string(containsString("Public Visitor")));
 
-        mockMvc.perform(post("/admin/contact-inquiries/" + inquiry.getId() + "/resolve")
+        // Admin moves it through the funnel and saves an internal note.
+        mockMvc.perform(post("/admin/consultations/" + inquiry.getId() + "/status")
                         .with(user("admin").roles("ADMIN"))
-                        .with(csrf()))
+                        .with(csrf())
+                        .param("status", "CONTACTED"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/dashboard"));
-        assertEquals("RESOLVED", contactInquiryRepository.findById(inquiry.getId()).orElseThrow().getStatus());
+                .andExpect(redirectedUrl("/admin/consultations/" + inquiry.getId()));
+        assertEquals("CONTACTED", contactInquiryRepository.findById(inquiry.getId()).orElseThrow().getStatus());
+
+        mockMvc.perform(post("/admin/consultations/" + inquiry.getId() + "/notes")
+                        .with(user("admin").roles("ADMIN"))
+                        .with(csrf())
+                        .param("agentNotes", "Called, scheduling Tuesday."))
+                .andExpect(status().is3xxRedirection());
+        assertEquals("Called, scheduling Tuesday.",
+                contactInquiryRepository.findById(inquiry.getId()).orElseThrow().getAgentNotes());
     }
 
     @Test

@@ -11,5 +11,9 @@ public interface ContactInquiryRepository extends JpaRepository<ContactInquiry, 
 
     List<ContactInquiry> findTop10ByStatusNotOrderByCreatedAtDesc(String status);
 
+    List<ContactInquiry> findTop10ByStatusNotInOrderByCreatedAtDesc(List<String> statuses);
+
+    List<ContactInquiry> findAllByOrderByCreatedAtDesc();
+
     long countByStatus(String status);
 }

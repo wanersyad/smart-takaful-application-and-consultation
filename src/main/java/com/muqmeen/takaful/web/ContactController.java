@@ -33,13 +33,17 @@ public class ContactController {
             return "redirect:/#contact";
         }
 
-        String subject = (form.subject == null || form.subject.isBlank()) ? "General enquiry" : form.subject;
+        String subject = (form.subject == null || form.subject.isBlank())
+                ? (form.topic == null || form.topic.isBlank() ? "General consultation" : form.topic)
+                : form.subject;
         var inquiry = contactInquiryService.create(new ContactInquiryService.ContactInput(
                 form.fullName,
                 form.email,
                 form.phoneNumber,
                 subject,
-                form.message
+                form.message,
+                form.topic,
+                form.preferredContact
         ));
         try {
             contactEmailService.send(new ContactEmailService.ContactMessage(
@@ -75,6 +79,12 @@ public class ContactController {
         @Size(max = 120)
         private String subject;
 
+        @Size(max = 80)
+        private String topic;
+
+        @Size(max = 30)
+        private String preferredContact;
+
         @NotBlank(message = "Message is required")
         @Size(max = 1000)
         private String message;
@@ -90,6 +100,12 @@ public class ContactController {
 
         public String getSubject() { return subject; }
         public void setSubject(String subject) { this.subject = subject; }
+
+        public String getTopic() { return topic; }
+        public void setTopic(String topic) { this.topic = topic; }
+
+        public String getPreferredContact() { return preferredContact; }
+        public void setPreferredContact(String preferredContact) { this.preferredContact = preferredContact; }
 
         public String getMessage() { return message; }
         public void setMessage(String message) { this.message = message; }
