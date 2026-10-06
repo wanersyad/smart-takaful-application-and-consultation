@@ -84,3 +84,6 @@ supabase/
 report-latex/
 *.tex
 *.bib
+
+# Local file uploads (customer documents) — never commit
+uploads/
