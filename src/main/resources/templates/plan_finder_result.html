@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html th:lang="${lang}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${lang == 'ms'} ? 'Pelan Dicadangkan - Muqmeen Group' : 'Your Suggested Plans - Muqmeen Group'">Your Suggested Plans - Muqmeen Group</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<nav th:replace="~{fragments/layout :: siteNav('products')}"></nav>
+
+<main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8" th:with="ms=${lang == 'ms'}">
+    <a th:href="@{/plan-finder(lang=${lang})}" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-rotate-left mr-2"></i><span th:text="${ms} ? 'Jawab semula' : 'Start again'">Start again</span></a>
+
+    <p class="mt-6 text-sm font-semibold uppercase tracking-[0.35em] text-yellow-400" th:text="${ms} ? 'Cadangan untuk anda' : 'Suggested for you'">Suggested for you</p>
+    <h1 class="mt-3 text-4xl font-semibold text-yellow-300 sm:text-5xl" th:text="${ms} ? 'Pelan yang paling berkaitan' : 'Your most relevant plans'">Your most relevant plans</h1>
+    <p th:if="${result.summary != null}" class="mt-4 max-w-3xl text-lg leading-8 text-white/75" th:text="${result.summary}">Summary</p>
+
+    <div th:if="${#lists.isEmpty(result.products)}" class="mt-8 rounded-3xl border border-yellow-400/25 bg-[#111] p-8 text-center">
+        <p class="text-xl font-semibold text-yellow-300" th:text="${ms} ? 'Tiada pelan untuk dicadangkan buat masa ini' : 'No plans to suggest right now'">No plans</p>
+        <p class="mt-2 text-white/70" th:text="${ms} ? 'Hantar permintaan konsultasi di bawah dan ejen kami akan membantu anda.' : 'Send a consultation request below and our agent will help you.'">Help</p>
+    </div>
+
+    <div class="mt-8 grid gap-6">
+        <article th:each="item, iter : ${result.products}" class="flex flex-col gap-5 rounded-[2rem] border border-yellow-400/25 bg-[#111] p-6 sm:flex-row"
+                 th:classappend="${iter.first} ? 'border-yellow-400/60' : ''">
+            <div class="flex h-24 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-yellow-400/10 text-4xl text-yellow-300 sm:h-32 sm:w-40">
+                <img th:if="${item.product.imageUrl != null && !#strings.isEmpty(item.product.imageUrl)}" th:src="${item.product.imageUrl}" alt="" class="h-full w-full object-cover">
+                <i th:if="${item.product.imageUrl == null || #strings.isEmpty(item.product.imageUrl)}" class="fa-solid" th:classappend="${item.product.iconClass != null ? item.product.iconClass : 'fa-shield-halved'}"></i>
+            </div>
+            <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="text-xs uppercase tracking-[0.25em] text-white/50" th:text="${item.product.categoryLabel}">Category</span>
+                    <span class="rounded-full px-3 py-1 text-xs font-semibold"
+                          th:classappend="${item.recommendation.fit == 'HIGH'} ? 'bg-yellow-400 text-zinc-950' : 'border border-yellow-400/40 text-yellow-200'"
+                          th:text="${item.recommendation.fit == 'HIGH'} ? (${ms} ? 'Padanan tinggi' : 'Strong match') : (${ms} ? 'Padanan sederhana' : 'Good match')">Match</span>
+                </div>
+                <h2 class="mt-2 text-2xl font-semibold text-yellow-300" th:text="${item.product.name}">Product</h2>
+                <p class="mt-2 leading-7 text-white/75" th:text="${item.recommendation.reason}">Reason</p>
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <a th:if="${authState != null and authState.customer}"
+                       th:href="@{/applications/new(productId=${item.product.id},planFinder=${token})}"
+                       class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300" th:text="${ms} ? 'Mohon pelan ini' : 'Apply for this plan'">Apply</a>
+                    <a th:unless="${authState != null and authState.customer}"
+                       th:href="@{/login(redirect=${'/applications/new?productId=' + item.product.id + '&planFinder=' + token})}"
+                       class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300" th:text="${ms} ? 'Log masuk untuk memohon' : 'Log in to apply'">Log in to apply</a>
+                    <a th:href="@{/products/{id}(id=${item.product.id})}" class="rounded-full border border-yellow-400/30 px-6 py-3 font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300" th:text="${ms} ? 'Lihat butiran' : 'View details'">View details</a>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <p class="mt-6 flex gap-2 text-sm leading-6 text-white/50">
+        <i class="fa-solid fa-circle-info mt-1"></i>
+        <span>
+            <span th:text="${ms}
+                ? 'Cadangan ini bukan nasihat kewangan. Ejen berlesen kami akan mengesahkan kelayakan, perlindungan dan caruman sebelum sebarang sebut harga.'
+                : 'These suggestions are not financial advice. Our licensed agent will confirm eligibility, coverage and contribution before any quotation.'">Disclaimer</span>
+            <span th:if="${result.response.source == 'AI'}" th:text="${ms} ? ' Dijana dengan bantuan AI.' : ' Generated with AI assistance.'"></span>
+        </span>
+    </p>
+
+    <section id="consult" class="mt-12 scroll-mt-28 rounded-[2rem] border border-yellow-400/25 bg-[#111] p-6 sm:p-8">
+        <h2 class="text-2xl font-semibold text-yellow-300" th:text="${ms} ? 'Mahu berbincang dahulu?' : 'Prefer to talk it through first?'">Talk first</h2>
+        <p class="mt-2 text-white/70" th:text="${ms}
+            ? 'Hantar permintaan konsultasi. Ejen kami akan melihat jawapan Plan Finder anda dan menghubungi anda.'
+            : 'Send a consultation request. Our agent will see your Plan Finder answers and contact you.'">Consult intro</p>
+
+        <div th:if="${contactSent}" class="mt-6 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 p-4 text-emerald-200"
+             th:text="${ms} ? 'Terima kasih! Permintaan anda telah dihantar. Ejen kami akan menghubungi anda tidak lama lagi.' : 'Thank you! Your request was sent. Our agent will contact you shortly.'">Sent</div>
+        <div th:if="${contactError}" class="mt-6 rounded-2xl border border-amber-400/40 bg-amber-400/10 p-4 text-amber-200" th:text="${contactError}">Error</div>
+
+        <form th:action="@{/contact}" method="post" class="mt-6 grid gap-5 sm:grid-cols-2">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="planFinderToken" th:value="${token}">
+            <input type="hidden" name="topic" th:value="${consultTopic}">
+            <label class="grid gap-2 text-sm font-medium text-white/80"><span th:text="${ms} ? 'Nama' : 'Name'">Name</span>
+                <input name="fullName" required th:value="${prefillName}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300"></label>
+            <label class="grid gap-2 text-sm font-medium text-white/80"><span>Email</span>
+                <input name="email" type="email" required th:value="${prefillEmail}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300"></label>
+            <label class="grid gap-2 text-sm font-medium text-white/80"><span th:text="${ms} ? 'Telefon' : 'Phone'">Phone</span>
+                <input name="phoneNumber" th:value="${prefillPhone}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300"></label>
+            <label class="grid gap-2 text-sm font-medium text-white/80"><span th:text="${ms} ? 'Cara dihubungi' : 'Preferred contact method'">Preferred contact method</span>
+                <select name="preferredContact" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300">
+                    <option value="WhatsApp">WhatsApp</option>
+                    <option value="Phone call" th:text="${ms} ? 'Panggilan telefon' : 'Phone call'">Phone call</option>
+                    <option value="Email">Email</option>
+                </select>
+            </label>
+            <label class="grid gap-2 text-sm font-medium text-white/80 sm:col-span-2"><span th:text="${ms} ? 'Mesej' : 'Message'">Message</span>
+                <textarea name="message" rows="4" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300" th:text="${consultMessage}"></textarea></label>
+            <button class="rounded-full bg-yellow-400 px-6 py-4 font-semibold text-zinc-950 hover:bg-yellow-300 sm:col-span-2" th:text="${ms} ? 'Minta konsultasi' : 'Request consultation'">Request consultation</button>
+        </form>
+    </section>
+
+    <details class="mt-8 rounded-2xl border border-yellow-400/15 bg-[#0d0d0d] p-5">
+        <summary class="cursor-pointer font-semibold text-white/80" th:text="${ms} ? 'Jawapan anda' : 'Your answers'">Your answers</summary>
+        <dl class="mt-4 grid gap-3 sm:grid-cols-2">
+            <div th:each="line : ${result.answers}">
+                <dt class="text-xs uppercase tracking-wide text-white/45" th:text="${line.question}">Q</dt>
+                <dd class="mt-1 text-white/80" th:text="${line.answer}">A</dd>
+            </div>
+        </dl>
+    </details>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: page-scripts}"></th:block>
+</body>
+</html>

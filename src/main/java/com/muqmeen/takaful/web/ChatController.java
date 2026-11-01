@@ -13,12 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -28,7 +24,7 @@ public class ChatController {
     private static final Duration RATE_LIMIT_WINDOW = Duration.ofMinutes(1);
 
     private final ChatService chatService;
-    private final ConcurrentHashMap<String, Deque<Instant>> ipHits = new ConcurrentHashMap<>();
+    private final IpRateLimiter rateLimiter = new IpRateLimiter(RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW);
 
     public ChatController(ChatService chatService) {
         this.chatService = chatService;
@@ -36,8 +32,7 @@ public class ChatController {
 
     @PostMapping
     public ResponseEntity<?> chat(@Valid @RequestBody ChatRequest request, HttpServletRequest http) {
-        String clientIp = clientIp(http);
-        if (!allowRequest(clientIp)) {
+        if (!rateLimiter.allow(http)) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                     .body(Map.of("reply",
                             "You're sending messages a bit too fast. Please wait a minute and try again."));
@@ -51,31 +46,6 @@ public class ChatController {
 
         String reply = chatService.reply(request.message(), history);
         return ResponseEntity.ok(new ChatReply(reply));
-    }
-
-    private boolean allowRequest(String ip) {
-        Instant now = Instant.now();
-        Instant cutoff = now.minus(RATE_LIMIT_WINDOW);
-        Deque<Instant> hits = ipHits.computeIfAbsent(ip, k -> new ArrayDeque<>());
-        synchronized (hits) {
-            while (!hits.isEmpty() && hits.peekFirst().isBefore(cutoff)) {
-                hits.pollFirst();
-            }
-            if (hits.size() >= RATE_LIMIT_MAX_REQUESTS) {
-                return false;
-            }
-            hits.offerLast(now);
-            return true;
-        }
-    }
-
-    private String clientIp(HttpServletRequest http) {
-        String forwarded = http.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            int comma = forwarded.indexOf(',');
-            return (comma > 0 ? forwarded.substring(0, comma) : forwarded).trim();
-        }
-        return http.getRemoteAddr() == null ? "unknown" : http.getRemoteAddr();
     }
 
     public record ChatRequest(

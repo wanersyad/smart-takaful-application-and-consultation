@@ -3,6 +3,7 @@ package com.muqmeen.takaful.web;
 import com.muqmeen.takaful.domain.ConsultationStatus;
 import com.muqmeen.takaful.domain.ContactInquiry;
 import com.muqmeen.takaful.service.ContactInquiryService;
+import com.muqmeen.takaful.service.PlanFinderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +25,11 @@ import java.util.List;
 public class AdminConsultationController {
 
     private final ContactInquiryService consultationService;
+    private final PlanFinderService planFinderService;
 
-    public AdminConsultationController(ContactInquiryService consultationService) {
+    public AdminConsultationController(ContactInquiryService consultationService, PlanFinderService planFinderService) {
         this.consultationService = consultationService;
+        this.planFinderService = planFinderService;
     }
 
     @GetMapping
@@ -48,6 +51,7 @@ public class AdminConsultationController {
                 .map(consultation -> {
                     model.addAttribute("consultation", consultation);
                     model.addAttribute("statuses", ConsultationStatus.values());
+                    model.addAttribute("planFinder", planFinderService.forInquiry(consultation).orElse(null));
                     return "admin/consultation-detail";
                 })
                 .orElseGet(() -> {

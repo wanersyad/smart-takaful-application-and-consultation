@@ -31,14 +31,25 @@ public class GeminiClient {
     }
 
     public String generate(String systemInstruction, List<GeminiContent> conversation) {
+        return call(new GeminiRequest(
+                new GeminiContent("user", List.of(new GeminiPart(systemInstruction))),
+                conversation
+        ));
+    }
+
+    /** Single-turn request whose answer is a JSON document (the caller parses and validates it). */
+    public String generateJson(String systemInstruction, String userPrompt) {
+        return call(new GeminiRequest(
+                new GeminiContent("user", List.of(new GeminiPart(systemInstruction))),
+                List.of(new GeminiContent("user", List.of(new GeminiPart(userPrompt)))),
+                GeminiRequest.GenerationConfig.json()
+        ));
+    }
+
+    private String call(GeminiRequest body) {
         if (!isConfigured()) {
             throw new GeminiException("GEMINI_API_KEY is not configured");
         }
-
-        GeminiRequest body = new GeminiRequest(
-                new GeminiContent("user", List.of(new GeminiPart(systemInstruction))),
-                conversation
-        );
 
         // The free tier intermittently returns 503 ("high demand") / 429. These are transient, so
         // retry a couple of times with a short backoff before falling back — this is what makes the

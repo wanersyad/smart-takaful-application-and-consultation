@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"></head>
+<body>
+
+<!--
+  Agent-side Plan Finder panel. Shows the customer's questionnaire, the suggested plans and the
+  points to confirm before quoting. Usage: <section th:replace="~{fragments/plan-finder :: agentPanel(${planFinder})}"></section>
+-->
+<section th:fragment="agentPanel(pf)" th:if="${pf != null}" class="mt-6 rounded-3xl border border-yellow-400/40 bg-[#111] p-6">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-yellow-400">Plan Finder</p>
+            <h2 class="mt-1 text-xl font-semibold text-yellow-300">Customer's needs questionnaire</h2>
+            <p class="mt-1 text-sm text-white/55">Completed <span th:text="${#temporals.format(pf.createdAt, 'dd MMM yyyy HH:mm')}">date</span>
+                &middot; answered in <span th:text="${pf.response.language == 'ms'} ? 'Bahasa Melayu' : 'English'">English</span></p>
+        </div>
+        <span class="rounded-full border border-yellow-400/30 px-3 py-1 text-xs font-semibold text-yellow-200"
+              th:text="${pf.source == 'AI'} ? 'AI suggestion' : 'Rule-based suggestion'">AI suggestion</span>
+    </div>
+
+    <div class="mt-5 grid gap-5 lg:grid-cols-2">
+        <div>
+            <p class="text-xs uppercase tracking-wide text-white/50">Answers</p>
+            <dl class="mt-3 grid gap-3 sm:grid-cols-2">
+                <div th:each="line : ${pf.answers}">
+                    <dt class="text-xs text-white/45" th:text="${line.question}">Q</dt>
+                    <dd class="mt-0.5 text-sm text-white/85" th:text="${line.answer}"
+                        th:classappend="${line.question == 'Existing medical condition' and line.answer == 'Yes'} ? 'font-semibold text-amber-200' : ''">A</dd>
+                </div>
+            </dl>
+        </div>
+        <div>
+            <p class="text-xs uppercase tracking-wide text-white/50">Suggested plans</p>
+            <ol class="mt-3 grid gap-3">
+                <li th:each="rec, iter : ${pf.recommendations}" class="rounded-2xl border border-yellow-400/15 bg-black p-4">
+                    <p class="font-semibold text-yellow-200"><span th:text="${iter.count} + '. '">1.</span><span th:text="${rec.productName}">Product</span>
+                        <span class="ml-2 text-xs font-normal text-white/50" th:text="${rec.fit == 'HIGH'} ? 'strong match' : 'good match'">match</span></p>
+                    <p class="mt-1 text-sm leading-6 text-white/70" th:text="${rec.reason}">Reason</p>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(pf.agentChecks)}" class="mt-5 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4">
+        <p class="text-sm font-semibold text-amber-200"><i class="fa-solid fa-list-check mr-2"></i>Confirm before quoting</p>
+        <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-amber-100/90">
+            <li th:each="check : ${pf.agentChecks}" th:text="${check}">Check</li>
+        </ul>
+    </div>
+    <p class="mt-4 text-xs text-white/40">Suggestions only. The agent decides suitability and sets all quotation amounts. The health answer is never sent to the AI.</p>
+</section>
+
+</body>
+</html>

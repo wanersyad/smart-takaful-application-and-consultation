@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html th:lang="${lang}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${lang == 'ms'} ? 'Cari Pelan Sesuai - Muqmeen Group' : 'Plan Finder - Muqmeen Group'">Plan Finder - Muqmeen Group</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<nav th:replace="~{fragments/layout :: siteNav('products')}"></nav>
+
+<main class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <p class="text-sm font-semibold uppercase tracking-[0.35em] text-yellow-400" th:text="${lang == 'ms'} ? 'Cari Pelan Sesuai' : 'Plan Finder'">Plan Finder</p>
+        <div class="flex rounded-full border border-yellow-400/30 p-1 text-sm" role="group" aria-label="Language">
+            <a href="/plan-finder?lang=en" class="rounded-full px-4 py-1.5" th:classappend="${lang == 'en'} ? 'bg-yellow-400 font-semibold text-zinc-950' : 'text-white/70 hover:text-yellow-300'">English</a>
+            <a href="/plan-finder?lang=ms" class="rounded-full px-4 py-1.5" th:classappend="${lang == 'ms'} ? 'bg-yellow-400 font-semibold text-zinc-950' : 'text-white/70 hover:text-yellow-300'">Bahasa Melayu</a>
+        </div>
+    </div>
+    <h1 class="mt-4 text-4xl font-semibold text-yellow-300 sm:text-5xl" th:text="${lang == 'ms'} ? 'Pelan Takaful mana yang sesuai untuk anda?' : 'Which Takaful plan fits you?'">Which Takaful plan fits you?</h1>
+    <p class="mt-4 max-w-2xl text-lg leading-8 text-white/70" th:text="${lang == 'ms'}
+        ? 'Jawab 8 soalan ringkas (kira-kira 1 minit). Kami akan mencadangkan pelan yang paling berkaitan, kemudian anda boleh memohon atau berbincang dengan ejen kami.'
+        : 'Answer 8 quick questions (about 1 minute). We will suggest the most relevant plans, then you can apply or talk to one of our agents.'">Intro</p>
+
+    <div class="mt-6 flex gap-3 rounded-2xl border border-yellow-400/20 bg-yellow-400/5 p-4 text-sm leading-6 text-white/70">
+        <i class="fa-solid fa-user-shield mt-1 text-yellow-300"></i>
+        <p th:text="${lang == 'ms'}
+            ? 'Kami tidak meminta nama, IC atau maklumat hubungan di sini. Jawapan anda (kecuali soalan kesihatan) diproses oleh AI untuk mencadangkan pelan. Cadangan ini bukan nasihat kewangan; ejen berlesen akan mengesahkan kesesuaian dan caruman.'
+            : 'We do not ask for your name, IC or contact details here. Your answers (except the health question) are processed by AI to suggest plans. Suggestions are not financial advice; a licensed agent confirms suitability and contribution.'">Privacy</p>
+    </div>
+
+    <p th:if="${planFinderError}" class="mt-6 rounded-2xl border border-amber-400/40 bg-amber-400/10 p-4 text-amber-200" th:text="${planFinderError}">Error</p>
+
+    <form th:action="@{/plan-finder}" method="post" class="mt-8 space-y-6" id="plan-finder-form">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <input type="hidden" name="lang" th:value="${lang}">
+
+        <fieldset th:each="q, iter : ${questions}" class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+            <legend class="sr-only" th:text="${q.label(lang)}">Question</legend>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-yellow-400/80">
+                <span th:text="${iter.count}">1</span> / <span th:text="${iter.size}">8</span>
+            </p>
+            <p class="mt-2 text-lg font-semibold text-white" th:text="${q.label(lang)}">Question</p>
+            <div class="mt-4 flex flex-wrap gap-3">
+                <label th:each="opt : ${q.options()}" class="cursor-pointer">
+                    <input class="peer sr-only"
+                           th:type="${q.multiple()} ? 'checkbox' : 'radio'"
+                           th:name="${q.key()}"
+                           th:value="${opt.code()}"
+                           th:required="${!q.multiple() and !q.optional()}">
+                    <span class="inline-flex items-center rounded-full border border-yellow-400/25 bg-black px-4 py-2.5 text-sm text-white/80 transition hover:border-yellow-300 hover:text-yellow-200 peer-checked:border-yellow-400 peer-checked:bg-yellow-400 peer-checked:font-semibold peer-checked:text-zinc-950 peer-focus-visible:ring-2 peer-focus-visible:ring-yellow-300"
+                          th:text="${opt.label(lang)}">Option</span>
+                </label>
+            </div>
+        </fieldset>
+
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-sm text-white/50" th:text="${lang == 'ms'} ? 'Soalan kesihatan adalah pilihan.' : 'The health question is optional.'">Optional</p>
+            <button type="submit" class="rounded-full bg-yellow-400 px-8 py-4 font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-yellow-300">
+                <i class="fa-solid fa-wand-magic-sparkles mr-2"></i><span th:text="${lang == 'ms'} ? 'Cari pelan saya' : 'Find my plan'">Find my plan</span>
+            </button>
+        </div>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: page-scripts}"></th:block>
+<script th:inline="javascript">
+    // Goals is a checkbox group, so the browser cannot enforce "at least one" on its own.
+    document.getElementById('plan-finder-form').addEventListener('submit', (event) => {
+        if (!document.querySelector('input[name="goals"]:checked')) {
+            event.preventDefault();
+            alert(/*[[${lang == 'ms'} ? 'Sila pilih sekurang-kurangnya satu matlamat.' : 'Please choose at least one goal.']]*/ 'Please choose at least one goal.');
+            return;
+        }
+        const button = event.target.querySelector('button[type="submit"]');
+        button.disabled = true;
+        button.classList.add('opacity-60');
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>' + /*[[${lang == 'ms'} ? 'Sedang mencari pelan anda... (sehingga 1 minit)' : 'Finding your plans... (up to a minute)']]*/ 'Finding your plans...';
+    });
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.muqmeen.takaful.web;
 
 import com.muqmeen.takaful.service.ContactEmailService;
 import com.muqmeen.takaful.service.ContactInquiryService;
+import com.muqmeen.takaful.service.PlanFinderService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -17,20 +18,27 @@ public class ContactController {
 
     private final ContactEmailService contactEmailService;
     private final ContactInquiryService contactInquiryService;
+    private final PlanFinderService planFinderService;
 
     public ContactController(ContactEmailService contactEmailService,
-                             ContactInquiryService contactInquiryService) {
+                             ContactInquiryService contactInquiryService,
+                             PlanFinderService planFinderService) {
         this.contactEmailService = contactEmailService;
         this.contactInquiryService = contactInquiryService;
+        this.planFinderService = planFinderService;
     }
 
     @PostMapping("/contact")
     public String submitContact(@Valid @ModelAttribute ContactForm form,
                                 BindingResult bindingResult,
                                 RedirectAttributes redirectAttributes) {
+        // A request sent from a Plan Finder result returns to that result page.
+        String returnTo = planFinderService.findByToken(form.planFinderToken)
+                .map(r -> "redirect:/plan-finder/result/" + r.getToken() + "#consult")
+                .orElse("redirect:/#contact");
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("contactError", "Please complete the contact form with a valid email.");
-            return "redirect:/#contact";
+            return returnTo;
         }
 
         String subject = (form.subject == null || form.subject.isBlank())
@@ -45,6 +53,9 @@ public class ContactController {
                 form.topic,
                 form.preferredContact
         ));
+        if (form.planFinderToken != null) {
+            planFinderService.linkInquiry(form.planFinderToken, inquiry);
+        }
         try {
             contactEmailService.send(new ContactEmailService.ContactMessage(
                     form.fullName,
@@ -60,7 +71,7 @@ public class ContactController {
             redirectAttributes.addFlashAttribute("contactError", "We could not send the message right now. Please try again shortly.");
         }
 
-        return "redirect:/#contact";
+        return returnTo;
     }
 
     public static class ContactForm {
@@ -88,6 +99,12 @@ public class ContactController {
         @NotBlank(message = "Message is required")
         @Size(max = 1000)
         private String message;
+
+        @Size(max = 36)
+        private String planFinderToken;
+
+        public String getPlanFinderToken() { return planFinderToken; }
+        public void setPlanFinderToken(String planFinderToken) { this.planFinderToken = planFinderToken; }
 
         public String getFullName() { return fullName; }
         public void setFullName(String fullName) { this.fullName = fullName; }

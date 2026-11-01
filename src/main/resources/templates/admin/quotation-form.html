@@ -23,6 +23,7 @@
             <p class="mt-1 text-2xl font-semibold text-yellow-300">RM <span id="quotation-total">0.00</span></p>
         </div>
     </div>
+    <section th:replace="~{fragments/plan-finder :: agentPanel(${planFinder})}"></section>
     <form id="quotation-form" th:action="@{/admin/applications/{id}/quotation(id=${app.id})}" method="post" class="mt-8 grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
         <label class="grid gap-2 text-sm text-white/80">Admin notes<textarea name="adminNotes" rows="4" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${form.adminNotes}"></textarea></label>

@@ -5,6 +5,7 @@ import com.muqmeen.takaful.domain.ConsultationApplication;
 import com.muqmeen.takaful.domain.Quotation;
 import com.muqmeen.takaful.service.ApplicationService;
 import com.muqmeen.takaful.service.ContactInquiryService;
+import com.muqmeen.takaful.service.PlanFinderService;
 import com.muqmeen.takaful.service.QuotationService;
 import com.muqmeen.takaful.service.QuotationService.QuotationItemInput;
 import org.springframework.stereotype.Controller;
@@ -28,13 +29,16 @@ public class AdminApplicationController {
     private final ApplicationService applicationService;
     private final QuotationService quotationService;
     private final ContactInquiryService contactInquiryService;
+    private final PlanFinderService planFinderService;
 
     public AdminApplicationController(ApplicationService applicationService,
                                       QuotationService quotationService,
-                                      ContactInquiryService contactInquiryService) {
+                                      ContactInquiryService contactInquiryService,
+                                      PlanFinderService planFinderService) {
         this.applicationService = applicationService;
         this.quotationService = quotationService;
         this.contactInquiryService = contactInquiryService;
+        this.planFinderService = planFinderService;
     }
 
     @GetMapping("/dashboard")
@@ -80,6 +84,7 @@ public class AdminApplicationController {
         model.addAttribute("productName", productName(application));
         model.addAttribute("statuses", ApplicationStatus.values());
         model.addAttribute("quotation", quotationService.getOrCreate(application));
+        model.addAttribute("planFinder", planFinderService.forApplication(application).orElse(null));
         return "admin/application-detail";
     }
 
@@ -104,6 +109,7 @@ public class AdminApplicationController {
         model.addAttribute("productName", productName(application));
         model.addAttribute("quotation", quotation);
         model.addAttribute("form", QuotationForm.from(quotation));
+        model.addAttribute("planFinder", planFinderService.forApplication(application).orElse(null));
         return "admin/quotation-form";
     }
 

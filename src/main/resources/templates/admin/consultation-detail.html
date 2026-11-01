@@ -47,6 +47,8 @@
         <p class="mt-2 whitespace-pre-line text-white/80" th:text="${consultation.message}">Message</p>
     </section>
 
+    <section th:replace="~{fragments/plan-finder :: agentPanel(${planFinder})}"></section>
+
     <!-- Status funnel -->
     <section class="mt-6 rounded-3xl border border-yellow-400/20 bg-[#0d0d0d] p-6">
         <h2 class="text-lg font-semibold text-white">Update status</h2>

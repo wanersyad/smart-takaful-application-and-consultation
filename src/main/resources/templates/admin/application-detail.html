@@ -41,6 +41,7 @@
         <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Quotation</p><p class="mt-2 font-semibold" th:text="${quotation.status}">DRAFT</p></div>
         <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Payable Total</p><p class="mt-2 text-xl font-semibold text-yellow-300">RM <span th:text="${#numbers.formatDecimal(quotation.selectedTotal(), 1, 2)}">0.00</span></p></div>
     </section>
+    <section th:replace="~{fragments/plan-finder :: agentPanel(${planFinder})}"></section>
     <form th:action="@{/admin/applications/{id}/status(id=${app.id})}" method="post" class="mt-6 grid gap-4 rounded-3xl border border-yellow-400/25 bg-[#111] p-5 lg:grid-cols-2">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
         <label class="grid gap-2 text-sm text-white/80">Review status
