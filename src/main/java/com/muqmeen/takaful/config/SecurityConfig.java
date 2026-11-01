@@ -27,7 +27,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/", "/products/**", "/login", "/admin/login", "/register", "/forgot-password", "/reset-password", "/success", "/payment/**", "/api/chat", "/brochures/**", "/error", "/favicon.ico").permitAll()
+                        .requestMatchers("/", "/products/**", "/login", "/admin/login", "/register", "/forgot-password", "/reset-password", "/success", "/payment/**", "/api/chat", "/plan-finder", "/plan-finder/**", "/brochures/**", "/error", "/favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.POST, "/contact").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/account/**", "/applications/**", "/quotations/**").hasRole("USER")

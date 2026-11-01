@@ -6,10 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GeminiProperties {
 
     private String apiKey;
-    private String model = "gemini-2.5-flash";
+    private String model = "gemini-3.8-flash";
     private String baseUrl = "https://generativelanguage.googleapis.com/v1beta/models";
     private int connectTimeoutMs = 3000;
-    private int readTimeoutMs = 20000;
+    private int readTimeoutMs = 45000;
 
     public boolean isConfigured() {
         return apiKey != null && !apiKey.isBlank();

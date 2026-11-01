@@ -1,55 +1,120 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Content - Muqmeen Admin</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Website Content - Muqmeen Admin</title>
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
+    <style>
+        .sec-btn.active { background: #0B0B0C; color: #fff; }
+        .sec-btn.active i { color: #C8962E; }
+        .js .content-block { display: none; }
+        .js .content-block.shown { display: block; animation: cIn .35s cubic-bezier(.22,.61,.36,1) both; }
+        @keyframes cIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        #savebar { transform: translateY(140%); transition: transform .4s cubic-bezier(.22,.61,.36,1); }
+        #savebar.show { transform: none; }
+    </style>
 </head>
-<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
-<nav th:replace="~{fragments/layout :: adminNav('content')}"></nav>
-<main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-    <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+<body class="lg:pl-64">
+<th:block th:replace="~{fragments/layout :: adminNav('content')}"></th:block>
+<main class="space-y-6 p-5 pb-28 sm:p-8 sm:pb-28">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <h1 class="text-4xl font-semibold text-yellow-300">Manage Site Content</h1>
-            <p class="mt-2 text-white/65">Edit public landing copy, FAQ rows, chat text, and labels from the database.</p>
+            <h1 class="fade-up text-3xl font-semibold tracking-tight">Manage Site Content</h1>
+            <p class="fade-up mt-1 text-muted" style="--d:.1s">Edit public landing copy, FAQ rows, chat text, and labels. Changes go live when you save.</p>
         </div>
-        <a href="/" class="rounded-full border border-yellow-400/30 px-6 py-3 text-center font-semibold text-yellow-200 hover:bg-yellow-400/10 hover:text-yellow-300"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>View Site</a>
+        <a href="/" target="_blank" class="btn btn-outline"><i class="fa-solid fa-arrow-up-right-from-square text-gold-deep"></i>View Site</a>
     </div>
+    <p th:if="${flashMessage}" class="rounded-2xl bg-ok-soft p-4 text-ok" th:text="${flashMessage}">Saved</p>
 
-    <p th:if="${flashMessage}" class="mt-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
-
-    <form th:action="@{/admin/content}" method="post" class="mt-8 space-y-6">
+    <form th:action="@{/admin/content}" method="post" id="content-form" class="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[200px,minmax(0,1fr),380px]">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <section th:each="block, iter : ${blocks}" class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.25em] text-white/45" th:text="${block.sectionName}">Section</p>
-                    <label th:for="${'content_' + iter.index}" class="mt-2 block text-lg font-semibold text-yellow-300" th:text="${block.label}">Label</label>
+        <nav id="secs" class="flex gap-2 overflow-x-auto xl:flex-col xl:overflow-visible" aria-label="Sections"></nav>
+
+        <section class="min-w-0 space-y-4">
+            <div th:each="block, iter : ${blocks}" class="content-block card p-6" th:attr="data-section=${block.sectionName}">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <label th:for="${'content_' + iter.index}" class="font-semibold" th:text="${block.label}">Label</label>
+                    <code class="rounded-full bg-cream px-3 py-1 text-[11px] text-muted" th:text="${block.contentKey}">content.key</code>
                 </div>
-                <code class="w-fit rounded-full border border-yellow-400/20 bg-black px-3 py-1 text-xs text-white/50" th:text="${block.contentKey}">content.key</code>
+                <input th:if="${block.inputType == 'text'}" th:id="${'content_' + iter.index}" th:name="${'content_' + block.contentKey}" th:value="${block.contentValue}" class="field mt-3">
+                <textarea th:if="${block.inputType != 'text'}" th:id="${'content_' + iter.index}" th:name="${'content_' + block.contentKey}" rows="5" class="field mt-3" th:text="${block.contentValue}"></textarea>
+                <p th:if="${block.contentKey == 'faq.items'}" class="hint mt-2">One question per line, written as <code class="text-gold-deep">Question | Answer</code>.</p>
+                <p th:if="${block.contentKey == 'hero.questions'}" class="hint mt-2">One question per line — they rotate in the Plan Finder search pill.</p>
+                <p th:if="${block.contentKey == 'chat.knowledge'}" class="mt-3 flex gap-2 rounded-2xl bg-gold-soft p-3 text-xs leading-5 text-gold-deep"><i class="fa-solid fa-shield-halved mt-0.5"></i>The assistant only answers Takaful questions and never invents prices. Product details are read automatically from the Products pages.</p>
             </div>
-            <input th:if="${block.inputType == 'text'}"
-                   th:id="${'content_' + iter.index}"
-                   th:name="${'content_' + block.contentKey}"
-                   th:value="${block.contentValue}"
-                   class="mt-4 w-full rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300">
-            <textarea th:if="${block.inputType != 'text'}"
-                      th:id="${'content_' + iter.index}"
-                      th:name="${'content_' + block.contentKey}"
-                      rows="5"
-                      class="mt-4 w-full rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300"
-                      th:text="${block.contentValue}"></textarea>
         </section>
 
-        <div class="sticky bottom-4 rounded-full border border-yellow-400/25 bg-black/90 p-3 text-right backdrop-blur">
-            <button class="rounded-full bg-yellow-400 px-7 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">
-                <i class="fa-solid fa-floppy-disk mr-2"></i>Save Content
-            </button>
+        <aside class="hidden xl:block">
+            <div class="sticky top-6">
+                <p class="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted"><span class="h-2 w-2 animate-pulse rounded-full bg-ok"></span>Live preview</p>
+                <div id="preview" class="overflow-hidden rounded-3xl border border-cream-line shadow-card"></div>
+            </div>
+        </aside>
+
+        <div id="savebar" class="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[min(560px,calc(100%-2rem))] items-center justify-between gap-4 rounded-full bg-ink py-2 pl-6 pr-2 text-sm text-white shadow-lift lg:left-64">
+            <span><i class="fa-solid fa-circle-dot mr-2 text-gold"></i>You have unsaved changes</span>
+            <div class="flex gap-2">
+                <button type="button" id="discard" class="rounded-full px-4 py-2 text-white/70 hover:text-white">Discard</button>
+                <button type="submit" id="save" class="btn btn-gold btn-sm">Save Content</button>
+            </div>
         </div>
     </form>
 </main>
+<script>
+// Runs after the deferred site.js so MG is available.
+document.addEventListener('DOMContentLoaded', function () {
+    document.body.classList.add('js');
+    const form = document.getElementById('content-form');
+    const blocks = Array.from(document.querySelectorAll('.content-block'));
+    const sections = [...new Set(blocks.map(function (b) { return b.dataset.section; }))];
+    const icons = { Hero: 'fa-house', Metrics: 'fa-chart-simple', About: 'fa-circle-info', Products: 'fa-box-open', FAQ: 'fa-circle-question', Contact: 'fa-envelope', Chat: 'fa-robot' };
+    const val = function (key) { const el = form.querySelector('[name="content_' + key + '"]'); return el ? el.value : ''; };
+    const esc = function (s) { return MG.esc(s || ''); };
+    let current = sections[0];
+
+    function nav() {
+        document.getElementById('secs').innerHTML = sections.map(function (s) {
+            return '<button type="button" class="sec-btn flex shrink-0 items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium hover:bg-cream-deep' + (s === current ? ' active' : '') + '" data-s="' + esc(s) + '"><i class="fa-solid ' + (icons[s] || 'fa-pen') + ' w-4 text-muted"></i>' + esc(s) + '</button>';
+        }).join('');
+        document.querySelectorAll('.sec-btn').forEach(function (b) { b.addEventListener('click', function () { current = b.dataset.s; nav(); show(); }); });
+    }
+    function show() { blocks.forEach(function (b) { b.classList.toggle('shown', b.dataset.section === current); }); preview(); }
+
+    function preview() {
+        const p = document.getElementById('preview');
+        const orbit = '<div class="orbit"><svg viewBox="0 0 640 640" style="width:440px;height:440px;left:50%;top:40%;transform:translate(-50%,-50%)"><circle class="r3" cx="320" cy="320" r="300"/><circle class="r1" cx="320" cy="320" r="218"/><circle class="dot" cx="320" cy="102" r="4"/></svg></div>';
+        let h;
+        if (current === 'Hero' || current === 'Metrics') {
+            const metric = function (k) { return '<div class="rounded-xl border border-white/10 bg-white/5 p-2"><b class="block text-base normal-case tracking-normal text-gold">0</b>' + esc(val(k)) + '</div>'; };
+            h = '<div class="relative isolate overflow-hidden bg-ink p-7 text-center text-white"><div class="aurora"><div class="blob b1"></div><div class="blob b2"></div></div>' + orbit +
+                '<h2 class="relative text-2xl font-semibold leading-tight">' + esc(val('hero.title')) + '</h2><p class="relative mt-3 text-xs leading-5 text-white/65">' + esc(val('hero.subtitle')) + '</p>' +
+                '<div class="relative mx-auto mt-4 flex max-w-xs items-center justify-between rounded-full border border-white/15 bg-white/5 py-1 pl-4 pr-1 text-left text-[11px]"><span class="truncate">' + esc((val('hero.questions') || '').split('\n')[0]) + '</span><span class="rounded-full bg-gold px-3 py-1.5 font-semibold text-ink">Find my plan</span></div>' +
+                '<div class="relative mt-5 grid grid-cols-2 gap-2 text-[10px] uppercase tracking-wider text-white/55">' + metric('metrics.customers.label') + metric('metrics.applications.label') + metric('metrics.products.label') + metric('metrics.quoted.label') + '</div></div>';
+        } else if (current === 'About') {
+            h = '<div class="bg-white p-7"><p class="text-[10px] font-semibold uppercase tracking-[0.3em] text-gold-deep">' + esc(val('about.eyebrow')) + '</p><h2 class="mt-2 text-xl font-semibold">' + esc(val('about.title')) + '</h2><p class="mt-3 text-sm leading-6 text-muted">' + esc(val('about.body')) + '</p></div>';
+        } else if (current === 'Products') {
+            h = '<div class="bg-cream p-7 text-center"><p class="text-[10px] font-semibold uppercase tracking-[0.3em] text-gold-deep">' + esc(val('products.eyebrow')) + '</p><h2 class="mt-2 text-xl font-semibold">' + esc(val('products.title')) + '</h2><p class="mt-2 text-xs text-muted">' + esc(val('products.subtitle')) + '</p><div class="mt-4 rounded-2xl bg-white p-4 text-left text-xs shadow-card"><b>' + esc(val('products.empty.title')) + '</b><p class="mt-1 text-muted">' + esc(val('products.empty.body')) + '</p><p class="mt-2 text-[10px] text-muted">(shown only when no plans are active)</p></div></div>';
+        } else if (current === 'FAQ') {
+            const rows = (val('faq.items') || '').split('\n').filter(function (l) { return l.includes('|'); }).map(function (l, i) {
+                const parts = l.split('|'); return '<details class="rounded-xl bg-white p-3 text-sm shadow-card"' + (i === 0 ? ' open' : '') + '><summary class="cursor-pointer font-medium">' + esc(parts[0].trim()) + '</summary><p class="mt-2 text-xs leading-5 text-muted">' + esc(parts.slice(1).join('|').trim()) + '</p></details>';
+            }).join('');
+            h = '<div class="bg-cream p-6"><p class="text-[10px] font-semibold uppercase tracking-[0.3em] text-gold-deep">' + esc(val('faq.eyebrow')) + '</p><h2 class="mt-1 text-lg font-semibold">' + esc(val('faq.title')) + '</h2><div class="mt-4 space-y-2">' + rows + '</div></div>';
+        } else if (current === 'Contact') {
+            h = '<div class="bg-white p-7 text-center"><h2 class="text-xl font-semibold">' + esc(val('contact.title')) + '</h2><p class="mt-2 text-xs leading-5 text-muted">' + esc(val('contact.subtitle')) + '</p><div class="mt-4 grid grid-cols-2 gap-2"><div class="h-9 rounded-xl border border-cream-line"></div><div class="h-9 rounded-xl border border-cream-line"></div></div><div class="mt-3 rounded-full bg-gold py-2 text-xs font-semibold">Request Consultation</div></div>';
+        } else if (current === 'Chat') {
+            h = '<div class="bg-white"><div class="flex items-center gap-3 bg-ink p-4 text-white"><span class="flex h-9 w-9 items-center justify-center rounded-full bg-gold text-ink"><i class="fa-solid fa-comments"></i></span><div><p class="text-sm font-semibold">' + esc(val('chat.title')) + '</p><p class="text-[11px] text-white/55">' + esc(val('chat.subtitle')) + '</p></div></div><div class="space-y-3 bg-cream p-4 text-xs"><p class="max-w-[85%] rounded-2xl rounded-tl-sm bg-white p-3 shadow-card">' + esc(val('chat.greeting')) + '</p><div class="rounded-full border border-cream-line bg-white px-3 py-2 text-muted">' + esc(val('chat.placeholder')) + '</div></div></div>';
+        } else {
+            h = '<div class="bg-white p-7 text-sm text-muted">Preview not available for this section.</div>';
+        }
+        p.innerHTML = h;
+    }
+
+    form.addEventListener('input', function () { document.getElementById('savebar').classList.add('show'); preview(); });
+    form.addEventListener('submit', function () { MG.busy(document.getElementById('save'), 'Publishing…'); });
+    document.getElementById('discard').addEventListener('click', function () { form.reset(); document.getElementById('savebar').classList.remove('show'); preview(); });
+    addEventListener('beforeunload', function (e) { if (document.getElementById('savebar').classList.contains('show') && !document.getElementById('save').classList.contains('mg-btn-busy')) { e.preventDefault(); e.returnValue = ''; } });
+    nav(); show();
+});
+</script>
 </body>
 </html>

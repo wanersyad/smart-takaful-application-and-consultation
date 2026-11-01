@@ -1,120 +1,151 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application - Muqmeen Group</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title th:text="'Application #' + ${app.id} + ' - Muqmeen Group'">Application - Muqmeen Group</title>
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
 </head>
-<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<body th:with="s=${app.status.name()},q=${app.quotation},quoteVisible=${app.quotation != null and app.quotation.status != 'DRAFT'},stage=${s == 'DRAFT' ? 0 : (s == 'SUBMITTED' or s == 'UNDER_REVIEW' or s == 'NEEDS_INFO' ? 1 : (s == 'QUOTED' or s == 'PAYMENT_PENDING' ? 3 : (s == 'PAID' or s == 'CLOSED' ? 4 : 1)))}">
 <nav th:replace="~{fragments/layout :: siteNav('account')}"></nav>
 <main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-    <a href="/account" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to account</a>
-    <div th:if="${paymentError}" class="mt-6 rounded-2xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm text-amber-200" th:text="${paymentError}">Payment error</div>
+    <a href="/account" class="text-sm font-medium text-muted hover:text-ink"><i class="fa-solid fa-arrow-left mr-2"></i>Back to account</a>
+    <div th:if="${paymentError}" class="mt-6 rounded-2xl bg-warn-soft p-4 text-sm text-warn" th:text="${paymentError}">Payment error</div>
+    <p th:if="${flashMessage}" class="mt-6 rounded-2xl bg-ok-soft p-4 text-sm text-ok" th:text="${flashMessage}">Saved</p>
+
     <div class="mt-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <p class="text-white/60">Application #<span th:text="${app.id}">1</span></p>
-            <h1 class="text-4xl font-semibold text-yellow-300" th:text="${productName}">Product</h1>
-            <p class="mt-2"><span class="status-badge rounded-full px-3 py-1 text-sm font-semibold" th:classappend="'status-' + ${#strings.toLowerCase(app.status)}" th:text="${app.status}">DRAFT</span></p>
+            <p class="fade-up text-sm text-muted">Application #<span th:text="${app.id}">1</span></p>
+            <h1 class="fade-up mt-1 text-3xl font-semibold tracking-tight sm:text-4xl" style="--d:.1s" th:text="${productName}">Product</h1>
+            <p class="fade-up mt-3" style="--d:.15s"><span class="status-badge" th:classappend="'status-' + ${#strings.toLowerCase(s)}" th:text="${app.status}">DRAFT</span></p>
         </div>
-        <div class="flex gap-3">
-            <a th:if="${app.editableByCustomer}" th:href="@{/applications/{id}/edit(id=${app.id})}" class="rounded-full bg-yellow-400 px-5 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Edit Draft</a>
-            <form th:if="${app.status == T(com.muqmeen.takaful.domain.ApplicationStatus).DRAFT}" th:action="@{/applications/{id}/delete(id=${app.id})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button class="rounded-full bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-500">Delete Draft</button></form>
-        </div>
-    </div>
-    <section class="mt-6 grid gap-4 md:grid-cols-4">
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Current Step</p><p class="mt-2 text-xl font-semibold text-yellow-300" th:text="${app.status}">DRAFT</p></div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Product</p><p class="mt-2 font-semibold" th:text="${productName}">Product</p></div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Quotation</p><p class="mt-2 font-semibold" th:text="${app.quotation == null ? 'Not issued' : app.quotation.status}">Not issued</p></div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase tracking-wide text-white/50">Payment</p><p class="mt-2 font-semibold" th:text="${app.quotation == null || app.quotation.payment == null ? 'Not started' : app.quotation.payment.status}">Not started</p></div>
-    </section>
-    <section th:if="${app.correctionRequest != null && !#strings.isEmpty(app.correctionRequest) && app.correctionResolvedAt == null}" class="mt-6 rounded-3xl border border-amber-400/30 bg-amber-400/10 p-6">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-                <p class="text-sm uppercase tracking-wide text-amber-200">Agent Requested More Information</p>
-                <h2 class="mt-2 text-2xl font-semibold text-yellow-300">Please update your application</h2>
-                <p class="mt-3 text-white/80" th:text="${app.correctionRequest}">Correction request</p>
-                <p th:if="${app.correctionResolvedAt != null}" class="mt-3 text-sm text-white/55">You resubmitted corrections on <span th:text="${#temporals.format(app.correctionResolvedAt, 'yyyy-MM-dd HH:mm')}">time</span>.</p>
-            </div>
-            <a th:if="${app.editableByCustomer}" th:href="@{/applications/{id}/edit(id=${app.id})}" class="rounded-full bg-yellow-400 px-6 py-3 text-center font-semibold text-zinc-950 hover:bg-yellow-300">Edit and Resubmit</a>
-        </div>
-    </section>
-    <section th:if="${app.adminReviewNotes != null && !#strings.isEmpty(app.adminReviewNotes)}" class="mt-6 rounded-3xl border border-yellow-400/20 bg-[#111] p-6">
-        <p class="text-sm uppercase tracking-wide text-yellow-300">Agent Review Notes</p>
-        <p class="mt-3 text-white/75" th:text="${app.adminReviewNotes}">Review notes</p>
-    </section>
-    <section class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-        <h2 class="text-xl font-semibold text-yellow-300">What Happens Next</h2>
-        <div class="mt-5 grid gap-3 md:grid-cols-3">
-            <div class="rounded-2xl bg-black p-4"><p class="font-semibold text-white">1. Admin reviews</p><p class="mt-2 text-sm text-white/60">Your submitted details, private files, and nominees are checked by the agent/admin.</p></div>
-            <div class="rounded-2xl bg-black p-4"><p class="font-semibold text-white">2. Quotation issued</p><p class="mt-2 text-sm text-white/60">The agent creates selected payable items based on the suitable Takaful plan.</p></div>
-            <div class="rounded-2xl bg-black p-4"><p class="font-semibold text-white">3. Payment after quote</p><p class="mt-2 text-sm text-white/60">Payment opens only after the quotation is published to your account.</p></div>
-        </div>
-    </section>
-    <div class="mt-8 grid gap-6 lg:grid-cols-2">
-        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-            <h2 class="text-xl font-semibold text-yellow-300">Your Application Details</h2>
-            <dl class="mt-5 grid gap-3 text-sm">
-                <div><dt class="text-white/45">Name</dt><dd th:text="${app.applicantFullName}">Name</dd></div>
-                <div><dt class="text-white/45">Email</dt><dd th:text="${app.email}">Email</dd></div>
-                <div><dt class="text-white/45">Phone</dt><dd th:text="${app.phoneNumber}">Phone</dd></div>
-                <div><dt class="text-white/45">Home address</dt><dd th:text="${app.homeAddress}">Address</dd></div>
-                <div><dt class="text-white/45">Occupation / Position</dt><dd><span th:text="${app.occupation}">Occupation</span>, <span th:text="${app.positionTitle}">Position</span></dd></div>
-                <div><dt class="text-white/45">Employer</dt><dd th:text="${app.employerName}">Employer</dd></div>
-                <div><dt class="text-white/45">Workplace address</dt><dd th:text="${app.workplaceAddress}">Workplace</dd></div>
-                <div><dt class="text-white/45">Annual income</dt><dd>RM <span th:text="${app.annualIncome}">0</span></dd></div>
-                <div><dt class="text-white/45">Claim bank details</dt><dd><span th:text="${app.bankName}">Bank</span> - <span th:text="${app.bankAccountNumber}">Account</span></dd></div>
-                <div><dt class="text-white/45">Measurements</dt><dd><span th:text="${app.heightCm}">0</span> cm / <span th:text="${app.weightKg}">0</span> kg</dd></div>
-            </dl>
-        </section>
-        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-            <h2 class="text-xl font-semibold text-yellow-300">Private Documents and Nominees</h2>
-            <div class="mt-5 flex flex-wrap gap-3">
-                <a th:if="${app.icFrontFile != null}" th:href="@{/files/{id}(id=${app.icFrontFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">IC Front</a>
-                <a th:if="${app.icBackFile != null}" th:href="@{/files/{id}(id=${app.icBackFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">IC Back</a>
-                <a th:if="${app.signatureFile != null}" th:href="@{/files/{id}(id=${app.signatureFile.id})}" class="rounded-full border border-yellow-400/30 px-4 py-2 text-sm hover:bg-yellow-400/10">Signature</a>
-            </div>
-            <div class="mt-6 space-y-4">
-                <article th:each="nominee : ${app.nominees}" class="rounded-2xl border border-yellow-400/15 bg-black p-4">
-                    <p class="font-semibold text-yellow-300" th:text="${nominee.fullName}">Nominee</p>
-                    <dl class="mt-3 grid gap-2 text-sm text-white/70">
-                        <div><dt class="text-white/40">IC / Relationship</dt><dd><span th:text="${nominee.icNumber}">IC</span> / <span th:text="${nominee.relationship}">Relationship</span></dd></div>
-                        <div><dt class="text-white/40">Phone</dt><dd th:text="${nominee.phoneNumber}">Phone</dd></div>
-                        <div><dt class="text-white/40">Occupation</dt><dd th:text="${nominee.occupation}">Occupation</dd></div>
-                        <div><dt class="text-white/40">Home address</dt><dd th:text="${nominee.homeAddress}">Address</dd></div>
-                    </dl>
-                </article>
-            </div>
-        </section>
-    </div>
-    <section th:if="${app.quotation != null}" class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-                <h2 class="text-xl font-semibold text-yellow-300">Quotation</h2>
-                <p class="mt-2 text-white/65">Status: <span th:text="${app.quotation.status}">DRAFT</span></p>
-                <p th:if="${app.quotation.adminNotes != null && !#strings.isEmpty(app.quotation.adminNotes)}" class="mt-3 rounded-2xl bg-black p-4 text-sm text-white/70" th:text="${app.quotation.adminNotes}">Admin notes</p>
-            </div>
-            <p th:if="${app.quotation.payment != null}" class="rounded-full border border-yellow-400/25 px-4 py-2 text-sm text-yellow-200">Payment: <span th:text="${app.quotation.payment.status}">PENDING</span></p>
-        </div>
-        <div class="mt-5 space-y-3">
-            <div th:each="item : ${app.quotation.items}" class="grid gap-2 rounded-2xl border border-yellow-400/15 bg-black p-4 sm:grid-cols-[1fr,auto,auto] sm:items-center">
-                <div><p class="font-semibold" th:text="${item.itemName}">Item</p><p class="text-sm text-white/60" th:text="${item.description}">Description</p></div>
-                <span class="w-fit rounded-full px-3 py-1 text-xs font-semibold" th:classappend="${item.selected} ? ' bg-yellow-400 text-zinc-950' : ' border border-white/15 text-white/55'" th:text="${item.selected} ? 'Included' : 'Not included'">Included</span>
-                <p class="font-semibold text-yellow-300">RM <span th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</span></p>
-            </div>
-        </div>
-        <div class="mt-6 flex items-center justify-between">
-            <p class="text-2xl font-semibold text-yellow-300">Total RM <span th:text="${#numbers.formatDecimal(app.quotation.selectedTotal(), 1, 2)}">0.00</span></p>
-            <form th:if="${app.quotation.status == 'PUBLISHED'}" th:action="@{/quotations/{id}/pay(id=${app.quotation.id})}" method="post">
+        <div class="flex flex-wrap gap-3">
+            <a th:if="${app.editableByCustomer}" th:href="@{/applications/{id}/edit(id=${app.id})}" class="btn btn-gold" th:text="${s == 'DRAFT'} ? 'Continue application' : 'Edit application'">Edit Draft</a>
+            <form th:if="${s == 'DRAFT'}" th:action="@{/applications/{id}/delete(id=${app.id})}" method="post" onsubmit="return confirm('Delete this draft application?');">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                <button class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Proceed to Payment</button>
+                <button class="btn btn-danger"><i class="fa-regular fa-trash-can"></i>Delete Draft</button>
             </form>
         </div>
-    </section>
+    </div>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-[1fr,340px]">
+        <div class="space-y-6">
+            <section th:if="${app.correctionRequest != null && !#strings.isEmpty(app.correctionRequest) && app.correctionResolvedAt == null}" class="rounded-3xl border border-warn/25 bg-warn-soft p-6">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-warn">Agent Requested More Information</p>
+                        <h2 class="mt-2 text-xl font-semibold">Please update your application</h2>
+                        <p class="mt-2 leading-7 text-ink/80" th:text="${app.correctionRequest}">Correction request</p>
+                    </div>
+                    <a th:if="${app.editableByCustomer}" th:href="@{/applications/{id}/edit(id=${app.id})}" class="btn btn-ink shrink-0">Edit and Resubmit</a>
+                </div>
+            </section>
+
+            <!-- Quotation -->
+            <section th:if="${quoteVisible}" class="reveal card p-7">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h2 class="text-xl font-semibold">Your quotation</h2>
+                    <span class="chip" th:classappend="${q.status == 'PAID'} ? 'bg-ok-soft text-ok' : 'chip-soft'" th:text="${q.status}">PUBLISHED</span>
+                </div>
+                <p class="mt-2 text-sm leading-6 text-muted">Prepared by your agent after reviewing your application. You only pay for the items included.</p>
+                <p th:if="${q.adminNotes != null && !#strings.isEmpty(q.adminNotes)}" class="mt-4 rounded-2xl bg-cream p-4 text-sm leading-6" th:text="${q.adminNotes}">Admin notes</p>
+                <div class="mt-5 divide-y divide-cream-line rounded-2xl border border-cream-line">
+                    <div th:each="item : ${q.items}" class="flex items-center justify-between gap-4 p-4" th:classappend="${!item.selected} ? 'bg-cream/60 text-muted' : ''">
+                        <div class="min-w-0"><p class="font-medium" th:classappend="${!item.selected} ? 'line-through' : ''" th:text="${item.itemName}">Item</p><p class="text-sm text-muted" th:text="${item.selected} ? ${item.description} : 'Not included — discussed with your agent'">Description</p></div>
+                        <p class="shrink-0 font-semibold" th:classappend="${!item.selected} ? 'line-through font-normal' : ''">RM <span th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</span></p>
+                    </div>
+                </div>
+                <div class="mt-6 flex flex-col gap-4 rounded-2xl bg-ink p-5 text-white sm:flex-row sm:items-center sm:justify-between">
+                    <div><p class="text-sm text-white/60">Total payable</p><p class="text-3xl font-semibold text-gold">RM <span th:text="${#numbers.formatDecimal(q.selectedTotal(), 1, 2)}">0.00</span></p></div>
+                    <form th:if="${q.status == 'PUBLISHED'}" th:action="@{/quotations/{id}/pay(id=${q.id})}" method="post" id="pay-form">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button type="submit" class="btn btn-gold px-7 py-3.5"><i class="fa-solid fa-lock text-sm"></i>Proceed to Payment</button>
+                    </form>
+                    <span th:if="${q.status == 'PAID'}" class="btn bg-ok px-6 py-3 text-white"><i class="fa-solid fa-circle-check"></i>Paid</span>
+                    <span th:if="${q.payment != null and q.status != 'PAID' and q.status != 'PUBLISHED'}" class="text-sm text-white/70">Payment: <span th:text="${q.payment.status}">PENDING</span></span>
+                </div>
+                <p th:if="${q.status == 'PUBLISHED'}" class="mt-3 flex items-center gap-2 text-xs text-muted"><i class="fa-solid fa-shield-halved"></i>Payments are processed by ToyyibPay (FPX). We never see your bank login.</p>
+            </section>
+
+            <section th:if="${app.adminReviewNotes != null && !#strings.isEmpty(app.adminReviewNotes)}" class="reveal card p-6">
+                <p class="eyebrow">Agent Review Notes</p>
+                <p class="mt-3 leading-7" th:text="${app.adminReviewNotes}">Review notes</p>
+            </section>
+
+            <section class="reveal card p-6">
+                <h2 class="text-lg font-semibold">What Happens Next</h2>
+                <div class="mt-4 grid gap-3 md:grid-cols-3">
+                    <div class="rounded-2xl bg-cream p-4"><p class="font-semibold">1. Admin reviews</p><p class="mt-1 text-sm leading-6 text-muted">Your submitted details, private files, and nominees are checked by the agent/admin.</p></div>
+                    <div class="rounded-2xl bg-cream p-4"><p class="font-semibold">2. Quotation issued</p><p class="mt-1 text-sm leading-6 text-muted">The agent creates selected payable items based on the suitable Takaful plan.</p></div>
+                    <div class="rounded-2xl bg-cream p-4"><p class="font-semibold">3. Payment after quote</p><p class="mt-1 text-sm leading-6 text-muted">Payment opens only after the quotation is published to your account.</p></div>
+                </div>
+            </section>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <section class="reveal card p-6">
+                    <h2 class="font-semibold">Your Application Details</h2>
+                    <dl class="mt-4 space-y-3 text-sm">
+                        <div class="flex justify-between gap-4"><dt class="text-muted">Name</dt><dd class="text-right" th:text="${app.applicantFullName}">Name</dd></div>
+                        <div class="flex justify-between gap-4"><dt class="text-muted">Email</dt><dd class="min-w-0 truncate text-right" th:text="${app.email}">Email</dd></div>
+                        <div class="flex justify-between gap-4"><dt class="text-muted">Phone</dt><dd class="text-right" th:text="${app.phoneNumber}">Phone</dd></div>
+                        <div class="flex justify-between gap-4"><dt class="text-muted">Home address</dt><dd class="text-right" th:text="${app.homeAddress}">Address</dd></div>
+                        <div class="flex justify-between gap-4"><dt class="text-muted">Occupation / Position</dt><dd class="text-right"><span th:text="${app.occupation}">Occupation</span>, <span th:text="${app.positionTitle}">Position</span></dd></div>
+                        <div class="flex justify-between gap-4"><dt class="text-muted">Employer</dt><dd class="text-right" th:text="${app.employerName}">Employer</dd></div>
+                        <div class="flex justify-between gap-4"><dt class="text-muted">Workplace address</dt><dd class="text-right" th:text="${app.workplaceAddress}">Workplace</dd></div>
+                        <div class="flex justify-between gap-4"><dt class="text-muted">Annual income</dt><dd class="text-right">RM <span th:text="${app.annualIncome}">0</span></dd></div>
+                        <div class="flex justify-between gap-4"><dt class="text-muted">Claim bank details</dt><dd class="text-right"><span th:text="${app.bankName}">Bank</span> · <span th:text="${app.bankAccountNumber}">Account</span></dd></div>
+                        <div class="flex justify-between gap-4"><dt class="text-muted">Measurements</dt><dd class="text-right"><span th:text="${app.heightCm}">0</span> cm / <span th:text="${app.weightKg}">0</span> kg</dd></div>
+                    </dl>
+                </section>
+                <section class="reveal card p-6" style="--i:1">
+                    <h2 class="font-semibold">Private Documents and Nominees</h2>
+                    <div class="mt-4 flex flex-wrap gap-2 text-sm">
+                        <a th:if="${app.icFrontFile != null}" th:href="@{/files/{id}(id=${app.icFrontFile.id})}" target="_blank" class="chip chip-muted !py-1.5 hover:bg-gold-soft"><i class="fa-regular fa-id-card text-gold-deep"></i>IC Front</a>
+                        <a th:if="${app.icBackFile != null}" th:href="@{/files/{id}(id=${app.icBackFile.id})}" target="_blank" class="chip chip-muted !py-1.5 hover:bg-gold-soft"><i class="fa-regular fa-id-card text-gold-deep"></i>IC Back</a>
+                        <a th:if="${app.signatureFile != null}" th:href="@{/files/{id}(id=${app.signatureFile.id})}" target="_blank" class="chip chip-muted !py-1.5 hover:bg-gold-soft"><i class="fa-solid fa-signature text-gold-deep"></i>Signature</a>
+                    </div>
+                    <div class="mt-5 space-y-3">
+                        <article th:each="nominee : ${app.nominees}" class="rounded-2xl bg-cream p-4 text-sm">
+                            <p class="font-semibold" th:text="${nominee.fullName}">Nominee</p>
+                            <p class="mt-1 text-muted"><span th:text="${nominee.relationship}">Relationship</span> · <span th:text="${nominee.icNumber}">IC</span> · <span th:text="${nominee.phoneNumber}">Phone</span></p>
+                            <p class="mt-1 text-muted" th:text="${nominee.occupation}">Occupation</p>
+                            <p class="mt-1 text-muted" th:text="${nominee.homeAddress}">Address</p>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Progress timeline -->
+        <aside class="reveal card p-7 lg:sticky lg:top-24 lg:self-start" style="--i:1">
+            <h2 class="text-lg font-semibold">Progress</h2>
+            <ol class="relative mt-6 space-y-7">
+                <span class="absolute bottom-6 left-[15px] top-2 w-0.5 bg-cream-line"></span>
+                <li th:each="step, st : ${ {'Submitted','Reviewed by agent','Quotation ready','Paid & protected'} }" class="relative flex gap-4">
+                    <span class="z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs"
+                          th:classappend="${st.count < stage or (st.count == stage and stage == 4)} ? 'bg-ink text-gold' : (${st.count == stage} ? 'bg-gold text-ink shadow-glow' : 'border-2 border-cream-line bg-white text-muted')">
+                        <i th:if="${st.count < stage or (st.count == stage and stage == 4)}" class="fa-solid fa-check"></i>
+                        <span th:unless="${st.count < stage or (st.count == stage and stage == 4)}" th:text="${st.count}">1</span>
+                    </span>
+                    <div><p th:classappend="${st.count <= stage} ? 'font-semibold' : 'text-muted'" th:text="${step}">Step</p>
+                        <p th:if="${st.count == 1 and app.submittedAt != null}" class="text-sm text-muted" th:text="${#temporals.format(app.submittedAt, 'd MMM yyyy, HH:mm')}">date</p>
+                        <p th:if="${st.count == 3 and stage == 3}" class="text-sm text-muted">Waiting for your payment</p>
+                        <p th:if="${st.count == 2 and s == 'NEEDS_INFO'}" class="text-sm text-warn">More information requested</p>
+                    </div>
+                </li>
+            </ol>
+            <a href="/#contact" class="btn btn-outline mt-8 w-full text-sm"><i class="fa-regular fa-comments"></i>Questions? Ask your agent</a>
+        </aside>
+    </div>
 </main>
 <footer th:replace="~{fragments/layout :: footer}"></footer>
-<script th:replace="~{fragments/layout :: menu-script}"></script>
+<script>
+    // Shown while the bill is created and the browser is redirected to ToyyibPay.
+    (function () {
+        const form = document.getElementById('pay-form');
+        if (form) form.addEventListener('submit', function () {
+            MG.loader({ icon: 'fa-lock', title: 'Connecting to FPX securely', sub: 'You will choose your bank on ToyyibPay', steps: ['Creating your secure bill', 'Opening FPX bank selection'], stepEvery: 1400 });
+        });
+    })();
+</script>
 </body>
 </html>

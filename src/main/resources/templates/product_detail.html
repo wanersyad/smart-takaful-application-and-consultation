@@ -2,80 +2,129 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${product.name} + ' - Muqmeen Group'">Product - Muqmeen Group</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
 </head>
-<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
-<nav class="border-b border-yellow-400/20 bg-[#0d0d0d]">
-    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <a href="/#products" class="flex items-center gap-3 text-yellow-300"><i class="fa-solid fa-arrow-left"></i> Products</a>
-        <a th:if="${customerSignedIn}" href="/account" class="rounded-full px-4 py-2 text-white/80 hover:bg-yellow-400/10 hover:text-yellow-300">Account</a>
-        <a th:if="${!customerSignedIn}" th:href="@{/login(redirect=${'/applications/new?productId=' + product.id})}" class="rounded-full bg-yellow-400 px-5 py-2 font-semibold text-zinc-950 hover:bg-yellow-300">Login to Apply</a>
-    </div>
-</nav>
-<main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-    <div class="grid gap-8 lg:grid-cols-[.9fr,1.1fr]">
-        <div>
-            <img th:if="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}" th:src="${product.imageUrl}" alt="" class="aspect-[16/10] w-full rounded-[2rem] object-cover">
-            <div th:if="${product.imageUrl == null || #strings.isEmpty(product.imageUrl)}" class="flex aspect-[16/10] w-full items-center justify-center rounded-[2rem] border border-yellow-400/25 bg-yellow-400/10 text-6xl text-yellow-300">
-                <i class="fa-solid" th:classappend="${product.iconClass}"></i>
-            </div>
-        </div>
-        <div>
-            <p class="text-sm uppercase tracking-[0.3em] text-yellow-400" th:text="${product.categoryLabel}">Category</p>
-            <h1 class="mt-3 text-4xl font-semibold text-yellow-300 sm:text-5xl" th:text="${product.name}">Product</h1>
-            <p class="mt-5 text-lg leading-8 text-white/75" th:text="${product.summary != null && !#strings.isEmpty(product.summary) ? product.summary : product.description}">Summary</p>
-            <p class="mt-5 whitespace-pre-line leading-7 text-white/65" th:text="${product.detailedDescription}">Details</p>
-            <div class="mt-7 flex flex-wrap gap-3">
-                <a th:href="${customerSignedIn} ? @{/applications/new(productId=${product.id})} : @{/login(redirect=${'/applications/new?productId=' + product.id})}" class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Apply Product</a>
-            </div>
-        </div>
-    </div>
+<body class="pb-20 md:pb-0" th:with="applyUrl=${customerSignedIn} ? @{/applications/new(productId=${product.id})} : @{/login(redirect=${'/applications/new?productId=' + product.id})}">
+<nav th:replace="~{fragments/layout :: siteNav('products')}"></nav>
 
-    <div class="mt-12 grid gap-6 lg:grid-cols-3">
-        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-            <h2 class="text-xl font-semibold text-yellow-300">Benefits</h2>
-            <ul class="mt-4 space-y-3 text-white/70">
-                <li th:if="${#lists.isEmpty(product.benefits)}">No benefits entered yet.</li>
-                <li th:each="benefit : ${product.benefits}" class="flex gap-3"><i class="fa-solid fa-check mt-1 text-yellow-300"></i><span th:text="${benefit.benefitText}">Benefit</span></li>
-            </ul>
-        </section>
-        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-            <h2 class="text-xl font-semibold text-yellow-300">Coverage Items</h2>
-            <div class="mt-4 space-y-4">
-                <p th:if="${#lists.isEmpty(product.coverageItems)}" class="text-white/70">No coverage items entered yet.</p>
-                <article th:each="item : ${product.coverageItems}">
-                    <h3 class="font-semibold text-white" th:text="${item.itemName}">Item</h3>
-                    <p class="text-sm leading-6 text-white/65" th:text="${item.itemDescription}">Description</p>
-                </article>
+<main>
+    <section class="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 lg:px-8">
+        <nav class="fade-up text-sm text-muted" aria-label="Breadcrumb">
+            <a href="/" class="hover:text-ink">Home</a> <i class="fa-solid fa-chevron-right mx-2 text-[10px]"></i>
+            <a href="/#products" class="hover:text-ink">Plans</a> <i class="fa-solid fa-chevron-right mx-2 text-[10px]"></i>
+            <span class="text-ink" th:text="${product.name}">Product</span>
+        </nav>
+        <div class="mt-6 grid items-stretch gap-8 lg:grid-cols-[1.15fr,.85fr]">
+            <div class="flex flex-col justify-center">
+                <div class="fade-up flex flex-wrap items-center gap-2" style="--d:.1s">
+                    <span th:if="${product.categoryLabel != null && !#strings.isEmpty(product.categoryLabel)}" class="chip chip-soft uppercase tracking-[0.15em]" th:text="${product.categoryLabel}">Category</span>
+                    <span th:if="${product.featured}" class="chip chip-gold uppercase tracking-[0.15em]">Popular</span>
+                </div>
+                <h1 class="fade-up mt-4 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl" style="--d:.18s" th:text="${product.name}">Product</h1>
+                <p class="fade-up mt-4 text-lg leading-8 text-muted" style="--d:.26s" th:text="${product.summary != null && !#strings.isEmpty(product.summary) ? product.summary : product.description}">Summary</p>
+                <p th:if="${product.detailedDescription != null && !#strings.isEmpty(product.detailedDescription)}" class="fade-up mt-3 whitespace-pre-line leading-7 text-ink/75" style="--d:.32s" th:text="${product.detailedDescription}">Details</p>
+                <div class="fade-up mt-7 flex flex-wrap gap-3" style="--d:.4s">
+                    <a th:href="${applyUrl}" class="btn btn-gold px-7 py-3.5" th:text="${customerSignedIn} ? 'Apply for this plan' : 'Log in to apply'">Apply for this plan</a>
+                    <a href="/plan-finder" class="btn btn-outline"><i class="fa-solid fa-wand-magic-sparkles text-gold-deep"></i>Is it right for me?</a>
+                </div>
+                <ul class="fade-up mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted" style="--d:.48s">
+                    <li><i class="fa-solid fa-scale-balanced mr-2 text-gold-deep"></i>Shariah-compliant</li>
+                    <li><i class="fa-solid fa-receipt mr-2 text-gold-deep"></i>Pay only after quotation</li>
+                    <li><i class="fa-solid fa-user-tie mr-2 text-gold-deep"></i>Agent-reviewed</li>
+                </ul>
             </div>
-        </section>
-        <section class="rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-            <h2 class="text-xl font-semibold text-yellow-300">Requirements</h2>
-            <ul class="mt-4 space-y-3 text-white/70">
-                <li th:if="${#lists.isEmpty(product.requirements)}">No requirements entered yet.</li>
-                <li th:each="requirement : ${product.requirements}" class="flex gap-3"><i class="fa-solid fa-file-circle-check mt-1 text-yellow-300"></i><span th:text="${requirement.requirementText}">Requirement</span></li>
-            </ul>
-        </section>
-    </div>
-
-    <section class="mt-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-        <h2 class="text-xl font-semibold text-yellow-300">Eligibility, Purpose, Notes, and Documents</h2>
-        <div class="mt-5 grid gap-5 md:grid-cols-3">
-            <div><p class="text-sm uppercase tracking-[0.2em] text-white/45">Eligibility</p><p class="mt-2 whitespace-pre-line text-white/70" th:text="${product.eligibility}">Eligibility</p></div>
-            <div><p class="text-sm uppercase tracking-[0.2em] text-white/45">Coverage Purpose</p><p class="mt-2 whitespace-pre-line text-white/70" th:text="${product.coveragePurpose}">Purpose</p></div>
-            <div><p class="text-sm uppercase tracking-[0.2em] text-white/45">Terms / Notes</p><p class="mt-2 whitespace-pre-line text-white/70" th:text="${product.termsNotes}">Notes</p></div>
-        </div>
-        <div class="mt-6 flex flex-wrap gap-3">
-            <a th:each="document : ${product.documents}" th:href="${document.url}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full border border-yellow-400/30 px-5 py-3 text-sm font-semibold text-yellow-200 transition hover:bg-yellow-400/10 hover:text-yellow-300">
-                <i class="fa-solid fa-file-pdf"></i><span>View Brochure</span>
-            </a>
+            <div class="fade-up panel-dark min-h-[340px] p-8" style="--d:.2s">
+                <div th:replace="~{fragments/layout :: aurora}"></div>
+                <div th:replace="~{fragments/layout :: orbit('width:620px;height:620px;right:-230px;top:-200px')}"></div>
+                <img th:if="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}" th:src="${product.imageUrl}" alt="" class="relative aspect-[16/9] w-full rounded-2xl object-cover">
+                <span th:if="${product.imageUrl == null || #strings.isEmpty(product.imageUrl)}" class="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gold text-3xl text-ink"><i class="fa-solid" th:classappend="${product.iconClass}"></i></span>
+                <p class="relative mt-8 text-xs uppercase tracking-[0.25em] text-white/50">At a glance</p>
+                <dl class="relative mt-4 grid gap-4 text-sm">
+                    <div class="flex justify-between gap-4 border-b border-white/10 pb-3"><dt class="text-white/55">Eligibility</dt><dd class="text-right font-medium" th:text="${product.eligibility != null && !#strings.isEmpty(product.eligibility) ? product.eligibility : 'Confirmed by your agent'}">Eligibility</dd></div>
+                    <div class="flex justify-between gap-4 border-b border-white/10 pb-3"><dt class="text-white/55">Purpose</dt><dd class="text-right font-medium" th:text="${product.coveragePurpose != null && !#strings.isEmpty(product.coveragePurpose) ? product.coveragePurpose : 'Family protection'}">Purpose</dd></div>
+                    <div class="flex justify-between gap-4"><dt class="text-white/55">Contribution</dt><dd class="text-right font-medium text-gold">Set by agent after review</dd></div>
+                </dl>
+            </div>
         </div>
     </section>
+
+    <div class="sticky top-[64px] z-30 border-y border-cream-line bg-cream/90 backdrop-blur">
+        <div class="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 py-2 text-sm font-medium sm:px-6 lg:px-8" id="tabs">
+            <a href="#benefits" class="nav-link is-active whitespace-nowrap" data-no-transition>Benefits</a>
+            <a href="#coverage" class="nav-link whitespace-nowrap" data-no-transition>Coverage</a>
+            <a href="#requirements" class="nav-link whitespace-nowrap" data-no-transition>Requirements</a>
+            <a href="#documents" class="nav-link whitespace-nowrap" data-no-transition>Brochure &amp; notes</a>
+        </div>
+    </div>
+
+    <section class="mx-auto grid max-w-7xl gap-6 px-4 py-12 sm:px-6 lg:grid-cols-3 lg:px-8">
+        <div class="space-y-6 lg:col-span-2">
+            <article id="benefits" class="reveal card scroll-mt-32 p-7">
+                <h2 class="text-xl font-semibold">Benefits</h2>
+                <p th:if="${#lists.isEmpty(product.benefits)}" class="mt-4 text-muted">No benefits entered yet.</p>
+                <ul class="mt-5 grid gap-3 sm:grid-cols-2">
+                    <li th:each="benefit : ${product.benefits}" class="flex gap-3 rounded-2xl bg-cream p-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-soft text-gold-deep"><i class="fa-solid fa-check text-sm"></i></span><span class="text-sm leading-6" th:text="${benefit.benefitText}">Benefit</span></li>
+                </ul>
+            </article>
+            <article id="coverage" class="reveal card scroll-mt-32 p-7">
+                <h2 class="text-xl font-semibold">Coverage items</h2>
+                <p th:if="${#lists.isEmpty(product.coverageItems)}" class="mt-4 text-muted">No coverage items entered yet.</p>
+                <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                    <div th:each="item : ${product.coverageItems}" class="card-hover rounded-2xl border border-cream-line p-5"><i class="fa-solid fa-shield-heart text-xl text-gold-deep"></i><p class="mt-3 font-semibold" th:text="${item.itemName}">Item</p><p class="mt-1 text-sm leading-6 text-muted" th:text="${item.itemDescription}">Description</p></div>
+                </div>
+            </article>
+            <article id="requirements" class="reveal card scroll-mt-32 p-7">
+                <h2 class="text-xl font-semibold">What you'll need</h2>
+                <p class="mt-1 text-sm text-muted">Prepare these before you start — you can save a draft any time.</p>
+                <p th:if="${#lists.isEmpty(product.requirements)}" class="mt-4 text-muted">No requirements entered yet.</p>
+                <ol class="mt-5 grid gap-3 sm:grid-cols-2">
+                    <li th:each="requirement, iter : ${product.requirements}" class="flex items-center gap-3 rounded-2xl border border-dashed border-cream-line p-4 text-sm"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white" th:text="${iter.count}">1</span><span th:text="${requirement.requirementText}">Requirement</span></li>
+                </ol>
+            </article>
+        </div>
+
+        <aside class="space-y-6">
+            <div id="documents" class="reveal card scroll-mt-32 p-6" style="--i:1">
+                <h2 class="font-semibold">Brochure</h2>
+                <p th:if="${#lists.isEmpty(product.documents)}" class="mt-3 text-sm text-muted">No brochure uploaded yet.</p>
+                <a th:each="document : ${product.documents}" th:href="${document.url}" target="_blank" rel="noopener" class="card-hover mt-3 flex items-center gap-4 rounded-2xl border border-cream-line p-4">
+                    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-warn-soft text-warn"><i class="fa-solid fa-file-pdf text-xl"></i></span>
+                    <span class="min-w-0 flex-1"><span class="block truncate text-sm font-semibold" th:text="${document.label != null && !#strings.isEmpty(document.label) ? document.label : 'View Brochure'}">Brochure</span><span class="text-xs text-muted" th:text="${document.documentType != null ? document.documentType : 'Document'}">PDF</span></span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-muted"></i>
+                </a>
+                <div th:if="${product.termsNotes != null && !#strings.isEmpty(product.termsNotes)}" class="mt-5 rounded-2xl bg-cream p-4">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-muted">Terms / notes</p>
+                    <p class="mt-2 whitespace-pre-line text-sm leading-6" th:text="${product.termsNotes}">Notes</p>
+                </div>
+            </div>
+            <div class="reveal sticky top-36 rounded-3xl bg-ink p-6 text-white shadow-lift" style="--i:2">
+                <p class="text-lg font-semibold">Ready when you are</p>
+                <p class="mt-1 text-sm leading-6 text-white/65">Save a draft any time. You only pay after an agent sends your quotation.</p>
+                <a th:href="${applyUrl}" class="btn btn-gold mt-5 w-full">Apply now <i class="fa-solid fa-arrow-right arrow text-sm"></i></a>
+                <a href="/#contact" class="btn btn-ghost-dark mt-3 w-full">Talk to an agent</a>
+            </div>
+        </aside>
+    </section>
 </main>
+
+<div class="fixed inset-x-0 bottom-0 z-40 flex gap-3 border-t border-cream-line bg-white/90 p-3 backdrop-blur md:hidden">
+    <a href="/plan-finder" class="btn btn-outline flex-1 py-3 text-sm">Is it for me?</a>
+    <a th:href="${applyUrl}" class="btn btn-gold flex-1 py-3 text-sm">Apply now</a>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script>
+    // Highlight the tab of the section currently in view.
+    (function () {
+        const tabs = Array.from(document.querySelectorAll('#tabs a'));
+        const secs = tabs.map(function (t) { return document.querySelector(t.getAttribute('href')); });
+        addEventListener('scroll', function () {
+            let cur = secs[0];
+            secs.forEach(function (s) { if (s && s.getBoundingClientRect().top < 180) cur = s; });
+            tabs.forEach(function (t) { t.classList.toggle('is-active', cur && t.getAttribute('href') === '#' + cur.id); });
+        }, { passive: true });
+    })();
+</script>
 </body>
 </html>

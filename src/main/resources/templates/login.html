@@ -1,78 +1,68 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-[#050505]" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Muqmeen Group</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title th:text="${adminLogin} ? 'Admin sign in - Muqmeen Group' : 'Log in - Muqmeen Group'">Log in - Muqmeen Group</title>
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
 </head>
-<body class="auth-page min-h-screen bg-[#050505] text-white flex items-center justify-center p-4">
-    <main class="w-full max-w-md bg-transparent">
-        <a href="/" class="mb-8 flex items-center justify-center gap-3">
-            <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="Muqmeen Group logo"
-                 class="h-14 w-14 object-contain">
-            <span class="logo-wordmark text-sm leading-none text-yellow-400">
-                MUQMEEN <span class="logo-wordmark-strong text-yellow-300">GROUP</span>
-            </span>
-        </a>
+<body>
+<div class="grid min-h-screen lg:grid-cols-[1fr,1.05fr]">
+    <aside th:replace="~{fragments/layout :: authAside}"></aside>
 
-        <section class="brand-shell rounded-xl p-8">
-            <h1 class="text-2xl font-semibold text-zinc-950" th:text="${adminLogin} ? 'Admin sign in' : 'Welcome back'">Welcome back</h1>
-            <p class="text-sm text-zinc-500 mt-1"
-               th:text="${adminLogin} ? 'Sign in with the configured admin credentials.' : 'Sign in to continue your Takaful consultation.'">
-                Sign in to continue your Takaful consultation.
-            </p>
+    <main class="flex items-center justify-center px-4 py-12 sm:px-8">
+        <div class="w-full max-w-md">
+            <a th:replace="~{fragments/layout :: authMobileLogo}"></a>
 
-            <div th:if="${param.error}" class="mt-5 rounded-lg border border-amber-200 bg-yellow-50 p-3 text-sm text-yellow-800">
-                Invalid email or password.
+            <div th:unless="${adminLogin}" class="mb-8 flex rounded-full border border-cream-line bg-white p-1 text-sm font-semibold">
+                <span class="flex-1 rounded-full bg-ink py-2.5 text-center text-white">Log in</span>
+                <a th:href="@{/register(redirect=${redirect})}" class="flex-1 rounded-full py-2.5 text-center text-muted hover:text-ink">Create account</a>
             </div>
-            <div th:if="${param.logout}" class="mt-5 rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-3 text-sm text-emerald-300">
-                You have been signed out.
-            </div>
-            <div th:if="${passwordReset}" class="mt-5 rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-3 text-sm text-emerald-300">
-                Password updated. Please sign in with your new password.
-            </div>
+            <span th:if="${adminLogin}" class="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-ink text-2xl text-gold"><i class="fa-solid fa-user-shield"></i></span>
 
-            <form th:action="@{/login}" method="post" class="mt-6 space-y-4">
+            <h1 class="text-3xl font-semibold tracking-tight" th:text="${adminLogin} ? 'Admin sign in' : 'Welcome back'">Welcome back</h1>
+            <p class="mt-2 text-muted" th:text="${adminLogin} ? 'Sign in with the configured admin credentials.' : 'Sign in to continue your Takaful consultation.'">Sign in to continue your Takaful consultation.</p>
+
+            <div th:if="${param.error}" class="mt-6 rounded-2xl bg-warn-soft p-4 text-sm text-warn"><i class="fa-solid fa-circle-exclamation mr-2"></i>Invalid email or password.</div>
+            <div th:if="${param.logout}" class="mt-6 rounded-2xl bg-ok-soft p-4 text-sm text-ok"><i class="fa-solid fa-circle-check mr-2"></i>You have been signed out.</div>
+            <div th:if="${passwordReset}" class="mt-6 rounded-2xl bg-ok-soft p-4 text-sm text-ok"><i class="fa-solid fa-circle-check mr-2"></i>Password updated. Please sign in with your new password.</div>
+
+            <form th:action="@{/login}" method="post" class="mt-7 space-y-4" id="login-form">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <input type="hidden" name="redirect" th:value="${redirect}">
                 <input type="hidden" name="portal" th:value="${adminLogin} ? 'admin' : 'customer'">
-
-                <div>
-                    <label for="username" class="block text-sm font-semibold text-zinc-700 mb-1"
-                           th:text="${adminLogin} ? 'Admin username' : 'Email address'">Email address</label>
-                    <input id="username" name="username" type="text" autocomplete="username" required autofocus
-                           class="w-full rounded-lg border border-zinc-300 px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
-                </div>
-
-                <div>
-                    <div class="mb-1 flex items-center justify-between gap-3">
-                        <label for="password" class="block text-sm font-semibold text-zinc-700">Password</label>
-                        <a th:unless="${adminLogin}" th:href="@{/forgot-password}"
-                           class="text-xs font-semibold text-yellow-700 hover:text-yellow-500 smooth-transition">
-                            Forgot password?
-                        </a>
-                    </div>
-                    <input id="password" name="password" type="password" required
-                           class="w-full rounded-lg border border-zinc-300 px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
-                </div>
-
-                <button type="submit"
-                        class="w-full rounded-lg bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold py-3 smooth-transition">
-                    Sign in
-                </button>
+                <label class="label" for="username"><span th:text="${adminLogin} ? 'Admin username' : 'Email address'">Email address</span>
+                    <input id="username" name="username" type="text" autocomplete="username" required autofocus class="field" th:placeholder="${adminLogin} ? 'admin' : 'you@example.com'">
+                </label>
+                <label class="label" for="password">
+                    <span class="flex justify-between">Password <a th:unless="${adminLogin}" th:href="@{/forgot-password}" class="font-medium text-gold-deep hover:underline">Forgot?</a></span>
+                    <span class="relative block">
+                        <input id="password" name="password" type="password" autocomplete="current-password" required class="field pr-12">
+                        <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 px-1 text-muted hover:text-ink" data-toggle-password="password" aria-label="Show password"><i class="fa-regular fa-eye"></i></button>
+                    </span>
+                </label>
+                <button type="submit" class="btn btn-gold w-full py-3.5">Log in <i class="fa-solid fa-arrow-right arrow text-sm"></i></button>
             </form>
 
-            <p th:unless="${adminLogin}" class="text-sm text-zinc-500 mt-6 text-center">
-                New here?
-                <a th:href="@{/register(redirect=${redirect})}" class="font-semibold text-zinc-950 hover:text-yellow-600">Create an account</a>
-            </p>
-        </section>
+            <p th:unless="${adminLogin}" class="mt-6 text-center text-sm text-muted">New here? <a th:href="@{/register(redirect=${redirect})}" class="font-semibold text-ink hover:underline">Create an account</a></p>
+            <p th:if="${adminLogin}" class="mt-6 text-center text-sm text-muted"><a href="/" class="font-semibold text-ink hover:underline"><i class="fa-solid fa-arrow-left mr-1"></i>Back to website</a></p>
+        </div>
     </main>
+</div>
+<script th:inline="javascript">
+    (function () {
+        const admin = /*[[${adminLogin}]]*/ false;
+        document.querySelectorAll('[data-toggle-password]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const input = document.getElementById(btn.dataset.togglePassword), show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                btn.innerHTML = show ? '<i class="fa-regular fa-eye-slash"></i>' : '<i class="fa-regular fa-eye"></i>';
+            });
+        });
+        // Shown only while the sign-in request is actually in flight.
+        document.getElementById('login-form').addEventListener('submit', function () {
+            MG.loader({ title: admin ? 'Signing you in' : 'Preparing your account', sub: admin ? 'Opening the admin panel' : 'Assalamualaikum, welcome back' });
+        });
+    })();
+</script>
 </body>
 </html>

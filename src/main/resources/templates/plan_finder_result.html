@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html th:lang="${lang}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${lang == 'ms'} ? 'Pelan Dicadangkan - Muqmeen Group' : 'Your Suggested Plans - Muqmeen Group'">Your Suggested Plans - Muqmeen Group</title>
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
+</head>
+<body th:with="ms=${lang == 'ms'}">
+<nav th:replace="~{fragments/layout :: siteNav('plan-finder')}"></nav>
+
+<main class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <a th:href="@{/plan-finder(lang=${lang})}" class="btn btn-outline btn-sm"><i class="fa-solid fa-rotate-left text-gold-deep"></i><span th:text="${ms} ? 'Jawab semula' : 'Start again'">Start again</span></a>
+
+    <section class="fade-up panel-dark mt-6 px-7 py-9 sm:px-10">
+        <div th:replace="~{fragments/layout :: aurora}"></div>
+        <div th:replace="~{fragments/layout :: orbit('width:560px;height:560px;right:-180px;top:-240px')}"></div>
+        <p class="eyebrow-dark relative"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i><span th:text="${ms} ? 'Cadangan untuk anda' : 'Suggested for you'">Suggested for you</span></p>
+        <h1 class="relative mt-3 max-w-2xl text-3xl font-semibold leading-tight sm:text-4xl" th:text="${ms} ? 'Pelan yang paling berkaitan' : 'Your most relevant plans'">Your most relevant plans</h1>
+        <p th:if="${result.summary != null}" class="relative mt-3 max-w-2xl leading-7 text-white/70" th:text="${result.summary}">Summary</p>
+        <div class="relative mt-6 flex flex-wrap gap-2 text-xs">
+            <span th:each="line : ${result.answers}" class="rounded-full border border-white/15 bg-white/5 px-3 py-1.5" th:text="${line.answer}">answer</span>
+        </div>
+    </section>
+
+    <div class="mt-8 grid gap-8 lg:grid-cols-[1fr,340px]">
+        <section class="space-y-5">
+            <div th:if="${#lists.isEmpty(result.products)}" class="card p-8 text-center">
+                <p class="text-xl font-semibold" th:text="${ms} ? 'Tiada pelan untuk dicadangkan buat masa ini' : 'No plans to suggest right now'">No plans</p>
+                <p class="mt-2 text-muted" th:text="${ms} ? 'Hantar permintaan konsultasi dan ejen kami akan membantu anda.' : 'Send a consultation request and our agent will help you.'">Help</p>
+            </div>
+
+            <article th:each="item, iter : ${result.products}" class="reveal card card-hover relative overflow-hidden p-6" th:classappend="${iter.first} ? '!border-2 !border-gold' : ''" th:style="'--i:' + ${iter.index}">
+                <span th:if="${iter.first}" class="absolute right-0 top-0 rounded-bl-2xl bg-gold px-4 py-1.5 text-xs font-semibold" th:text="${ms} ? 'Padanan terbaik' : 'Best match'">Best match</span>
+                <div class="flex flex-col gap-5 sm:flex-row">
+                    <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gold-soft text-3xl text-gold-deep">
+                        <img th:if="${item.product.imageUrl != null && !#strings.isEmpty(item.product.imageUrl)}" th:src="${item.product.imageUrl}" alt="" class="h-full w-full object-cover">
+                        <i th:if="${item.product.imageUrl == null || #strings.isEmpty(item.product.imageUrl)}" class="fa-solid" th:classappend="${item.product.iconClass != null ? item.product.iconClass : 'fa-shield-halved'}"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-semibold uppercase tracking-[0.2em] text-muted" th:text="${item.product.categoryLabel}">Category</span>
+                            <span class="chip" th:classappend="${item.recommendation.fit == 'HIGH'} ? 'chip-gold' : 'chip-soft'"
+                                  th:text="${item.recommendation.fit == 'HIGH'} ? (${ms} ? 'Padanan tinggi' : 'Strong match') : (${ms} ? 'Padanan sederhana' : 'Good match')">Match</span>
+                        </div>
+                        <h2 class="mt-1 text-2xl font-semibold" th:text="${item.product.name}">Product</h2>
+                        <p class="mt-2 leading-7 text-ink/75" th:text="${item.recommendation.reason}">Reason</p>
+                        <div class="mt-5 flex flex-wrap gap-3">
+                            <a th:if="${authState != null and authState.customer}" th:href="@{/applications/new(productId=${item.product.id},planFinder=${token})}" class="btn btn-gold" th:text="${ms} ? 'Mohon pelan ini' : 'Apply for this plan'">Apply</a>
+                            <a th:unless="${authState != null and authState.customer}" th:href="@{/login(redirect=${'/applications/new?productId=' + item.product.id + '&planFinder=' + token})}" class="btn btn-gold" th:text="${ms} ? 'Log masuk untuk memohon' : 'Log in to apply'">Log in to apply</a>
+                            <a th:href="@{/products/{id}(id=${item.product.id})}" class="btn btn-outline" th:text="${ms} ? 'Lihat butiran' : 'View details'">View details</a>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <p class="flex gap-2 text-sm leading-6 text-muted">
+                <i class="fa-solid fa-circle-info mt-1"></i>
+                <span>
+                    <span th:text="${ms}
+                        ? 'Cadangan ini bukan nasihat kewangan. Ejen berlesen kami akan mengesahkan kelayakan, perlindungan dan caruman sebelum sebarang sebut harga.'
+                        : 'These suggestions are not financial advice. Our licensed agent will confirm eligibility, coverage and contribution before any quotation.'">Disclaimer</span>
+                    <span th:if="${result.response.source == 'AI'}" th:text="${ms} ? ' Dijana dengan bantuan AI.' : ' Generated with AI assistance.'"></span>
+                </span>
+            </p>
+        </section>
+
+        <aside class="space-y-5">
+            <section id="consult" class="card scroll-mt-28 p-6">
+                <p class="text-lg font-semibold" th:text="${ms} ? 'Mahu berbincang dahulu?' : 'Prefer to talk it through first?'">Talk first</p>
+                <p class="mt-1 text-sm leading-6 text-muted" th:text="${ms} ? 'Ejen kami akan melihat jawapan Plan Finder anda dan menghubungi anda.' : 'Our agent will see your Plan Finder answers and contact you.'">Consult intro</p>
+                <div th:if="${contactSent}" class="mt-4 rounded-2xl bg-ok-soft p-4 text-sm text-ok"><i class="fa-solid fa-circle-check mr-2"></i><span th:text="${ms} ? 'Terima kasih! Ejen kami akan menghubungi anda tidak lama lagi.' : 'Thank you! Our agent will contact you shortly.'">Sent</span></div>
+                <div th:if="${contactError}" class="mt-4 rounded-2xl bg-warn-soft p-4 text-sm text-warn" th:text="${contactError}">Error</div>
+                <form th:action="@{/contact}" method="post" class="mt-4 space-y-3" data-busy="Sending…">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="hidden" name="planFinderToken" th:value="${token}">
+                    <input type="hidden" name="topic" th:value="${consultTopic}">
+                    <input name="fullName" required th:value="${prefillName}" class="field" th:placeholder="${ms} ? 'Nama penuh' : 'Full name'" aria-label="Name">
+                    <input name="email" type="email" required th:value="${prefillEmail}" class="field" placeholder="Email" aria-label="Email">
+                    <input name="phoneNumber" th:value="${prefillPhone}" class="field" th:placeholder="${ms} ? 'Telefon (WhatsApp)' : 'Phone (WhatsApp)'" aria-label="Phone">
+                    <select name="preferredContact" class="field" aria-label="Preferred contact method">
+                        <option value="WhatsApp">WhatsApp</option>
+                        <option value="Phone call" th:text="${ms} ? 'Panggilan telefon' : 'Phone call'">Phone call</option>
+                        <option value="Email">Email</option>
+                    </select>
+                    <textarea name="message" rows="4" required class="field" aria-label="Message" th:text="${consultMessage}"></textarea>
+                    <button type="submit" class="btn btn-ink w-full" th:text="${ms} ? 'Minta konsultasi' : 'Request consultation'">Request consultation</button>
+                </form>
+            </section>
+            <details class="card group p-6">
+                <summary class="flex cursor-pointer list-none items-center justify-between font-semibold"><span th:text="${ms} ? 'Jawapan anda' : 'Your answers'">Your answers</span><i class="fa-solid fa-chevron-down text-sm transition group-open:rotate-180"></i></summary>
+                <dl class="mt-4 grid gap-3 text-sm">
+                    <div th:each="line : ${result.answers}"><dt class="text-muted" th:text="${line.question}">Q</dt><dd th:text="${line.answer}">A</dd></div>
+                </dl>
+            </details>
+        </aside>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: page-scripts}"></th:block>
+</body>
+</html>

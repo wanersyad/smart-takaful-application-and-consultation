@@ -6,6 +6,8 @@ import com.muqmeen.takaful.service.ApplicationService;
 import com.muqmeen.takaful.service.ApplicationService.ApplicationInput;
 import com.muqmeen.takaful.service.ApplicationService.NomineeInput;
 import com.muqmeen.takaful.service.CustomerService;
+import com.muqmeen.takaful.service.PlanFinderService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -27,17 +29,28 @@ public class ApplicationController {
 
     private final CustomerService customerService;
     private final ApplicationService applicationService;
+    private final PlanFinderService planFinderService;
 
-    public ApplicationController(CustomerService customerService, ApplicationService applicationService) {
+    public ApplicationController(CustomerService customerService, ApplicationService applicationService,
+                                 PlanFinderService planFinderService) {
         this.customerService = customerService;
         this.applicationService = applicationService;
+        this.planFinderService = planFinderService;
     }
 
     @GetMapping("/applications/new")
     public String start(@RequestParam("productId") Long productId,
-                        Authentication authentication) {
+                        @RequestParam(value = "planFinder", required = false) String planFinderToken,
+                        Authentication authentication,
+                        HttpSession session) {
         Customer customer = currentCustomer(authentication);
         ConsultationApplication application = applicationService.start(customer, productId);
+        // Hand the visitor's Plan Finder answers to the agent who will review this application.
+        String token = planFinderToken != null ? planFinderToken : (String) session.getAttribute(PlanFinderController.SESSION_TOKEN);
+        if (token != null) {
+            planFinderService.linkApplication(token, application, customer);
+            session.removeAttribute(PlanFinderController.SESSION_TOKEN);
+        }
         return "redirect:/applications/" + application.getId() + "/edit";
     }
 

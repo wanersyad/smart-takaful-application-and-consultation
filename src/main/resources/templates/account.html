@@ -2,56 +2,106 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account - Muqmeen Group</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
 </head>
-<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<body th:with="toPay=${applications.?[quotation != null and (status.name() == 'QUOTED' or status.name() == 'PAYMENT_PENDING')]},toFix=${applications.?[status.name() == 'NEEDS_INFO']}">
 <nav th:replace="~{fragments/layout :: siteNav('account')}"></nav>
 <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-    <p th:if="${flashMessage}" class="mb-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
-    <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <div class="h-20 w-20 overflow-hidden rounded-3xl border border-yellow-400/30 bg-yellow-400/10">
+    <p th:if="${flashMessage}" class="mb-6 rounded-2xl bg-ok-soft p-4 text-ok" th:text="${flashMessage}">Saved</p>
+
+    <section class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div class="flex items-center gap-5">
+            <div class="fade-up h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-ink">
                 <img th:if="${profile.profilePicture != null}" th:src="@{/files/{id}(id=${profile.profilePicture.id})}" alt="Profile picture" class="h-full w-full object-cover">
-                <div th:if="${profile.profilePicture == null}" class="flex h-full w-full items-center justify-center text-2xl text-yellow-300"><i class="fa-solid fa-user"></i></div>
+                <div th:if="${profile.profilePicture == null}" class="flex h-full w-full items-center justify-center text-xl text-gold"><i class="fa-solid fa-user"></i></div>
             </div>
             <div>
-                <p class="text-white/65">Signed in as <span class="font-semibold text-white" th:text="${customer.fullName}">Customer</span></p>
-                <h1 class="mt-2 text-4xl font-semibold text-yellow-300">My Takaful Applications</h1>
+                <p class="fade-up text-sm text-muted">Assalamualaikum,</p>
+                <h1 class="fade-up text-3xl font-semibold tracking-tight sm:text-4xl" style="--d:.1s" th:text="${customer.fullName}">Customer</h1>
+                <p class="fade-up mt-1 text-muted" style="--d:.15s">Here's where your Takaful journey stands today.</p>
             </div>
         </div>
-        <a href="/account/profile" class="rounded-full border border-yellow-400/30 px-6 py-3 text-center font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300">Update Profile</a>
+        <div class="fade-up flex gap-3" style="--d:.2s">
+            <a href="/account/profile" class="btn btn-outline"><i class="fa-solid fa-user-pen text-gold-deep"></i>Update Profile</a>
+            <a href="/#products" class="btn btn-ink"><i class="fa-solid fa-plus"></i>New application</a>
+        </div>
+    </section>
+
+    <!-- Action needed: quotation ready to pay -->
+    <section th:if="${!#lists.isEmpty(toPay)}" th:with="q=${toPay[0].quotation}" class="fade-up panel-dark mt-8 p-7 sm:p-9" style="--d:.25s">
+        <div th:replace="~{fragments/layout :: aurora}"></div>
+        <div th:replace="~{fragments/layout :: orbit('width:520px;height:520px;right:-140px;top:-200px')}"></div>
+        <div class="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div>
+                <span class="chip chip-gold"><span class="h-1.5 w-1.5 animate-pulse rounded-full bg-ink"></span>Action needed</span>
+                <h2 class="mt-4 text-2xl font-semibold sm:text-3xl">Your quotation is ready</h2>
+                <p class="mt-2 max-w-xl leading-7 text-white/70">Our agent reviewed your <b class="text-white" th:text="${toPay[0].product.name}">plan</b> application and prepared a quotation. Review it and pay securely to activate your protection.</p>
+            </div>
+            <div class="shrink-0 md:text-right">
+                <p class="text-sm text-white/55">Total payable</p>
+                <p class="text-4xl font-semibold text-gold">RM <span th:text="${#numbers.formatDecimal(q.selectedTotal(), 1, 2)}">0.00</span></p>
+                <a th:href="@{/applications/{id}(id=${toPay[0].id})}" class="btn btn-gold mt-4">Review &amp; pay <i class="fa-solid fa-arrow-right arrow text-sm"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action needed: agent asked for corrections -->
+    <section th:if="${!#lists.isEmpty(toFix)}" class="fade-up mt-6 flex flex-col gap-4 rounded-3xl border border-warn/25 bg-warn-soft p-6 sm:flex-row sm:items-center sm:justify-between" style="--d:.3s">
+        <div class="flex gap-4"><i class="fa-solid fa-pen-to-square mt-1 text-xl text-warn"></i><div><p class="font-semibold text-warn">Your agent needs a little more information</p><p class="mt-1 text-sm text-ink/70" th:text="${toFix[0].product.name} + ' — please review the correction request and resubmit.'">Please review the correction request.</p></div></div>
+        <a th:href="@{/applications/{id}(id=${toFix[0].id})}" class="btn btn-ink shrink-0">Open application</a>
+    </section>
+
+    <section class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div class="reveal card p-5"><p class="text-xs font-medium uppercase tracking-wide text-muted">Total</p><p class="mt-2 text-3xl font-semibold" th:text="${totalApplications}">0</p></div>
+        <div class="reveal card p-5" style="--i:1"><p class="text-xs font-medium uppercase tracking-wide text-muted">Drafts</p><p class="mt-2 text-3xl font-semibold" th:text="${draftApplications}">0</p></div>
+        <div class="reveal card p-5" style="--i:2"><p class="text-xs font-medium uppercase tracking-wide text-muted">In review</p><p class="mt-2 text-3xl font-semibold" th:text="${reviewApplications}">0</p></div>
+        <div class="reveal card p-5" style="--i:3"><p class="text-xs font-medium uppercase tracking-wide text-muted">Quoted</p><p class="mt-2 text-3xl font-semibold text-info" th:text="${quotedApplications}">0</p></div>
+        <div class="reveal card p-5" style="--i:4"><p class="text-xs font-medium uppercase tracking-wide text-muted">Paid</p><p class="mt-2 text-3xl font-semibold text-ok" th:text="${paidApplications}">0</p></div>
+    </section>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-3">
+        <section class="lg:col-span-2">
+            <h2 class="text-xl font-semibold">My applications</h2>
+            <div th:if="${#lists.isEmpty(applications)}" class="card mt-4 p-10 text-center">
+                <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gold-soft text-2xl text-gold-deep"><i class="fa-solid fa-folder-open"></i></span>
+                <p class="mt-4 font-semibold">No applications yet</p>
+                <p class="mt-1 text-muted">Your application records will appear here after you start a product application.</p>
+                <a href="/plan-finder" class="btn btn-gold mt-5"><i class="fa-solid fa-wand-magic-sparkles"></i>Find a suitable plan</a>
+            </div>
+            <div class="mt-4 space-y-4">
+                <a th:each="app, iter : ${applications}" th:href="@{/applications/{id}(id=${app.id})}"
+                   class="reveal card card-hover block p-6" th:classappend="${app.status.name() == 'DRAFT'} ? '!border-dashed' : ''" th:style="'--i:' + ${iter.index % 4}"
+                   th:with="s=${app.status.name()},stage=${s == 'DRAFT' ? 0 : (s == 'SUBMITTED' or s == 'UNDER_REVIEW' or s == 'NEEDS_INFO' ? 1 : (s == 'QUOTED' or s == 'PAYMENT_PENDING' ? 3 : (s == 'PAID' or s == 'CLOSED' ? 4 : 1)))}">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div class="flex items-center gap-4">
+                            <span class="flex h-12 w-12 items-center justify-center rounded-2xl" th:classappend="${s == 'DRAFT'} ? 'bg-cream-deep text-muted' : 'bg-gold-soft text-gold-deep'"><i class="fa-solid" th:classappend="${app.product.iconClass != null ? app.product.iconClass : 'fa-shield-halved'}"></i></span>
+                            <div>
+                                <p class="font-semibold" th:text="${app.product.name}">Product</p>
+                                <p class="text-sm text-muted">Application #<span th:text="${app.id}">1</span> · <span th:text="${#temporals.format(app.createdAt, 'd MMM yyyy')}">date</span>
+                                    <span th:if="${app.quotation != null and app.quotation.status != 'DRAFT'}" th:text="' · RM ' + ${#numbers.formatDecimal(app.quotation.selectedTotal(), 1, 2)}"></span></p>
+                            </div>
+                        </div>
+                        <span class="status-badge" th:classappend="'status-' + ${#strings.toLowerCase(s)}" th:text="${app.status}">DRAFT</span>
+                    </div>
+                    <div class="mt-6 grid grid-cols-4 gap-2 text-[11px] font-medium text-muted">
+                        <div th:each="label, st : ${ {'Submitted','Reviewed','Quoted','Paid'} }">
+                            <div class="h-1.5 overflow-hidden rounded-full bg-cream-line"><div class="h-full rounded-full bg-gold" th:if="${st.count <= stage}"></div></div>
+                            <p class="mt-2" th:classappend="${st.count <= stage} ? 'text-ink' : ''" th:text="${label}">Step</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <aside class="space-y-4">
+            <h2 class="text-xl font-semibold">Quick actions</h2>
+            <a href="/plan-finder" class="reveal card card-hover flex items-center gap-4 p-5"><span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-ink text-gold"><i class="fa-solid fa-wand-magic-sparkles"></i></span><span class="flex-1"><span class="block font-semibold">Plan Finder</span><span class="text-sm text-muted">Find another suitable plan</span></span><i class="fa-solid fa-chevron-right text-xs text-muted"></i></a>
+            <a href="/account/profile" class="reveal card card-hover flex items-center gap-4 p-5" style="--i:1"><span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gold-soft text-gold-deep"><i class="fa-solid fa-user-pen"></i></span><span class="flex-1"><span class="block font-semibold">Edit profile</span><span class="text-sm text-muted">Prefills future applications</span></span><i class="fa-solid fa-chevron-right text-xs text-muted"></i></a>
+            <a href="/#contact" class="reveal card card-hover flex items-center gap-4 p-5" style="--i:2"><span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-ok-soft text-ok"><i class="fa-regular fa-comments"></i></span><span class="flex-1"><span class="block font-semibold">Talk to an agent</span><span class="text-sm text-muted">Request a consultation</span></span><i class="fa-solid fa-chevron-right text-xs text-muted"></i></a>
+        </aside>
     </div>
-
-    <section class="mt-8 grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Total</p><p class="mt-2 text-3xl font-semibold" th:text="${totalApplications}">0</p></div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Drafts</p><p class="mt-2 text-3xl font-semibold" th:text="${draftApplications}">0</p></div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Review</p><p class="mt-2 text-3xl font-semibold" th:text="${reviewApplications}">0</p></div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Quoted</p><p class="mt-2 text-3xl font-semibold text-yellow-300" th:text="${quotedApplications}">0</p></div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5"><p class="text-xs uppercase text-white/50">Paid</p><p class="mt-2 text-3xl font-semibold text-emerald-300" th:text="${paidApplications}">0</p></div>
-    </section>
-
-    <section class="mt-8 overflow-hidden rounded-3xl border border-yellow-400/25 bg-[#111]">
-        <div class="hidden grid-cols-[1fr,1.2fr,1fr,1fr,1fr] border-b border-yellow-400/15 px-5 py-4 text-xs font-semibold uppercase tracking-wide text-white/60 md:grid">
-            <span>Date</span><span>Product</span><span>Status</span><span>Quotation</span><span>Action</span>
-        </div>
-        <div th:if="${#lists.isEmpty(applications)}" class="p-12 text-center text-white/65">
-            Your application records will appear here after you start a product application.
-        </div>
-        <article th:each="app : ${applications}" class="grid gap-3 border-b border-yellow-400/10 p-5 last:border-b-0 md:grid-cols-[1fr,1.2fr,1fr,1fr,1fr] md:items-center">
-            <p class="text-sm text-white/65" th:text="${#temporals.format(app.createdAt, 'yyyy-MM-dd HH:mm')}">Date</p>
-            <p class="font-semibold text-white" th:text="${app.product.name}">Product</p>
-            <p><span class="rounded-full border border-yellow-400/25 bg-yellow-400/10 px-3 py-1 text-xs font-semibold text-yellow-200" th:text="${app.status}">DRAFT</span></p>
-            <p class="text-sm text-white/65" th:text="${app.quotation == null ? 'Not issued' : app.quotation.status + ' / RM ' + #numbers.formatDecimal(app.quotation.selectedTotal(), 1, 2)}">Not issued</p>
-            <a th:href="@{/applications/{id}(id=${app.id})}" class="rounded-full bg-yellow-400 px-4 py-2 text-center text-sm font-semibold text-zinc-950 hover:bg-yellow-300">Open</a>
-        </article>
-    </section>
 </main>
 <footer th:replace="~{fragments/layout :: footer}"></footer>
-<script th:replace="~{fragments/layout :: menu-script}"></script>
 </body>
 </html>

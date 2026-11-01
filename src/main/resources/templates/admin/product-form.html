@@ -1,90 +1,79 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Form - Muqmeen Admin</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title th:text="${formMode == 'create'} ? 'Create Product - Muqmeen Admin' : 'Edit Product - Muqmeen Admin'">Product - Muqmeen Admin</title>
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
 </head>
-<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
-<nav th:replace="~{fragments/layout :: adminNav('')}"></nav>
-<main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-    <a href="/admin/products" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to products</a>
-    <h1 class="mt-5 text-4xl font-semibold text-yellow-300" th:text="${formMode == 'create'} ? 'Create Product' : 'Edit Product'">Product</h1>
-    <form th:action="${formMode == 'create'} ? @{/admin/products} : @{/admin/products/{id}(id=${product.id})}" th:object="${product}" method="post" enctype="multipart/form-data" class="mt-8 grid gap-6 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
+<body class="lg:pl-64">
+<th:block th:replace="~{fragments/layout :: adminNav('products')}"></th:block>
+<main class="space-y-6 p-5 sm:p-8">
+    <a href="/admin/products" class="text-sm font-medium text-muted hover:text-ink"><i class="fa-solid fa-arrow-left mr-2"></i>Back to products</a>
+    <h1 class="fade-up text-3xl font-semibold tracking-tight" th:text="${formMode == 'create'} ? 'Create Product' : 'Edit Product'">Product</h1>
+
+    <form th:action="${formMode == 'create'} ? @{/admin/products} : @{/admin/products/{id}(id=${product.id})}" th:object="${product}" method="post" enctype="multipart/form-data"
+          class="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr),320px]" data-busy="Saving…">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <section class="grid gap-5 sm:grid-cols-2">
-            <label class="grid gap-2 text-sm text-white/80">Product name<input th:field="*{name}" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="grid gap-2 text-sm text-white/80">Category<label class="sr-only">Category</label><input th:field="*{categoryLabel}" placeholder="Family Protection" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></label>
-            <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Short summary<textarea th:field="*{summary}" rows="3" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
-            <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Detailed description<textarea th:field="*{detailedDescription}" rows="5" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
-            <div class="grid gap-2 text-sm text-white/80">
-                <span>Product image</span>
-                <div th:if="${formMode == 'edit' and product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}" class="flex items-center gap-3 rounded-2xl border border-yellow-400/15 bg-black p-3">
-                    <img th:src="${product.imageUrl}" alt="Current product image" class="h-16 w-24 rounded-lg object-cover">
-                    <button type="submit" formnovalidate
-                            th:formaction="@{/admin/products/{id}/remove-image(id=${product.id})}"
-                            formmethod="post"
-                            onclick="return confirm('Remove the current product image? Customers will see the icon placeholder until you upload a new one.');"
-                            class="rounded-full border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-200 hover:bg-red-500 hover:text-white">
-                        <i class="fa-solid fa-trash-can mr-1"></i>Remove image
-                    </button>
+        <div class="min-w-0 space-y-6">
+            <section class="card grid gap-5 p-6 sm:grid-cols-2">
+                <p class="eyebrow sm:col-span-2">Core information</p>
+                <label class="label">Product name<input th:field="*{name}" required class="field"></label>
+                <label class="label">Category<input th:field="*{categoryLabel}" placeholder="Family Protection" class="field"></label>
+                <label class="label sm:col-span-2">Short summary<span class="hint">Shown on the plan card and used by the Plan Finder.</span><textarea th:field="*{summary}" rows="2" class="field"></textarea></label>
+                <label class="label sm:col-span-2">Detailed description<textarea th:field="*{detailedDescription}" rows="5" class="field"></textarea></label>
+                <label class="label">Eligibility<textarea th:field="*{eligibility}" rows="3" class="field"></textarea></label>
+                <label class="label">Coverage purpose<textarea th:field="*{coveragePurpose}" rows="3" class="field"></textarea></label>
+                <label class="label sm:col-span-2">Terms and notes<textarea th:field="*{termsNotes}" rows="3" class="field"></textarea></label>
+            </section>
+
+            <section class="card space-y-5 p-6">
+                <p class="eyebrow">Plan details</p>
+                <label class="label">Benefits<span class="hint">One benefit per line. Each line becomes a point customers read on the product page.</span>
+                    <textarea id="benefitsText" name="benefitsText" rows="4" placeholder="Covers accidental death&#10;Includes critical illness payout" class="field" th:text="${benefitsText}"></textarea></label>
+                <label class="label">Coverage Items<span class="hint">One item per line, as <code class="text-gold-deep">Name | What it covers</code>.</span>
+                    <textarea id="coverageText" name="coverageText" rows="4" placeholder="Death benefit | Lump sum paid to nominees&#10;Medical | Hospitalisation cover up to RM50,000" class="field" th:text="${coverageText}"></textarea></label>
+                <label class="label">Requirements<span class="hint">One requirement per line (documents, eligibility, info needed before applying).</span>
+                    <textarea id="requirementsText" name="requirementsText" rows="4" placeholder="Malaysian citizen aged 18-60&#10;Copy of IC (front and back)" class="field" th:text="${requirementsText}"></textarea></label>
+                <textarea id="documentsText" name="documentsText" class="hidden" th:text="${documentsText}"></textarea>
+            </section>
+
+            <section class="card grid gap-5 p-6 sm:grid-cols-2">
+                <p class="eyebrow sm:col-span-2">Media &amp; documents</p>
+                <div class="label">
+                    Product image
+                    <div th:if="${formMode == 'edit' and product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}" class="flex items-center gap-3 rounded-2xl bg-cream p-3">
+                        <img th:src="${product.imageUrl}" alt="Current product image" class="h-16 w-24 rounded-xl object-cover">
+                        <button type="submit" formnovalidate th:formaction="@{/admin/products/{id}/remove-image(id=${product.id})}" formmethod="post"
+                                onclick="return confirm('Remove the current product image? Customers will see the icon placeholder until you upload a new one.');"
+                                class="btn btn-danger btn-sm"><i class="fa-regular fa-trash-can"></i>Remove image</button>
+                    </div>
+                    <input name="productImage" type="file" accept="image/png,image/jpeg,image/webp" class="field !py-2">
+                    <span class="hint">JPG, PNG or WebP. The existing image stays if you leave this empty.</span>
                 </div>
-                <input name="productImage" type="file" accept="image/png,image/jpeg,image/webp" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white">
-                <span class="text-xs text-white/45">Upload a JPG, PNG, or WebP. Existing image stays if you leave this empty.</span>
-            </div>
-            <label class="grid gap-2 text-sm text-white/80">Icon choice
-                <select th:field="*{iconClass}" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-yellow-300">
-                    <option value="fa-shield">Shield</option>
-                    <option value="fa-heart">Health</option>
-                    <option value="fa-hand-holding-heart">Family care</option>
-                    <option value="fa-graduation-cap">Education</option>
-                    <option value="fa-piggy-bank">Savings</option>
-                </select>
-            </label>
-            <label class="grid gap-2 text-sm text-white/80">Eligibility<textarea th:field="*{eligibility}" rows="4" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
-            <label class="grid gap-2 text-sm text-white/80">Coverage purpose<textarea th:field="*{coveragePurpose}" rows="4" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
-            <label class="sm:col-span-2 grid gap-2 text-sm text-white/80">Terms and notes<textarea th:field="*{termsNotes}" rows="4" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3"></textarea></label>
-        </section>
-        <section class="grid gap-6">
-            <div class="rounded-2xl border border-yellow-400/15 bg-black p-5">
-                <h2 class="text-xl font-semibold text-white">Benefits</h2>
-                <p class="text-sm text-white/55">One benefit per line. Each line becomes a point customers read on the product detail view.</p>
-                <textarea id="benefitsText" name="benefitsText" rows="4" placeholder="Covers accidental death&#10;Includes critical illness payout" class="mt-4 w-full rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white" th:text="${benefitsText}"></textarea>
-            </div>
-
-            <div class="rounded-2xl border border-yellow-400/15 bg-black p-5">
-                <h2 class="text-xl font-semibold text-white">Coverage Items</h2>
-                <p class="text-sm text-white/55">One item per line, as <code class="text-yellow-300">Name | What it covers</code>.</p>
-                <textarea id="coverageText" name="coverageText" rows="4" placeholder="Death benefit | Lump sum paid to nominees&#10;Medical | Hospitalisation cover up to RM50,000" class="mt-4 w-full rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white" th:text="${coverageText}"></textarea>
-            </div>
-
-            <div class="rounded-2xl border border-yellow-400/15 bg-black p-5">
-                <h2 class="text-xl font-semibold text-white">Requirements</h2>
-                <p class="text-sm text-white/55">One requirement per line (documents, eligibility, info needed before applying).</p>
-                <textarea id="requirementsText" name="requirementsText" rows="4" placeholder="Malaysian citizen aged 18-60&#10;Copy of IC (front and back)" class="mt-4 w-full rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white" th:text="${requirementsText}"></textarea>
-            </div>
-
-            <textarea id="documentsText" name="documentsText" class="hidden" th:text="${documentsText}"></textarea>
-
-            <div class="rounded-2xl border border-yellow-400/15 bg-black p-5">
-                <div>
-                    <h2 class="text-xl font-semibold text-white">Documents</h2>
-                    <p class="text-sm text-white/55">Upload brochures (PDF or image). Product information above remains the source of truth.</p>
-                </div>
-                <label class="mt-4 grid gap-2 text-sm text-white/80">Upload product documents
-                    <input name="documentFiles" type="file" multiple accept="image/png,image/jpeg,image/webp,application/pdf" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
-                    <span class="text-xs text-white/45">Uploaded files become public product documents through the app, while the storage bucket remains private.</span>
+                <label class="label">Icon choice
+                    <select th:field="*{iconClass}" class="field">
+                        <option value="fa-shield">Shield</option>
+                        <option value="fa-heart">Health</option>
+                        <option value="fa-hand-holding-heart">Family care</option>
+                        <option value="fa-graduation-cap">Education</option>
+                        <option value="fa-piggy-bank">Savings</option>
+                    </select>
                 </label>
+                <label class="label sm:col-span-2">Upload product documents
+                    <input name="documentFiles" type="file" multiple accept="image/png,image/jpeg,image/webp,application/pdf" class="field !py-2">
+                    <span class="hint">Brochures (PDF or image) become public product documents through the app, while the storage bucket remains private.</span>
+                </label>
+            </section>
+        </div>
+
+        <aside class="min-w-0 space-y-4 xl:sticky xl:top-6 xl:self-start">
+            <div class="card space-y-4 p-6">
+                <p class="font-semibold">Visibility</p>
+                <label class="flex items-start gap-3 text-sm"><input type="checkbox" th:field="*{active}" class="mt-0.5 h-5 w-5 accent-[#0B0B0C]"> <span><b class="block">Show this product publicly</b><span class="text-muted">On the website and in the Plan Finder</span></span></label>
+                <label class="flex items-start gap-3 text-sm"><input type="checkbox" th:field="*{featured}" class="mt-0.5 h-5 w-5 accent-[#0B0B0C]"> <span><b class="block">Mark as featured / popular</b><span class="text-muted">Shows a "Popular" badge</span></span></label>
+                <button type="submit" class="btn btn-gold w-full">Save Product</button>
             </div>
-        </section>
-        <section class="grid gap-3 rounded-2xl border border-yellow-400/15 bg-black p-5">
-            <label class="flex items-center gap-3"><input type="checkbox" th:field="*{featured}" class="h-5 w-5 accent-yellow-400"> <span>Mark as featured/popular</span></label>
-            <label class="flex items-center gap-3"><input type="checkbox" th:field="*{active}" class="h-5 w-5 accent-yellow-400"> <span>Show this product publicly</span></label>
-        </section>
-        <button class="rounded-full bg-yellow-400 px-6 py-4 font-semibold text-zinc-950 hover:bg-yellow-300">Save Product</button>
+        </aside>
     </form>
 </main>
 <!--
@@ -94,7 +83,6 @@
   and when that failed the data was silently dropped on save. Direct textareas cannot fail that
   way — what the admin types is exactly what is posted.
 -->
-
-<script th:src="@{/js/theme-select.js}" defer></script>
+<th:block th:replace="~{fragments/layout :: page-scripts}"></th:block>
 </body>
 </html>
