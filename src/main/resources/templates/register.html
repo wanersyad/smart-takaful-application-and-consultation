@@ -1,81 +1,81 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-[#050505]" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account - Muqmeen Group</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Create account - Muqmeen Group</title>
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
 </head>
-<body class="auth-page min-h-screen bg-[#050505] text-white flex items-center justify-center p-4">
-    <main class="w-full max-w-lg bg-transparent">
-        <a href="/" class="mb-8 flex items-center justify-center gap-3">
-            <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="Muqmeen Group logo"
-                 class="h-14 w-14 object-contain">
-            <span class="logo-wordmark text-sm leading-none text-yellow-400">
-                MUQMEEN <span class="logo-wordmark-strong text-yellow-300">GROUP</span>
-            </span>
-        </a>
+<body>
+<div class="grid min-h-screen lg:grid-cols-[1fr,1.05fr]">
+    <aside th:replace="~{fragments/layout :: authAside}"></aside>
 
-        <section class="brand-shell rounded-xl p-8">
-            <h1 class="text-2xl font-semibold text-zinc-950">Create your account</h1>
-            <p class="text-sm text-zinc-500 mt-1">Track your consultations and payment history in one place.</p>
+    <main class="flex items-center justify-center px-4 py-12 sm:px-8">
+        <div class="w-full max-w-md">
+            <a th:replace="~{fragments/layout :: authMobileLogo}"></a>
+            <div class="mb-8 flex rounded-full border border-cream-line bg-white p-1 text-sm font-semibold">
+                <a th:href="@{/login(redirect=${redirect})}" class="flex-1 rounded-full py-2.5 text-center text-muted hover:text-ink">Log in</a>
+                <span class="flex-1 rounded-full bg-ink py-2.5 text-center text-white">Create account</span>
+            </div>
 
-            <form th:action="@{/register}" th:object="${registerForm}" method="post" class="mt-6 space-y-4">
+            <h1 class="text-3xl font-semibold tracking-tight">Create your account</h1>
+            <p class="mt-2 text-muted">Track your consultations and payment history in one place.</p>
+
+            <form th:action="@{/register}" th:object="${registerForm}" method="post" class="mt-7 space-y-4" id="register-form">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <input type="hidden" name="redirect" th:value="${redirect}">
-
-                <div th:if="${#fields.hasGlobalErrors()}" class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
-                    <p th:each="err : ${#fields.globalErrors()}" th:text="${err}" class="text-sm font-medium text-amber-800">Error</p>
+                <div th:if="${#fields.hasGlobalErrors()}" class="rounded-2xl bg-warn-soft p-4 text-sm text-warn">
+                    <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Error</p>
                 </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-zinc-700 mb-1">Full Name</label>
-                    <input type="text" th:field="*{fullName}" required
-                           th:classappend="${#fields.hasErrors('fullName')} ? 'border-amber-400' : 'border-zinc-300'"
-                           class="w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
-                    <p th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="text-xs text-yellow-700 mt-1">Name error</p>
+                <label class="label">Full name (as per IC)
+                    <input type="text" th:field="*{fullName}" required autocomplete="name" class="field" th:classappend="${#fields.hasErrors('fullName')} ? '!border-warn' : ''" placeholder="Aisyah Binti Rahman">
+                    <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="text-xs text-warn">Name error</span>
+                </label>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <label class="label">Email
+                        <input type="email" th:field="*{email}" required autocomplete="email" class="field" th:classappend="${#fields.hasErrors('email')} ? '!border-warn' : ''" placeholder="you@example.com">
+                        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-xs text-warn">Email error</span>
+                    </label>
+                    <label class="label">Phone
+                        <input type="tel" th:field="*{phoneNumber}" required autocomplete="tel" class="field" th:classappend="${#fields.hasErrors('phoneNumber')} ? '!border-warn' : ''" placeholder="60123456789">
+                        <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-xs text-warn">Phone error</span>
+                    </label>
                 </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-zinc-700 mb-1">Email</label>
-                    <input type="email" th:field="*{email}" required
-                           th:classappend="${#fields.hasErrors('email')} ? 'border-amber-400' : 'border-zinc-300'"
-                           class="w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
-                    <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-xs text-yellow-700 mt-1">Email error</p>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-zinc-700 mb-1">WhatsApp Number</label>
-                    <input type="tel" th:field="*{phoneNumber}" required placeholder="60123456789"
-                           th:classappend="${#fields.hasErrors('phoneNumber')} ? 'border-amber-400' : 'border-zinc-300'"
-                           class="w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
-                    <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-xs text-yellow-700 mt-1">Phone error</p>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-zinc-700 mb-1">Password</label>
-                    <input type="password" th:field="*{password}" required minlength="8"
-                           th:classappend="${#fields.hasErrors('password')} ? 'border-amber-400' : 'border-zinc-300'"
-                           class="w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none">
-                    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-xs text-yellow-700 mt-1">Password error</p>
-                </div>
-
-                <button type="submit"
-                        class="w-full rounded-lg bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold py-3 smooth-transition">
-                    Create account
-                </button>
+                <label class="label">Password
+                    <span class="relative block">
+                        <input type="password" th:field="*{password}" required minlength="8" autocomplete="new-password" class="field pr-12" th:classappend="${#fields.hasErrors('password')} ? '!border-warn' : ''" placeholder="At least 8 characters">
+                        <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 px-1 text-muted hover:text-ink" data-toggle-password="password" aria-label="Show password"><i class="fa-regular fa-eye"></i></button>
+                    </span>
+                    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-xs text-warn">Password error</span>
+                </label>
+                <div class="flex gap-1.5" aria-hidden="true" id="strength"><i class="h-1.5 flex-1 rounded-full bg-cream-line"></i><i class="h-1.5 flex-1 rounded-full bg-cream-line"></i><i class="h-1.5 flex-1 rounded-full bg-cream-line"></i><i class="h-1.5 flex-1 rounded-full bg-cream-line"></i></div>
+                <p id="strength-label" class="text-xs text-muted">Use 8+ characters with a number.</p>
+                <button type="submit" class="btn btn-gold w-full py-3.5">Create account <i class="fa-solid fa-arrow-right arrow text-sm"></i></button>
+                <p class="text-center text-xs text-muted">By continuing you agree to how we handle your data under PDPA 2010.</p>
             </form>
-
-            <p class="text-sm text-zinc-500 mt-6 text-center">
-                Already registered?
-                <a th:href="@{/login(redirect=${redirect})}" class="font-semibold text-zinc-950 hover:text-yellow-600">Sign in</a>
-            </p>
-        </section>
+        </div>
     </main>
+</div>
+<script>
+    (function () {
+        document.querySelectorAll('[data-toggle-password]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const input = document.getElementById(btn.dataset.togglePassword), show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                btn.innerHTML = show ? '<i class="fa-regular fa-eye-slash"></i>' : '<i class="fa-regular fa-eye"></i>';
+            });
+        });
+        const bars = document.querySelectorAll('#strength i'), label = document.getElementById('strength-label');
+        document.getElementById('password').addEventListener('input', function (e) {
+            const v = e.target.value; let s = 0;
+            if (v.length >= 8) s++; if (/\d/.test(v)) s++; if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++; if (/[^A-Za-z0-9]/.test(v)) s++;
+            const colors = ['#E8E2D4', '#B45309', '#C8962E', '#84A93C', '#15803D'];
+            bars.forEach(function (b, n) { b.style.backgroundColor = n < s ? colors[s] : '#E8E2D4'; });
+            label.textContent = ['Use 8+ characters with a number.', 'Weak', 'Fair', 'Good', 'Strong'][s];
+        });
+        document.getElementById('register-form').addEventListener('submit', function () {
+            MG.loader({ title: 'Creating your account', sub: 'This only takes a moment' });
+        });
+    })();
+</script>
 </body>
 </html>

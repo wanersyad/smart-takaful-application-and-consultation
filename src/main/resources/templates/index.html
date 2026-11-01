@@ -2,142 +2,224 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>Muqmeen Group - Smart Takaful Application</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
 </head>
-<body id="home" class="muqmeen-dark-site min-h-screen bg-[#050505] text-white antialiased">
+<body id="home" class="intro-on">
+<script>
+    // Opening intro: once per session, never for users who prefer less motion.
+    try { if (sessionStorage.getItem('mg-intro') || matchMedia('(prefers-reduced-motion: reduce)').matches) document.body.classList.remove('intro-on'); } catch (e) { document.body.classList.remove('intro-on'); }
+</script>
+<div id="intro" aria-hidden="true">
+    <div class="glow"></div>
+    <div class="relative text-center">
+        <div class="mark">
+            <svg viewBox="0 0 168 168"><circle class="ring2" cx="84" cy="84" r="80"/><circle class="ring" cx="84" cy="84" r="70"/><g class="orbiter"><circle cx="84" cy="14" r="3.5"/></g></svg>
+            <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="">
+        </div>
+        <div class="brand">MUQMEEN <b>GROUP</b></div>
+        <div class="bar"><i id="intro-bar"></i></div>
+    </div>
+</div>
+<div id="read-progress" class="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left scale-x-0 bg-gold"></div>
+
 <nav th:replace="~{fragments/layout :: siteNav('home')}"></nav>
 
 <main>
-    <section id="hero" class="bg-black">
-        <div class="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col items-center justify-center gap-8 px-4 py-16 text-center sm:px-6 lg:px-8">
-            <h1 class="text-5xl font-bold leading-none text-yellow-400 sm:text-6xl lg:text-7xl" th:text="${content.value('hero.title')}">Your Trusted Takaful Partner</h1>
-            <p class="max-w-2xl text-lg font-medium leading-8 text-white/75">
-                <span th:text="${content.value('hero.subtitle')}">Shariah-compliant protection, Hibah, medical, and education planning with Muqmeen Group. Apply online and let our agents guide you to the plan that fits your family.</span>
+    <!-- ================= HERO (black) ================= -->
+    <section id="hero" data-dark-hero class="relative isolate overflow-hidden bg-ink text-white">
+        <div class="aurora -z-10" data-parallax="0.18" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+        <div class="orbit -z-10" data-parallax="0.32" aria-hidden="true">
+            <svg viewBox="0 0 640 640" style="left:50%;top:42%;width:min(980px,165vw);height:auto;transform:translate(-50%,-50%)"><circle class="r3" cx="320" cy="320" r="300"/><circle class="r2" cx="320" cy="320" r="262"/><circle class="r1" cx="320" cy="320" r="218"/><circle class="dot" cx="320" cy="102" r="3.5"/></svg>
+        </div>
+        <div class="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-ink"></div>
+
+        <div class="mx-auto flex min-h-[100svh] max-w-5xl flex-col items-center justify-center px-4 pb-16 pt-32 text-center sm:px-6">
+            <p class="fade-up inline-flex items-center gap-2 rounded-full border border-gold/35 bg-white/[.04] px-4 py-1.5 text-xs font-medium tracking-[0.2em] text-gold" style="--d:.05s">
+                <i class="fa-solid fa-shield-halved"></i> SHARIAH-COMPLIANT · PRUBSN AUTHORISED AGENCY
             </p>
-            <div class="flex w-full max-w-2xl flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-                <a href="/plan-finder" class="group flex min-h-[3.75rem] flex-1 items-center justify-between gap-3 rounded-full border border-yellow-400/30 bg-white/[0.02] py-2 pl-7 pr-2 text-left text-base text-white/90 transition hover:border-yellow-300" aria-label="Open the Plan Finder">
-                    <span id="typewriter-question" th:text="${#lists.isEmpty(questionPrompts) ? '' : questionPrompts[0]}">Which plan fits my family needs?</span>
-                    <span class="shrink-0 rounded-full border border-yellow-400/40 px-4 py-2.5 text-sm font-semibold text-yellow-300 transition group-hover:bg-yellow-400 group-hover:text-zinc-950"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Find my plan</span>
-                </a>
-                <a href="#products" class="flex min-h-[3.75rem] items-center justify-center whitespace-nowrap rounded-full bg-yellow-400 px-8 py-4 font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-yellow-300">Explore Plans</a>
+            <h1 class="fade-up mt-7 text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl" style="--d:.15s" th:text="${content.value('hero.title')}">Your Trusted Takaful Partner</h1>
+            <p class="fade-up mt-6 max-w-2xl text-lg leading-8 text-white/70" style="--d:.5s" th:text="${content.value('hero.subtitle')}">Shariah-compliant protection, Hibah, medical, and education planning with Muqmeen Group.</p>
+
+            <a href="/plan-finder" class="fade-up group mt-9 flex w-full max-w-2xl items-center justify-between gap-3 rounded-full border border-white/15 bg-white/[.06] py-2 pl-6 pr-2 text-left backdrop-blur transition hover:border-gold/60 hover:bg-white/[.09]" style="--d:.7s" aria-label="Open the Plan Finder">
+                <span class="flex min-w-0 items-center gap-3 text-white/90"><i class="fa-solid fa-magnifying-glass text-gold"></i><span id="typewriter-question" class="caret truncate" th:text="${#lists.isEmpty(questionPrompts) ? '' : questionPrompts[0]}">Which plan fits my family needs?</span></span>
+                <span class="btn btn-gold shrink-0 px-5 py-3 text-sm"><i class="fa-solid fa-wand-magic-sparkles"></i>Find my plan</span>
+            </a>
+
+            <div class="mt-12 grid w-full max-w-4xl grid-cols-2 gap-3 sm:grid-cols-4">
+                <div class="reveal rounded-2xl border border-white/10 bg-white/[.04] p-5 backdrop-blur" style="--i:0">
+                    <p class="text-3xl font-semibold text-gold" th:attr="data-count=${metrics.customers}" th:text="${metrics.customers}">0</p>
+                    <p class="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/55" th:text="${content.value('metrics.customers.label')}">Customers</p>
+                </div>
+                <div class="reveal rounded-2xl border border-white/10 bg-white/[.04] p-5 backdrop-blur" style="--i:1">
+                    <p class="text-3xl font-semibold text-gold" th:attr="data-count=${metrics.applications}" th:text="${metrics.applications}">0</p>
+                    <p class="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/55" th:text="${content.value('metrics.applications.label')}">Applications</p>
+                </div>
+                <div class="reveal rounded-2xl border border-white/10 bg-white/[.04] p-5 backdrop-blur" style="--i:2">
+                    <p class="text-3xl font-semibold text-gold" th:attr="data-count=${metrics.activeProducts}" th:text="${metrics.activeProducts}">0</p>
+                    <p class="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/55" th:text="${content.value('metrics.products.label')}">Active Products</p>
+                </div>
+                <div class="reveal rounded-2xl border border-white/10 bg-white/[.04] p-5 backdrop-blur" style="--i:3">
+                    <p class="text-3xl font-semibold text-gold" th:attr="data-count=${metrics.quotedOrPaid}" th:text="${metrics.quotedOrPaid}">0</p>
+                    <p class="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/55" th:text="${content.value('metrics.quoted.label')}">Quoted / Paid</p>
+                </div>
             </div>
-            <div class="mt-6 grid w-full max-w-4xl grid-cols-2 gap-3 rounded-[2rem] border border-yellow-400/25 bg-white/[0.02] p-3 sm:grid-cols-4">
-                <div class="rounded-[1.5rem] bg-yellow-400/10 p-5 text-center">
-                    <p class="text-3xl font-semibold text-yellow-300" th:text="${metrics.customers}">0</p>
-                    <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65" th:text="${content.value('metrics.customers.label')}">Customers</p>
+
+            <a href="#trust" class="mt-12 flex flex-col items-center gap-2 text-xs tracking-[0.25em] text-white/40" aria-label="Scroll down">
+                SCROLL
+                <span class="flex h-9 w-5 justify-center rounded-full border border-white/25 pt-1.5"><span class="scroll-cue h-2 w-1 rounded-full bg-gold"></span></span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ================= TRUST STRIP (cream) ================= -->
+    <section id="trust" class="overflow-hidden border-b border-cream-line bg-cream py-6" aria-label="Why Muqmeen Group">
+        <div class="marquee flex w-max gap-12 whitespace-nowrap text-sm font-medium text-muted">
+            <th:block th:each="round : ${#numbers.sequence(1, 2)}">
+                <span><i class="fa-solid fa-scale-balanced mr-2 text-gold-deep"></i>Shariah-compliant</span>
+                <span><i class="fa-solid fa-user-tie mr-2 text-gold-deep"></i>Licensed Takaful agents</span>
+                <span><i class="fa-solid fa-handshake mr-2 text-gold-deep"></i>Authorised PruBSN agency</span>
+                <span><i class="fa-solid fa-lock mr-2 text-gold-deep"></i>Documents stored privately</span>
+                <span><i class="fa-solid fa-receipt mr-2 text-gold-deep"></i>Pay only after your quotation</span>
+                <span><i class="fa-solid fa-hand-holding-heart mr-2 text-gold-deep"></i>Hibah &amp; legacy planning</span>
+            </th:block>
+        </div>
+    </section>
+
+    <!-- ================= ABOUT (white) ================= -->
+    <section id="about" class="scroll-mt-20 bg-white py-24">
+        <div class="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+            <div>
+                <p class="reveal eyebrow" th:text="${content.value('about.eyebrow')}">About Us</p>
+                <h2 class="reveal mt-3 text-4xl font-semibold leading-tight tracking-tight" style="--i:1" th:text="${content.value('about.title')}">Who is Muqmeen Group?</h2>
+                <p class="reveal mt-5 text-lg leading-8 text-muted" style="--i:2" th:text="${content.value('about.body')}">About Muqmeen Group.</p>
+                <a href="#how" class="reveal btn btn-outline mt-8" style="--i:3">See how it works <i class="fa-solid fa-arrow-right arrow text-sm"></i></a>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="reveal card-hover rounded-3xl border border-cream-line bg-cream p-6" style="--i:1">
+                    <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-soft text-gold-deep"><i class="fa-solid fa-mosque"></i></span>
+                    <p class="mt-4 font-semibold">Shariah-first</p><p class="mt-1 text-sm leading-6 text-muted">Free from riba, gharar and maisir — built on mutual help.</p>
                 </div>
-                <div class="rounded-[1.5rem] bg-white/[0.03] p-5 text-center">
-                    <p class="text-3xl font-semibold text-yellow-300" th:text="${metrics.applications}">0</p>
-                    <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65" th:text="${content.value('metrics.applications.label')}">Applications</p>
+                <div class="reveal card-hover rounded-3xl border border-cream-line bg-cream p-6 sm:mt-8" style="--i:2">
+                    <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-soft text-gold-deep"><i class="fa-solid fa-comments"></i></span>
+                    <p class="mt-4 font-semibold">Honest advice</p><p class="mt-1 text-sm leading-6 text-muted">A licensed agent reviews your needs before any quotation.</p>
                 </div>
-                <div class="rounded-[1.5rem] bg-white/[0.03] p-5 text-center">
-                    <p class="text-3xl font-semibold text-yellow-300" th:text="${metrics.activeProducts}">0</p>
-                    <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65" th:text="${content.value('metrics.products.label')}">Active Products</p>
+                <div class="reveal card-hover rounded-3xl border border-cream-line bg-cream p-6" style="--i:3">
+                    <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-soft text-gold-deep"><i class="fa-solid fa-mobile-screen"></i></span>
+                    <p class="mt-4 font-semibold">Fully online</p><p class="mt-1 text-sm leading-6 text-muted">Apply, upload documents and pay from your phone.</p>
                 </div>
-                <div class="rounded-[1.5rem] bg-white/[0.03] p-5 text-center">
-                    <p class="text-3xl font-semibold text-yellow-300" th:text="${metrics.quotedOrPaid}">0</p>
-                    <p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/65" th:text="${content.value('metrics.quoted.label')}">Quoted / Paid</p>
+                <div class="reveal card-hover rounded-3xl border border-cream-line bg-cream p-6 sm:mt-8" style="--i:4">
+                    <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-soft text-gold-deep"><i class="fa-solid fa-shield-heart"></i></span>
+                    <p class="mt-4 font-semibold">Family focused</p><p class="mt-1 text-sm leading-6 text-muted">Protection, Hibah, medical and education in one place.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="about" class="scroll-mt-28 bg-black py-20">
-        <div class="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-            <p class="text-sm font-semibold uppercase tracking-[0.35em] text-yellow-400" th:text="${content.value('about.eyebrow')}">About Us</p>
-            <h2 class="mt-4 text-4xl font-semibold text-yellow-300" th:text="${content.value('about.title')}">Who is Muqmeen Group?</h2>
-            <p class="mt-6 text-lg leading-8 text-white/75" th:text="${content.value('about.body')}">About Muqmeen Group.</p>
-        </div>
-    </section>
-
-    <section id="products" class="scroll-mt-28 bg-[#0f0f0f] py-20">
+    <!-- ================= PLANS (cream) ================= -->
+    <section id="products" class="scroll-mt-20 bg-cream py-24">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <p class="text-sm font-semibold uppercase tracking-[0.35em] text-yellow-400" th:text="${content.value('products.eyebrow')}">Our Plans</p>
-                <h2 class="mt-4 text-4xl font-semibold text-yellow-300" th:text="${content.value('products.title')}">Protection plans built around your family</h2>
-                <p class="mt-4 text-white/70" th:text="${content.value('products.subtitle')}">Explore our Takaful plans and find the right coverage, benefits, and protection for your needs.</p>
-                <a href="/plan-finder" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-yellow-300 hover:text-yellow-200">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>Not sure which plan suits you? Try the 1-minute Plan Finder<i class="fa-solid fa-arrow-right"></i>
-                </a>
+            <div class="mx-auto max-w-2xl text-center">
+                <p class="reveal eyebrow" th:text="${content.value('products.eyebrow')}">Our Plans</p>
+                <h2 class="reveal mt-3 text-4xl font-semibold tracking-tight" style="--i:1" th:text="${content.value('products.title')}">Protection plans built around your family</h2>
+                <p class="reveal mt-4 text-muted" style="--i:2" th:text="${content.value('products.subtitle')}">Explore our Takaful plans and find the right coverage, benefits, and protection for your needs.</p>
             </div>
 
-            <div th:if="${#lists.isEmpty(products)}" class="mx-auto mt-12 max-w-2xl rounded-3xl border border-yellow-400/25 bg-black p-10 text-center">
-                <h3 class="text-2xl font-semibold text-yellow-300" th:text="${content.value('products.empty.title')}">Plans coming soon</h3>
-                <p class="mt-2 text-white/70" th:text="${content.value('products.empty.body')}">Our Takaful plans will be available here shortly. Please check back soon.</p>
+            <div th:if="${#lists.isEmpty(products)}" class="card mx-auto mt-12 max-w-2xl p-10 text-center">
+                <h3 class="text-2xl font-semibold" th:text="${content.value('products.empty.title')}">Plans coming soon</h3>
+                <p class="mt-2 text-muted" th:text="${content.value('products.empty.body')}">Our Takaful plans will be available here shortly. Please check back soon.</p>
             </div>
 
-            <div th:if="${!#lists.isEmpty(products)}" class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                <article th:each="product : ${products}" class="group flex flex-col rounded-[2rem] border border-yellow-400/25 bg-[#111] p-5 transition hover:-translate-y-1 hover:border-yellow-300 hover:bg-yellow-400/5">
+            <div class="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <article th:each="product, iter : ${products}" class="reveal card card-hover flex flex-col p-6" th:style="'--i:' + ${iter.index % 3}">
                     <a th:href="@{/products/{id}(id=${product.id})}" class="block">
-                        <img th:if="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}" th:src="${product.imageUrl}" alt="" class="aspect-[16/9] w-full rounded-[1.5rem] object-cover">
-                        <div th:if="${product.imageUrl == null || #strings.isEmpty(product.imageUrl)}" class="flex aspect-[16/9] w-full items-center justify-center rounded-[1.5rem] bg-yellow-400/10 text-5xl text-yellow-300">
-                            <i class="fa-solid" th:classappend="${product.iconClass}"> </i>
+                        <img th:if="${product.imageUrl != null && !#strings.isEmpty(product.imageUrl)}" th:src="${product.imageUrl}" alt="" class="mb-5 aspect-[16/9] w-full rounded-2xl object-cover">
+                        <div class="flex items-start justify-between gap-3">
+                            <span th:if="${product.imageUrl == null || #strings.isEmpty(product.imageUrl)}" class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gold-soft text-2xl text-gold-deep"><i class="fa-solid" th:classappend="${product.iconClass}"></i></span>
+                            <span th:if="${product.featured}" class="chip chip-gold ml-auto uppercase tracking-[0.15em]">Popular</span>
                         </div>
-                        <div class="mt-6 flex items-start justify-between gap-4">
-                            <div>
-                                <p class="text-xs uppercase tracking-[0.25em] text-white/45" th:text="${product.categoryLabel}">Category</p>
-                                <h3 class="mt-2 text-2xl font-semibold text-yellow-300" th:text="${product.name}">Product Name</h3>
-                            </div>
-                            <span th:if="${product.featured}" class="shrink-0 rounded-full bg-yellow-400 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-950">Popular</span>
-                        </div>
-                        <p class="mt-4 text-sm leading-6 text-white/70" th:text="${product.summary != null && !#strings.isEmpty(product.summary) ? product.summary : product.description}">Product summary</p>
+                        <p class="mt-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted" th:text="${product.categoryLabel}">Category</p>
+                        <h3 class="mt-1 text-2xl font-semibold" th:text="${product.name}">Product Name</h3>
+                        <p class="mt-2 leading-7 text-muted" th:text="${product.summary != null && !#strings.isEmpty(product.summary) ? product.summary : product.description}">Product summary</p>
                     </a>
-                    <div class="mt-6 flex gap-3 pt-2" style="margin-top:auto">
-                        <a th:href="@{/products/{id}(id=${product.id})}" class="flex-1 rounded-full border border-yellow-400/30 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-yellow-400/10 hover:text-yellow-300">View Details</a>
-                        <a th:href="${customerSignedIn} ? @{/applications/new(productId=${product.id})} : @{/login(redirect=${'/applications/new?productId=' + product.id})}" class="flex-1 rounded-full bg-yellow-400 px-5 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-yellow-300">Apply Product</a>
+                    <div class="mt-auto flex gap-3 pt-6">
+                        <a th:href="${customerSignedIn} ? @{/applications/new(productId=${product.id})} : @{/login(redirect=${'/applications/new?productId=' + product.id})}" class="btn btn-gold flex-1">Apply</a>
+                        <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-outline flex-1">Details</a>
                     </div>
+                </article>
+
+                <!-- Plan Finder CTA (black) -->
+                <article class="reveal panel-dark flex flex-col p-7 md:col-span-2 xl:col-span-1" style="--i:2">
+                    <div th:replace="~{fragments/layout :: orbit('width:340px;height:340px;right:-150px;top:-150px;opacity:.9')}"></div>
+                    <span class="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gold text-2xl text-ink"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                    <h3 class="relative mt-6 text-2xl font-semibold">Not sure which plan suits you?</h3>
+                    <p class="relative mt-2 flex-1 leading-7 text-white/70">Answer 8 quick questions. Our AI-assisted Plan Finder suggests the most relevant plans — then a licensed agent confirms.</p>
+                    <a href="/plan-finder" class="btn btn-gold relative mt-6">Try the 1-minute Plan Finder <i class="fa-solid fa-arrow-right arrow"></i></a>
                 </article>
             </div>
         </div>
     </section>
 
-    <section id="faq" class="scroll-mt-28 bg-black py-20">
-        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <p class="text-sm font-semibold uppercase tracking-[0.35em] text-yellow-400" th:text="${content.value('faq.eyebrow')}">FAQ</p>
-                <h2 class="mt-4 text-4xl font-semibold text-yellow-300" th:text="${content.value('faq.title')}">Frequently asked questions</h2>
+    <!-- ================= HOW IT WORKS (white) ================= -->
+    <section id="how" class="scroll-mt-20 bg-white py-24">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-2xl text-center">
+                <p class="reveal eyebrow">How it works</p>
+                <h2 class="reveal mt-3 text-4xl font-semibold tracking-tight" style="--i:1">From application to protection in four steps</h2>
             </div>
-            <div class="mt-10 space-y-4">
-                <details th:each="item : ${faqItems}" class="faq-item rounded-2xl border border-yellow-400/25 bg-[#111] p-6 transition hover:border-yellow-400/40">
-                    <summary class="flex cursor-pointer items-center justify-between gap-4 font-semibold text-yellow-300">
+            <div class="relative mt-16">
+                <div class="absolute left-[12%] right-[12%] top-7 hidden h-[2px] bg-cream-line md:block"><div class="bar-fill h-full bg-gold"></div></div>
+                <ol class="relative grid gap-10 md:grid-cols-4">
+                    <li class="reveal text-center" style="--i:1"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full border-2 border-gold bg-white text-lg font-semibold shadow-card">1</span><p class="mt-5 font-semibold">Apply online</p><p class="mt-1 text-sm leading-6 text-muted">Fill in your details, nominees and upload your IC.</p></li>
+                    <li class="reveal text-center" style="--i:2"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full border-2 border-gold bg-white text-lg font-semibold shadow-card">2</span><p class="mt-5 font-semibold">Agent review</p><p class="mt-1 text-sm leading-6 text-muted">A licensed agent checks everything and may ask for corrections.</p></li>
+                    <li class="reveal text-center" style="--i:3"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full border-2 border-gold bg-white text-lg font-semibold shadow-card">3</span><p class="mt-5 font-semibold">Quotation</p><p class="mt-1 text-sm leading-6 text-muted">You receive a clear quotation with only the items you need.</p></li>
+                    <li class="reveal text-center" style="--i:4"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold text-lg text-ink shadow-glow"><i class="fa-solid fa-check"></i></span><p class="mt-5 font-semibold">Pay &amp; protected</p><p class="mt-1 text-sm leading-6 text-muted">Pay securely via ToyyibPay FPX.</p></li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FAQ (cream) ================= -->
+    <section id="faq" class="scroll-mt-20 bg-cream py-24">
+        <div class="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-[.8fr,1.2fr] lg:px-8">
+            <div>
+                <p class="reveal eyebrow" th:text="${content.value('faq.eyebrow')}">FAQ</p>
+                <h2 class="reveal mt-3 text-4xl font-semibold tracking-tight" style="--i:1" th:text="${content.value('faq.title')}">Frequently asked questions</h2>
+                <p class="reveal mt-4 leading-7 text-muted" style="--i:2">Can't find your answer? Our Takaful assistant and agents are here to help.</p>
+                <a href="#contact" class="reveal btn btn-ink mt-7" style="--i:3">Ask an advisor <i class="fa-solid fa-arrow-right arrow text-sm"></i></a>
+            </div>
+            <div class="space-y-3">
+                <details th:each="item, iter : ${faqItems}" class="faq-item reveal rounded-2xl border border-cream-line bg-white shadow-card" th:style="'--i:' + ${iter.index}">
+                    <summary class="flex cursor-pointer items-center justify-between gap-4 px-6 py-5 font-semibold">
                         <span th:text="${item.question}">Question</span>
-                        <span class="faq-chevron flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-yellow-400/30 text-sm text-yellow-300 transition-transform"><i class="fa-solid fa-chevron-down"></i></span>
+                        <span class="faq-chevron flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cream-deep text-sm"><i class="fa-solid fa-plus"></i></span>
                     </summary>
-                    <p class="mt-4 text-white/70" th:text="${item.answer}">Answer</p>
+                    <p class="faq-body px-6 pb-6 leading-7 text-muted" th:text="${item.answer}">Answer</p>
                 </details>
             </div>
         </div>
     </section>
 
-    <section id="contact" class="scroll-mt-28 bg-[#0f0f0f] py-20">
-        <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-[2rem] border border-yellow-400/25 bg-[#111] p-8 sm:p-10">
+    <!-- ================= CONTACT (white) ================= -->
+    <section id="contact" class="scroll-mt-20 bg-white py-24">
+        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div class="reveal rounded-[2rem] border border-cream-line bg-cream p-6 shadow-card sm:p-10">
                 <div class="text-center">
-                    <h2 class="text-4xl font-semibold text-yellow-300" th:text="${content.value('contact.title')}">Speak to a Takaful advisor</h2>
-                    <p class="mt-3 text-white/70" th:text="${content.value('contact.subtitle')}">Not sure which plan fits you? Request a consultation — no need to apply for a product. An advisor will reach out the way you prefer.</p>
+                    <h2 class="text-3xl font-semibold tracking-tight" th:text="${content.value('contact.title')}">Speak to a Takaful advisor</h2>
+                    <p class="mx-auto mt-3 max-w-xl leading-7 text-muted" th:text="${content.value('contact.subtitle')}">Not sure which plan fits you? Request a consultation — an advisor will reach out the way you prefer.</p>
                 </div>
+                <div th:if="${contactSent}" class="mt-6 rounded-2xl bg-ok-soft p-4 text-center text-ok"><i class="fa-solid fa-circle-check mr-2"></i>Thank you! Your consultation request has been received — an advisor will be in touch soon.</div>
+                <div th:if="${contactError}" class="mt-6 rounded-2xl bg-warn-soft p-4 text-center text-warn" th:text="${contactError}">Error</div>
 
-                <div th:if="${contactSent}" class="mt-6 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 p-4 text-center text-emerald-200">
-                    <i class="fa-solid fa-circle-check mr-2"></i>Thank you! Your consultation request has been received — an advisor will be in touch soon.
-                </div>
-                <div th:if="${contactError}" class="mt-6 rounded-2xl border border-amber-400/40 bg-amber-400/10 p-4 text-center text-amber-200" th:text="${contactError}">Error</div>
-
-                <form th:action="@{/contact}" method="post" class="mt-8 grid gap-5 sm:grid-cols-2">
+                <form th:action="@{/contact}" method="post" class="mt-8 grid gap-5 sm:grid-cols-2" data-busy="Sending…">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                    <label class="grid gap-2 text-sm font-medium text-white/80">Name<input name="fullName" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300"></label>
-                    <label class="grid gap-2 text-sm font-medium text-white/80">Email<input name="email" type="email" required class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300"></label>
-                    <label class="grid gap-2 text-sm font-medium text-white/80">Phone<input name="phoneNumber" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300"></label>
-                    <label class="grid gap-2 text-sm font-medium text-white/80">What do you want to discuss?
-                        <select name="topic" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300">
+                    <label class="label">Name<input name="fullName" required class="field" placeholder="Your full name"></label>
+                    <label class="label">Email<input name="email" type="email" required class="field" placeholder="you@example.com"></label>
+                    <label class="label">Phone<input name="phoneNumber" class="field" placeholder="012-345 6789"></label>
+                    <label class="label">What do you want to discuss?
+                        <select name="topic" class="field">
                             <option value="General Takaful advice">General Takaful advice</option>
                             <option value="Family protection">Family protection</option>
                             <option value="Medical coverage">Medical coverage</option>
@@ -146,16 +228,30 @@
                             <option value="Other">Other</option>
                         </select>
                     </label>
-                    <label class="grid gap-2 text-sm font-medium text-white/80 sm:col-span-2">Preferred contact method
-                        <select name="preferredContact" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300">
+                    <label class="label sm:col-span-2">Preferred contact method
+                        <select name="preferredContact" class="field">
                             <option value="WhatsApp">WhatsApp</option>
                             <option value="Phone call">Phone call</option>
                             <option value="Email">Email</option>
                         </select>
                     </label>
-                    <label class="grid gap-2 text-sm font-medium text-white/80 sm:col-span-2">Message<textarea name="message" rows="5" required placeholder="Tell us a little about what you're looking for." class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none transition focus:border-yellow-300"></textarea></label>
-                    <button class="rounded-full bg-yellow-400 px-6 py-4 font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:bg-yellow-300 sm:col-span-2">Request Consultation</button>
+                    <label class="label sm:col-span-2">Message<textarea name="message" rows="5" required placeholder="Tell us a little about what you're looking for." class="field"></textarea></label>
+                    <button type="submit" class="btn btn-gold py-4 sm:col-span-2">Request Consultation</button>
                 </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FINAL CTA (black) ================= -->
+    <section class="relative isolate overflow-hidden bg-ink py-20 text-white">
+        <div class="aurora" aria-hidden="true" style="opacity:.6"><div class="blob b1"></div><div class="blob b2"></div></div>
+        <div th:replace="~{fragments/layout :: orbit('left:50%;top:50%;width:min(760px,150vw);height:auto;transform:translate(-50%,-50%);opacity:.7')}"></div>
+        <div class="reveal relative mx-auto max-w-3xl px-4 text-center">
+            <h2 class="text-4xl font-semibold tracking-tight">Protect what matters, <span class="shine">the Shariah way.</span></h2>
+            <p class="mt-4 text-white/65">Start with a 1-minute Plan Finder, or talk to an agent today.</p>
+            <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                <a href="/plan-finder" class="btn btn-gold px-7 py-3.5">Find my plan</a>
+                <a href="#contact" class="btn btn-ghost-dark px-7 py-3.5">Talk to an agent</a>
             </div>
         </div>
     </section>
@@ -163,109 +259,123 @@
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 
-<button id="chat-toggle" class="fixed bottom-6 right-6 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-400 text-2xl text-zinc-950 shadow-2xl hover:bg-yellow-300" aria-label="Open chat">
+<!-- Chat -->
+<button id="chat-toggle" class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gold text-xl text-ink shadow-glow transition hover:-translate-y-0.5" aria-label="Open chat" aria-controls="chat-panel" aria-expanded="false">
     <i class="fa-solid fa-comments"></i>
 </button>
-<div id="chat-panel" class="fixed bottom-24 right-6 z-40 hidden w-[min(92vw,30rem)] overflow-hidden rounded-[2rem] border border-yellow-400/25 bg-[#111] shadow-2xl">
-    <div class="flex items-center justify-between border-b border-yellow-400/20 p-5">
-        <div class="flex items-center gap-3">
-            <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="" class="h-10 w-10 object-contain">
-            <div><p class="font-semibold text-yellow-300" th:text="${content.value('chat.title')}">Takaful Assistant</p><p class="text-sm text-white/65" th:text="${content.value('chat.subtitle')}">Ask about our products</p></div>
-        </div>
-        <button id="chat-close" class="text-white/70 hover:text-yellow-300"><i class="fa-solid fa-xmark"></i></button>
+<section id="chat-panel" class="fixed bottom-24 right-4 z-40 hidden w-[min(calc(100vw-2rem),24rem)] flex-col overflow-hidden rounded-[1.75rem] bg-white shadow-lift" aria-label="Takaful assistant">
+    <header class="relative isolate flex items-center gap-3 overflow-hidden bg-ink p-4 text-white">
+        <div th:replace="~{fragments/layout :: orbit('width:300px;height:300px;right:-120px;top:-150px')}"></div>
+        <img th:src="@{/images/brand/mgkb.png}" src="/images/brand/mgkb.png" alt="" class="relative h-10 w-10 object-contain">
+        <div class="relative flex-1"><p class="text-sm font-semibold" th:text="${content.value('chat.title')}">Takaful Assistant</p><p class="text-[11px] text-white/55" th:text="${content.value('chat.subtitle')}">Ask about our products</p></div>
+        <button id="chat-close" class="relative flex h-8 w-8 items-center justify-center rounded-full bg-white/10" aria-label="Close chat"><i class="fa-solid fa-xmark"></i></button>
+    </header>
+    <div id="chat-messages" class="h-80 space-y-3 overflow-y-auto bg-cream p-4 text-sm" aria-live="polite">
+        <p class="max-w-[85%] rounded-2xl rounded-tl-sm bg-white p-3 shadow-card" th:text="${content.value('chat.greeting')}">Hi, I can explain the application process, product details, and quotation/payment flow.</p>
     </div>
-    <div id="chat-messages" class="h-80 space-y-3 overflow-y-auto p-5 text-sm">
-        <div class="rounded-2xl border border-yellow-400/25 bg-black p-4 text-white/75" th:text="${content.value('chat.greeting')}">Hi, I can explain the application process, product details, and quotation/payment flow.</div>
-    </div>
-    <form id="chat-form" class="flex gap-3 border-t border-yellow-400/20 p-4">
-        <input id="chat-input" class="min-w-0 flex-1 rounded-full border border-yellow-400/25 bg-black px-4 py-3 text-white outline-none focus:border-yellow-300" th:placeholder="${content.value('chat.placeholder')}" placeholder="Ask about Takaful products">
-        <button class="rounded-full bg-yellow-400 px-5 text-zinc-950 hover:bg-yellow-300"><i class="fa-solid fa-paper-plane"></i></button>
+    <form id="chat-form" class="flex gap-2 border-t border-cream-line p-3">
+        <input id="chat-input" class="field !rounded-full !py-2.5" maxlength="500" th:placeholder="${content.value('chat.placeholder')}" placeholder="Ask about Takaful products" aria-label="Your question">
+        <button class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-gold" aria-label="Send"><i class="fa-solid fa-paper-plane"></i></button>
     </form>
-</div>
+</section>
 
 <script th:inline="javascript">
-    document.querySelectorAll('.page-menu-open').forEach((button) => {
-        button.addEventListener('click', () => {
-            const menu = document.querySelector('.page-mobile-menu');
-            menu.classList.toggle('hidden');
-            document.body.classList.toggle('overflow-hidden', !menu.classList.contains('hidden'));
-        });
-    });
+    // ---------- Opening intro: lifts away once the page has loaded ----------
+    (function () {
+        const intro = document.getElementById('intro');
+        if (!document.body.classList.contains('intro-on')) { intro.remove(); return; }
+        const bar = document.getElementById('intro-bar'), started = performance.now();
+        let p = 0, finished = false;
+        const fill = setInterval(function () { p = Math.min(.9, p + .12); bar.style.transform = 'scaleX(' + p + ')'; }, 140);
+        function finish() {
+            if (finished) return; finished = true;
+            setTimeout(function () {
+                clearInterval(fill); bar.style.transform = 'scaleX(1)';
+                setTimeout(function () {
+                    intro.classList.add('done'); document.body.classList.remove('intro-on');
+                    try { sessionStorage.setItem('mg-intro', '1'); } catch (e) {}
+                    setTimeout(function () { intro.remove(); }, 1100);
+                }, 250);
+            }, Math.max(0, 1500 - (performance.now() - started)));
+        }
+        if (document.readyState === 'complete') finish(); else addEventListener('load', finish, { once: true });
+        setTimeout(finish, 4000); // never block longer than 4s on a slow connection
+    })();
 
-    // Scroll-spy: highlight the nav link for the section currently in view.
+    // ---------- Scroll-spy for the home nav ----------
     (function () {
         const sections = ['hero', 'about', 'products', 'faq', 'contact'];
         const links = {};
-        document.querySelectorAll('.nav-link').forEach((a) => {
+        document.querySelectorAll('nav .nav-link').forEach(function (a) {
             const href = a.getAttribute('href') || '';
             const id = href.includes('#') ? href.split('#').pop() : (href === '/' ? 'hero' : '');
             if (sections.includes(id)) links[id] = a;
         });
-        function setActive(id) {
-            sections.forEach((s) => {
-                if (links[s]) links[s].classList.toggle('is-active', s === id);
-            });
-        }
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) setActive(entry.target.id);
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) sections.forEach(function (s) { if (links[s]) links[s].classList.toggle('is-active', s === entry.target.id); });
             });
         }, { rootMargin: '-45% 0px -50% 0px' });
-        sections.forEach((s) => {
-            const el = document.getElementById(s);
-            if (el) observer.observe(el);
-        });
+        sections.forEach(function (s) { const el = document.getElementById(s); if (el) observer.observe(el); });
     })();
 
-    const questions = /*[[${questionPrompts}]]*/ ['Which plan fits my family needs?'];
-    const target = document.getElementById('typewriter-question');
-    let qIndex = 0;
-    let charIndex = 0;
-    let deleting = false;
-    function typeQuestion() {
-        if (!target || questions.length === 0) return;
-        const text = questions[qIndex];
-        target.textContent = text.slice(0, charIndex);
-        if (!deleting && charIndex < text.length) {
-            charIndex++;
-            setTimeout(typeQuestion, 45);
-        } else if (!deleting) {
-            deleting = true;
-            setTimeout(typeQuestion, 2200);
-        } else if (charIndex > 0) {
-            charIndex--;
-            setTimeout(typeQuestion, 25);
-        } else {
-            deleting = false;
-            qIndex = (qIndex + 1) % questions.length;
-            setTimeout(typeQuestion, 250);
+    // ---------- Typewriter in the Plan Finder pill ----------
+    (function () {
+        const questions = /*[[${questionPrompts}]]*/ ['Which plan fits my family needs?'];
+        const target = document.getElementById('typewriter-question');
+        if (!target || !questions || questions.length === 0) return;
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) { target.textContent = questions[0]; return; }
+        let qIndex = 0, charIndex = 0, deleting = false;
+        function type() {
+            const text = questions[qIndex];
+            target.textContent = text.slice(0, charIndex);
+            if (!deleting && charIndex < text.length) { charIndex++; setTimeout(type, 45); }
+            else if (!deleting) { deleting = true; setTimeout(type, 2200); }
+            else if (charIndex > 0) { charIndex--; setTimeout(type, 25); }
+            else { deleting = false; qIndex = (qIndex + 1) % questions.length; setTimeout(type, 250); }
         }
-    }
-    typeQuestion();
+        setTimeout(type, 1200);
+    })();
 
-    const chatPanel = document.getElementById('chat-panel');
-    document.getElementById('chat-toggle').addEventListener('click', () => chatPanel.classList.toggle('hidden'));
-    document.getElementById('chat-close').addEventListener('click', () => chatPanel.classList.add('hidden'));
-    document.getElementById('chat-form').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const input = document.getElementById('chat-input');
-        if (!input.value.trim()) return;
-        const messages = document.getElementById('chat-messages');
-        const userText = input.value.trim();
-        messages.insertAdjacentHTML('beforeend', `<div class="ml-auto max-w-[85%] rounded-2xl bg-yellow-400 p-4 text-zinc-950">${userText.replaceAll('<','&lt;')}</div>`);
-        input.value = '';
-        const token = document.querySelector('meta[name="_csrf"]').content;
-        const header = document.querySelector('meta[name="_csrf_header"]').content;
-        const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', [header]: token},
-            body: JSON.stringify({message: userText, history: []})
+    // ---------- Chat: orbit typing indicator while the assistant replies ----------
+    (function () {
+        const panel = document.getElementById('chat-panel'), toggle = document.getElementById('chat-toggle');
+        const messages = document.getElementById('chat-messages'), input = document.getElementById('chat-input');
+        const history = [];
+        function setOpen(open) {
+            panel.classList.toggle('hidden', !open); panel.classList.toggle('flex', open);
+            toggle.setAttribute('aria-expanded', String(open)); if (open) input.focus();
+        }
+        toggle.addEventListener('click', function () { setOpen(panel.classList.contains('hidden')); });
+        document.getElementById('chat-close').addEventListener('click', function () { setOpen(false); });
+        function bubble(text, mine) {
+            const p = document.createElement('p');
+            p.className = mine ? 'ml-auto max-w-[80%] rounded-2xl rounded-tr-sm bg-ink p-3 text-white' : 'mg-fade-in max-w-[85%] rounded-2xl rounded-tl-sm bg-white p-3 shadow-card';
+            p.textContent = text; messages.appendChild(p); messages.scrollTop = messages.scrollHeight;
+        }
+        document.getElementById('chat-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const userText = input.value.trim();
+            if (!userText) return;
+            bubble(userText, true); input.value = '';
+            const typing = MG.typing(); messages.appendChild(typing); messages.scrollTop = messages.scrollHeight;
+            let reply = 'Sorry, something went wrong. Please try again.';
+            try {
+                const token = document.querySelector('meta[name="_csrf"]').content;
+                const header = document.querySelector('meta[name="_csrf_header"]').content;
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', [header]: token },
+                    body: JSON.stringify({ message: userText, history: history.slice(-6) })
+                });
+                const data = await response.json();
+                reply = data.reply || data.message || reply;
+                history.push({ role: 'user', text: userText }, { role: 'assistant', text: reply });
+            } catch (e) { /* keep the friendly fallback */ }
+            typing.remove(); bubble(reply, false);
         });
-        const data = await response.json();
-        messages.insertAdjacentHTML('beforeend', `<div class="max-w-[85%] rounded-2xl border border-yellow-400/25 bg-black p-4 text-white/75">${(data.reply || data.message || 'Please try again.').replaceAll('<','&lt;')}</div>`);
-        messages.scrollTop = messages.scrollHeight;
-    });
+    })();
 </script>
-<script th:src="@{/js/theme-select.js}" defer></script>
+<th:block th:replace="~{fragments/layout :: page-scripts}"></th:block>
 </body>
 </html>

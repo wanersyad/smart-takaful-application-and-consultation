@@ -1,69 +1,94 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consultations - Muqmeen Group</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Consultations - Muqmeen Admin</title>
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
+    <style>
+        .view { display: none; } .view.active { display: block; animation: vIn .4s cubic-bezier(.22,.61,.36,1) both; }
+        @keyframes vIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    </style>
 </head>
-<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
-<nav th:replace="~{fragments/layout :: adminNav('consultations')}"></nav>
-<main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-    <p th:if="${flashMessage}" class="mb-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
-
-    <h1 class="text-4xl font-semibold text-yellow-300">Consultation Requests</h1>
-    <p class="mt-2 text-white/65">People who asked to speak with an advisor. Work each lead through the funnel.</p>
-
-    <div class="mt-6 flex flex-wrap items-center gap-2">
-        <a th:href="@{/admin/consultations}"
-           class="rounded-full border px-4 py-2 text-sm font-semibold transition"
-           th:classappend="${activeStatus == 'ALL'} ? ' border-yellow-400 bg-yellow-400 text-zinc-950' : ' border-yellow-400/30 text-yellow-200 hover:bg-yellow-400/10'">
-            All <span th:text="'(' + ${totalCount} + ')'">(0)</span>
-        </a>
-        <a th:each="s : ${statuses}" th:href="@{/admin/consultations(status=${s})}"
-           class="rounded-full border px-4 py-2 text-sm font-semibold transition"
-           th:classappend="${activeStatus == s.name()} ? ' border-yellow-400 bg-yellow-400 text-zinc-950' : ' border-yellow-400/30 text-yellow-200 hover:bg-yellow-400/10'"
-           th:text="${s}">STATUS</a>
-    </div>
-
-    <div class="mt-6 overflow-hidden rounded-3xl border border-yellow-400/20 bg-[#0d0d0d]">
-        <div th:if="${#lists.isEmpty(consultations)}" class="p-10 text-center text-white/55">
-            <i class="fa-regular fa-comments mb-3 text-3xl text-yellow-300/60"></i>
-            <p>No consultation requests in this view.</p>
+<body class="lg:pl-64">
+<th:block th:replace="~{fragments/layout :: adminNav('consultations')}"></th:block>
+<main class="space-y-6 p-5 sm:p-8">
+    <p th:if="${flashMessage}" class="rounded-2xl bg-ok-soft p-4 text-ok" th:text="${flashMessage}">Saved</p>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <h1 class="fade-up text-3xl font-semibold tracking-tight">Consultation Requests</h1>
+            <p class="fade-up mt-1 text-muted" style="--d:.1s">People who asked to speak with an advisor — from the contact form and Plan Finder.</p>
         </div>
-        <table th:unless="${#lists.isEmpty(consultations)}" class="w-full text-left text-sm">
-            <thead class="border-b border-yellow-400/15 text-xs uppercase tracking-wide text-white/50">
-                <tr>
-                    <th class="px-5 py-4">Received</th>
-                    <th class="px-5 py-4">Name</th>
-                    <th class="px-5 py-4">Topic</th>
-                    <th class="px-5 py-4">Prefers</th>
-                    <th class="px-5 py-4">Status</th>
-                    <th class="px-5 py-4 text-right">Action</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5">
-                <tr th:each="c : ${consultations}" class="hover:bg-white/[0.03]">
-                    <td class="px-5 py-4 text-white/60" th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm')}">date</td>
-                    <td class="px-5 py-4">
-                        <p class="font-semibold text-white" th:text="${c.fullName}">Name</p>
-                        <p class="text-xs text-white/50" th:text="${c.email}">email</p>
-                    </td>
-                    <td class="px-5 py-4 text-white/75" th:text="${c.topic != null and !#strings.isEmpty(c.topic) ? c.topic : '—'}">Topic</td>
-                    <td class="px-5 py-4 text-white/75" th:text="${c.preferredContact != null and !#strings.isEmpty(c.preferredContact) ? c.preferredContact : '—'}">Pref</td>
-                    <td class="px-5 py-4">
-                        <span class="rounded-full border border-yellow-400/30 bg-yellow-400/10 px-3 py-1 text-xs font-semibold text-yellow-200" th:text="${c.status}">NEW</span>
-                    </td>
-                    <td class="px-5 py-4 text-right">
-                        <a th:href="@{/admin/consultations/{id}(id=${c.id})}" class="rounded-full bg-yellow-400 px-4 py-2 text-xs font-semibold text-zinc-950 hover:bg-yellow-300">Manage</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="flex rounded-full bg-cream-deep p-1 text-sm font-medium" role="tablist">
+            <button type="button" class="vbtn rounded-full bg-white px-3 py-1.5 shadow-card" data-v="board"><i class="fa-solid fa-table-columns mr-1"></i>Board</button>
+            <button type="button" class="vbtn rounded-full px-3 py-1.5 text-muted" data-v="list"><i class="fa-solid fa-list mr-1"></i>List</button>
+        </div>
     </div>
+
+    <div class="flex flex-wrap items-center gap-2 text-sm font-medium">
+        <a th:href="@{/admin/consultations}" class="btn rounded-full border px-4 py-2" th:classappend="${activeStatus == 'ALL'} ? 'border-ink bg-ink text-white' : 'border-cream-line bg-white'">All <span class="opacity-60" th:text="${totalCount}">0</span></a>
+        <a th:each="s : ${statuses}" th:href="@{/admin/consultations(status=${s})}" class="btn rounded-full border px-4 py-2" th:classappend="${activeStatus == s.name()} ? 'border-ink bg-ink text-white' : 'border-cream-line bg-white'" th:text="${#strings.capitalize(#strings.toLowerCase(s.name()))}">Status</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(consultations)}" class="card p-10 text-center text-muted">
+        <i class="fa-regular fa-comments mb-3 text-3xl text-gold-deep"></i>
+        <p>No consultation requests in this view.</p>
+    </div>
+
+    <!-- Board -->
+    <section th:unless="${#lists.isEmpty(consultations)}" class="view active" id="board">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-5">
+            <div th:each="s : ${statuses}" th:with="lane=${consultations.?[status == '__${s.name()}__']}" class="min-h-[200px] rounded-3xl bg-cream-deep/70 p-3">
+                <p class="flex items-center justify-between px-2 pb-3 text-sm font-semibold"><span th:text="${#strings.capitalize(#strings.toLowerCase(s.name()))}">Status</span><span class="text-xs text-muted" th:text="${#lists.size(lane)}">0</span></p>
+                <div class="space-y-3">
+                    <a th:each="c : ${lane}" th:href="@{/admin/consultations/{id}(id=${c.id})}" class="card-hover block rounded-2xl border border-cream-line bg-white p-4 shadow-card">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-soft text-[11px] font-semibold text-gold-deep" th:text="${#strings.toUpperCase(#strings.substring(c.fullName, 0, 1))}">A</span>
+                            <p class="min-w-0 flex-1 truncate text-sm font-semibold" th:text="${c.fullName}">Name</p>
+                        </div>
+                        <p class="mt-2 line-clamp-2 text-xs text-muted" th:text="${c.topic != null and !#strings.isEmpty(c.topic) ? c.topic : c.subject}">Topic</p>
+                        <div class="mt-3 flex items-center justify-between gap-2 text-[11px] text-muted">
+                            <span th:if="${c.topic != null and #strings.startsWith(c.topic, 'Plan Finder')}" class="rounded-full bg-ink px-2 py-0.5 text-gold">Plan Finder</span>
+                            <span th:unless="${c.topic != null and #strings.startsWith(c.topic, 'Plan Finder')}" th:text="${c.preferredContact ?: '—'}">WhatsApp</span>
+                            <span th:text="${#temporals.format(c.createdAt, 'd MMM')}">date</span>
+                        </div>
+                    </a>
+                    <p th:if="${#lists.isEmpty(lane)}" class="px-2 text-xs text-muted">Nothing here</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- List -->
+    <section th:unless="${#lists.isEmpty(consultations)}" class="view" id="list">
+        <div class="card min-w-0 overflow-hidden"><div class="overflow-x-auto">
+            <table class="mobile-card-table w-full text-sm">
+                <thead class="table-head"><tr><th class="px-5 py-3 font-medium">Name</th><th class="px-5 py-3 font-medium">Topic</th><th class="px-5 py-3 font-medium">Prefers</th><th class="px-5 py-3 font-medium">Status</th><th class="px-5 py-3 font-medium">Received</th><th class="px-5 py-3"></th></tr></thead>
+                <tbody class="divide-y divide-cream-line">
+                    <tr th:each="c : ${consultations}" class="row-hover">
+                        <td class="px-5 py-4" data-label="Name"><p class="font-medium" th:text="${c.fullName}">Name</p><p class="truncate text-xs text-muted" th:text="${c.email}">email</p></td>
+                        <td class="px-5 py-4" data-label="Topic" th:text="${c.topic != null and !#strings.isEmpty(c.topic) ? c.topic : '—'}">Topic</td>
+                        <td class="px-5 py-4 text-muted" data-label="Prefers" th:text="${c.preferredContact != null and !#strings.isEmpty(c.preferredContact) ? c.preferredContact : '—'}">Pref</td>
+                        <td class="px-5 py-4" data-label="Status"><span class="status-badge" th:classappend="'status-' + ${#strings.toLowerCase(c.status)}" th:text="${c.status}">NEW</span></td>
+                        <td class="whitespace-nowrap px-5 py-4 text-muted" data-label="Received" th:text="${#temporals.format(c.createdAt, 'd MMM yyyy, HH:mm')}">date</td>
+                        <td class="px-5 py-4 text-right"><a th:href="@{/admin/consultations/{id}(id=${c.id})}" class="btn btn-outline btn-sm">Manage</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div></div>
+    </section>
 </main>
-<div th:replace="~{fragments/layout :: page-scripts}"></div>
+<script>
+    (function () {
+        let saved = null;
+        try { saved = localStorage.getItem('mg-consult-view'); } catch (e) {}
+        function show(v) {
+            document.querySelectorAll('.vbtn').forEach(function (x) { const on = x.dataset.v === v; x.classList.toggle('bg-white', on); x.classList.toggle('shadow-card', on); x.classList.toggle('text-muted', !on); });
+            document.querySelectorAll('.view').forEach(function (s) { s.classList.toggle('active', s.id === v); });
+            try { localStorage.setItem('mg-consult-view', v); } catch (e) {}
+        }
+        document.querySelectorAll('.vbtn').forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.v); }); });
+        if (saved === 'list') show('list');
+    })();
+</script>
 </body>
 </html>

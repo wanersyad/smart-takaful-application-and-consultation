@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mock Payment - Muqmeen Group</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>ToyyibPay Mock - Muqmeen Group</title>
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
 </head>
-<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
+<body>
 <main class="mx-auto flex min-h-screen max-w-xl items-center px-4">
-    <div class="w-full rounded-3xl border border-yellow-400/25 bg-[#111] p-8 text-center">
-        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-yellow-400 text-2xl text-zinc-950"><i class="fa-solid fa-credit-card"></i></div>
-        <h1 class="mt-5 text-3xl font-semibold text-yellow-300">ToyyibPay Mock</h1>
-        <p class="mt-3 text-white/70">Local development payment for quotation bill <span class="text-yellow-300" th:text="${billCode}">BILL</span>. This simulates the post-quotation payment gateway.</p>
+    <div class="fade-up card w-full p-8 text-center sm:p-10">
+        <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-ink text-2xl text-gold"><i class="fa-solid fa-credit-card"></i></span>
+        <p class="eyebrow mt-6">Development only</p>
+        <h1 class="mt-2 text-3xl font-semibold tracking-tight">ToyyibPay Mock</h1>
+        <p class="mt-3 leading-7 text-muted">Local development payment for quotation bill <b class="text-ink" th:text="${billCode}">BILL</b>. This simulates the post-quotation payment gateway.</p>
         <div class="mt-8 grid gap-3">
-            <a th:href="@{/payment/callback(billcode=${billCode},status_id='1')}" class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Mark Paid</a>
-            <a th:href="@{/payment/callback(billcode=${billCode},status_id='3')}" class="rounded-full border border-red-500/40 px-6 py-3 font-semibold text-red-200 hover:bg-red-500 hover:text-white">Mark Failed</a>
+            <a th:href="@{/payment/callback(billcode=${billCode},status_id='1')}" class="btn btn-gold" data-no-transition onclick="MG.loader({ icon: 'fa-shield-halved', title: 'Confirming your payment', sub: 'Please do not close or refresh this page' })">Mark Paid</a>
+            <a th:href="@{/payment/callback(billcode=${billCode},status_id='3')}" class="btn btn-danger">Mark Failed</a>
         </div>
     </div>
 </main>

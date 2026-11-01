@@ -1,88 +1,83 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
     <title>Quotation Builder - Muqmeen Group</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
+    <style>
+        .switch { width: 44px; height: 26px; border-radius: 999px; background: #E8E2D4; position: relative; transition: background-color .25s; flex-shrink: 0; }
+        .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .25s cubic-bezier(.22,.61,.36,1); }
+        .switch.on { background: #0B0B0C; } .switch.on::after { transform: translateX(18px); background: #C8962E; }
+        .quotation-item { transition: opacity .3s, background-color .3s; }
+        .quotation-item.off { opacity: .55; background: #FBF9F4; }
+    </style>
 </head>
-<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
-<nav th:replace="~{fragments/layout :: adminNav('')}"></nav>
-<main class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-    <a th:href="@{/admin/applications/{id}(id=${app.id})}" class="text-yellow-300 hover:text-yellow-200"><i class="fa-solid fa-arrow-left mr-2"></i>Back to application</a>
-    <div class="mt-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-            <p class="text-sm uppercase tracking-[0.25em] text-yellow-300">Admin Review</p>
-            <h1 class="mt-2 text-4xl font-semibold text-yellow-300">Quotation Builder</h1>
-            <p class="mt-2 text-white/65">Add only the payable items the customer should see after consultation review.</p>
-        </div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] px-5 py-4">
-            <p class="text-xs uppercase tracking-wide text-white/50">Selected total</p>
-            <p class="mt-1 text-2xl font-semibold text-yellow-300">RM <span id="quotation-total">0.00</span></p>
-        </div>
+<body class="lg:pl-64">
+<th:block th:replace="~{fragments/layout :: adminNav('applications')}"></th:block>
+<main class="space-y-6 p-5 sm:p-8">
+    <a th:href="@{/admin/applications/{id}(id=${app.id})}" class="text-sm font-medium text-muted hover:text-ink"><i class="fa-solid fa-arrow-left mr-2"></i>Back to application</a>
+    <div>
+        <p class="eyebrow">Admin Review · <span th:text="${app.applicantFullName}">Customer</span> · <span th:text="${productName}">Product</span></p>
+        <h1 class="fade-up mt-2 text-3xl font-semibold tracking-tight">Quotation Builder</h1>
+        <p class="fade-up mt-1 text-muted" style="--d:.1s">Add only the payable items the customer should see after consultation review.</p>
     </div>
-    <section th:replace="~{fragments/plan-finder :: agentPanel(${planFinder})}"></section>
-    <form id="quotation-form" th:action="@{/admin/applications/{id}/quotation(id=${app.id})}" method="post" class="mt-8 grid gap-5 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <label class="grid gap-2 text-sm text-white/80">Admin notes<textarea name="adminNotes" rows="4" class="rounded-2xl border border-yellow-400/25 bg-black px-4 py-3" th:text="${form.adminNotes}"></textarea></label>
-        <section class="grid gap-4">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="text-xl font-semibold text-white">Payable Items</h2>
-                    <p class="text-sm text-white/55">Unchecked items stay visible for context but are not included in the total.</p>
+
+    <div class="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr),340px]">
+        <div class="min-w-0 space-y-6">
+            <section th:replace="~{fragments/plan-finder :: agentPanel(${planFinder})}"></section>
+
+            <form id="quotation-form" th:action="@{/admin/applications/{id}/quotation(id=${app.id})}" method="post" class="card space-y-5 p-6" data-busy="Saving…">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold">Payable Items</h2>
+                        <p class="text-sm text-muted">Switched-off items stay visible for context but are not included in the total.</p>
+                    </div>
+                    <button type="button" id="add-quotation-item" class="btn btn-outline btn-sm"><i class="fa-solid fa-plus text-xs"></i>Add Item</button>
                 </div>
-                <button type="button" id="add-quotation-item" class="rounded-full border border-yellow-400/30 px-5 py-3 text-sm font-semibold text-yellow-300 hover:bg-yellow-400 hover:text-zinc-950">
-                    <i class="fa-solid fa-plus mr-2"></i>Add Item
-                </button>
-            </div>
-            <div id="quotation-items" class="grid gap-3">
-                <article th:each="item, iter : ${form.items}" class="quotation-item grid gap-3 rounded-2xl border border-yellow-400/15 bg-black p-4 lg:grid-cols-[1.2fr,1.5fr,0.7fr,0.45fr,auto] lg:items-end">
-                    <label class="grid gap-2 text-sm text-white/70">Item name
-                        <input th:name="|items[${iter.index}].itemName|" th:value="${item.itemName}" placeholder="Monthly protection contribution" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
-                    </label>
-                    <label class="grid gap-2 text-sm text-white/70">Description
-                        <input th:name="|items[${iter.index}].description|" th:value="${item.description}" placeholder="Based on selected customer needs" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
-                    </label>
-                    <label class="grid gap-2 text-sm text-white/70">Amount (RM)
-                        <input th:name="|items[${iter.index}].amount|" th:value="${item.amount}" type="number" min="0" step="0.01" class="quotation-amount rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
-                    </label>
-                    <label class="grid gap-2 text-sm text-white/70">Included
-                        <input type="hidden" th:name="|items[${iter.index}].selected|" th:value="${item.selected}">
-                        <button type="button" class="quotation-toggle rounded-2xl border border-yellow-400/30 px-4 py-3 text-sm font-semibold" th:classappend="${item.selected} ? ' bg-yellow-400 text-zinc-950' : ' bg-transparent text-white/70'">
-                            <span th:text="${item.selected} ? 'Yes' : 'No'">Yes</span>
-                        </button>
-                    </label>
-                    <button type="button" class="remove-quotation-item rounded-2xl border border-red-400/35 px-4 py-3 text-red-200 hover:bg-red-500 hover:text-white"><i class="fa-solid fa-trash"></i></button>
-                </article>
-            </div>
-        </section>
-        <div class="flex flex-col gap-3 sm:flex-row">
-            <button class="rounded-full border border-yellow-400/30 px-6 py-3 font-semibold text-white hover:bg-yellow-400/10 hover:text-yellow-300">Save Quotation</button>
+                <div id="quotation-items" class="grid gap-3">
+                    <article th:each="item, iter : ${form.items}" class="quotation-item grid items-end gap-3 rounded-2xl border border-cream-line p-4 lg:grid-cols-[1.2fr,1.5fr,130px,auto,auto]" th:classappend="${!item.selected} ? 'off' : ''">
+                        <label class="label">Item name<input th:name="|items[${iter.index}].itemName|" th:value="${item.itemName}" placeholder="Monthly protection contribution" class="field"></label>
+                        <label class="label">Description<input th:name="|items[${iter.index}].description|" th:value="${item.description}" placeholder="Based on selected customer needs" class="field"></label>
+                        <label class="label">Amount (RM)<input th:name="|items[${iter.index}].amount|" th:value="${item.amount}" type="number" min="0" step="0.01" class="quotation-amount field"></label>
+                        <div class="label">Included
+                            <input type="hidden" th:name="|items[${iter.index}].selected|" th:value="${item.selected}">
+                            <button type="button" class="quotation-toggle switch mb-3" th:classappend="${item.selected} ? 'on' : ''" aria-label="Include item"><span class="sr-only" th:text="${item.selected} ? 'Yes' : 'No'">Yes</span></button>
+                        </div>
+                        <button type="button" class="remove-quotation-item mb-1 flex h-11 w-11 items-center justify-center rounded-full text-muted hover:bg-red-50 hover:text-red-700" aria-label="Remove item"><i class="fa-regular fa-trash-can"></i></button>
+                    </article>
+                </div>
+                <label class="label">Note to customer (admin notes)<textarea name="adminNotes" rows="3" class="field" th:text="${form.adminNotes}"></textarea></label>
+                <button type="submit" class="btn btn-ink">Save Quotation</button>
+            </form>
         </div>
-    </form>
-    <form th:if="${quotation.id != null}" th:action="@{/admin/quotations/{id}/publish(id=${quotation.id})}" method="post" class="mt-4">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <button class="rounded-full bg-yellow-400 px-6 py-3 font-semibold text-zinc-950 hover:bg-yellow-300">Publish to Customer</button>
-    </form>
+
+        <aside class="min-w-0 space-y-4 xl:sticky xl:top-6 xl:self-start">
+            <div class="panel-dark rounded-3xl p-6">
+                <div th:replace="~{fragments/layout :: orbit('width:360px;height:360px;right:-170px;top:-180px')}"></div>
+                <p class="relative text-sm text-white/60">Selected total</p>
+                <p class="relative mt-1 text-4xl font-semibold text-gold">RM <span id="quotation-total">0.00</span></p>
+                <p class="relative mt-1 text-xs text-white/50"><span id="quotation-count">0</span> items included · status <span th:text="${quotation.status}">DRAFT</span></p>
+                <form th:if="${quotation.id != null}" th:action="@{/admin/quotations/{id}/publish(id=${quotation.id})}" method="post" class="relative mt-5" data-busy="Publishing…">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="btn btn-gold w-full">Publish to Customer</button>
+                </form>
+                <p th:if="${quotation.id == null}" class="relative mt-5 text-xs text-white/55">Save the quotation first, then publish it to the customer.</p>
+            </div>
+            <p class="px-1 text-xs leading-5 text-muted"><i class="fa-solid fa-circle-info mr-1"></i>Remember to save your changes before publishing. Customers can only pay after the quotation is published.</p>
+        </aside>
+    </div>
 </main>
 <template id="quotation-item-template">
-    <article class="quotation-item grid gap-3 rounded-2xl border border-yellow-400/15 bg-black p-4 lg:grid-cols-[1.2fr,1.5fr,0.7fr,0.45fr,auto] lg:items-end">
-        <label class="grid gap-2 text-sm text-white/70">Item name
-            <input data-field="itemName" placeholder="Monthly protection contribution" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
-        </label>
-        <label class="grid gap-2 text-sm text-white/70">Description
-            <input data-field="description" placeholder="Based on selected customer needs" class="rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
-        </label>
-        <label class="grid gap-2 text-sm text-white/70">Amount (RM)
-            <input data-field="amount" type="number" min="0" step="0.01" value="0.00" class="quotation-amount rounded-2xl border border-yellow-400/25 bg-[#080808] px-4 py-3 text-white">
-        </label>
-        <label class="grid gap-2 text-sm text-white/70">Included
+    <article class="quotation-item grid items-end gap-3 rounded-2xl border border-cream-line p-4 lg:grid-cols-[1.2fr,1.5fr,130px,auto,auto]">
+        <label class="label">Item name<input data-field="itemName" placeholder="Monthly protection contribution" class="field"></label>
+        <label class="label">Description<input data-field="description" placeholder="Based on selected customer needs" class="field"></label>
+        <label class="label">Amount (RM)<input data-field="amount" type="number" min="0" step="0.01" value="0.00" class="quotation-amount field"></label>
+        <div class="label">Included
             <input type="hidden" data-field="selected" value="true">
-            <button type="button" class="quotation-toggle rounded-2xl border border-yellow-400/30 bg-yellow-400 px-4 py-3 text-sm font-semibold text-zinc-950"><span>Yes</span></button>
-        </label>
-        <button type="button" class="remove-quotation-item rounded-2xl border border-red-400/35 px-4 py-3 text-red-200 hover:bg-red-500 hover:text-white"><i class="fa-solid fa-trash"></i></button>
+            <button type="button" class="quotation-toggle switch on mb-3" aria-label="Include item"><span class="sr-only">Yes</span></button>
+        </div>
+        <button type="button" class="remove-quotation-item mb-1 flex h-11 w-11 items-center justify-center rounded-full text-muted hover:bg-red-50 hover:text-red-700" aria-label="Remove item"><i class="fa-regular fa-trash-can"></i></button>
     </article>
 </template>
 <script>
@@ -100,27 +95,26 @@ function reindexQuotationRows() {
 }
 
 function updateQuotationTotal() {
-    let total = 0;
+    let total = 0, count = 0;
     itemsRoot.querySelectorAll('.quotation-item').forEach((row) => {
         const selected = row.querySelector('input[name$=".selected"]').value === 'true';
         const amount = Number(row.querySelector('.quotation-amount').value || 0);
-        if (selected) total += amount;
+        if (selected) { total += amount; count++; }
     });
     totalEl.textContent = total.toFixed(2);
+    document.getElementById('quotation-count').textContent = count;
+    totalEl.animate([{ transform: 'scale(1.08)' }, { transform: 'none' }], { duration: 250 });
 }
 
 function wireQuotationRow(row) {
     const toggle = row.querySelector('.quotation-toggle');
     const hidden = row.querySelector('input[name$=".selected"], input[data-field="selected"]');
-    const label = toggle.querySelector('span');
     toggle.addEventListener('click', () => {
         const next = hidden.value !== 'true';
         hidden.value = String(next);
-        toggle.classList.toggle('bg-yellow-400', next);
-        toggle.classList.toggle('text-zinc-950', next);
-        toggle.classList.toggle('bg-transparent', !next);
-        toggle.classList.toggle('text-white/70', !next);
-        label.textContent = next ? 'Yes' : 'No';
+        toggle.classList.toggle('on', next);
+        row.classList.toggle('off', !next);
+        toggle.querySelector('span').textContent = next ? 'Yes' : 'No';
         updateQuotationTotal();
     });
     row.querySelector('.quotation-amount').addEventListener('input', updateQuotationTotal);
@@ -128,6 +122,7 @@ function wireQuotationRow(row) {
         if (itemsRoot.querySelectorAll('.quotation-item').length === 1) {
             row.querySelectorAll('input').forEach((input) => input.value = input.name.endsWith('.selected') ? 'true' : '');
             row.querySelector('.quotation-amount').value = '0.00';
+            toggle.classList.add('on'); row.classList.remove('off');
         } else {
             row.remove();
         }
@@ -143,6 +138,7 @@ document.getElementById('add-quotation-item').addEventListener('click', () => {
     reindexQuotationRows();
     wireQuotationRow(row);
     updateQuotationTotal();
+    row.querySelector('input').focus();
 });
 reindexQuotationRows();
 updateQuotationTotal();

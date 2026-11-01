@@ -1,101 +1,105 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
     <title>Admin Dashboard - Muqmeen Group</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-    <link rel="icon" type="image/png" th:href="@{/images/brand/mgkb.png}" href="/images/brand/mgkb.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <th:block th:replace="~{fragments/layout :: headAssets}"></th:block>
 </head>
-<body class="muqmeen-dark-site min-h-screen bg-[#050505] text-white">
-<nav th:replace="~{fragments/layout :: adminNav('applications')}"></nav>
-<main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-    <p th:if="${flashMessage}" class="mb-6 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4 text-yellow-200" th:text="${flashMessage}">Saved</p>
-    <h1 class="text-4xl font-semibold text-yellow-300">Application Management</h1>
-    <p class="mt-2 text-white/65">Review submitted applications, request corrections, and create quotations.</p>
-    <section class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5">
-            <p class="text-xs uppercase tracking-wide text-white/55">Total</p>
-            <p class="mt-2 text-3xl font-semibold text-yellow-300" th:text="${totalApplications}">0</p>
+<body class="lg:pl-64">
+<th:block th:replace="~{fragments/layout :: adminNav('applications')}"></th:block>
+<main class="space-y-6 p-5 sm:p-8">
+    <p th:if="${flashMessage}" class="rounded-2xl bg-ok-soft p-4 text-ok" th:text="${flashMessage}">Saved</p>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <h1 class="fade-up text-3xl font-semibold tracking-tight">Application Management</h1>
+            <p class="fade-up mt-1 text-muted" style="--d:.1s">Review submitted applications, request corrections, and create quotations.</p>
         </div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5">
-            <p class="text-xs uppercase tracking-wide text-white/55">Submitted / Review</p>
-            <p class="mt-2 text-3xl font-semibold text-white" th:text="${submittedApplications}">0</p>
-        </div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5">
-            <p class="text-xs uppercase tracking-wide text-white/55">Needs Info</p>
-            <p class="mt-2 text-3xl font-semibold text-white" th:text="${needsInfoApplications}">0</p>
-        </div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5">
-            <p class="text-xs uppercase tracking-wide text-white/55">Quoted / Payment</p>
-            <p class="mt-2 text-3xl font-semibold text-white" th:text="${quotedApplications}">0</p>
-        </div>
-        <div class="rounded-2xl border border-yellow-400/25 bg-[#111] p-5">
-            <p class="text-xs uppercase tracking-wide text-white/55">Paid / Closed</p>
-            <p class="mt-2 text-3xl font-semibold text-white" th:text="${paidApplications}">0</p>
-        </div>
+        <label class="fade-up relative w-full max-w-xs" style="--d:.15s"><i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-sm text-muted"></i><input id="app-search" class="field !rounded-full !py-2.5 pl-11" placeholder="Search customer or product…" aria-label="Search applications"></label>
+    </div>
+
+    <section class="grid grid-cols-2 gap-4 xl:grid-cols-5">
+        <div class="reveal card p-5"><div class="flex items-center justify-between text-sm text-muted">Total<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-cream-deep"><i class="fa-solid fa-layer-group"></i></span></div><p class="mt-3 text-3xl font-semibold" th:attr="data-count=${totalApplications}" th:text="${totalApplications}">0</p></div>
+        <div class="reveal card p-5" style="--i:1"><div class="flex items-center justify-between text-sm text-muted">Submitted / Review<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gold-soft text-gold-deep"><i class="fa-solid fa-inbox"></i></span></div><p class="mt-3 text-3xl font-semibold" th:attr="data-count=${submittedApplications}" th:text="${submittedApplications}">0</p></div>
+        <div class="reveal card p-5" style="--i:2"><div class="flex items-center justify-between text-sm text-muted">Needs Info<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-warn-soft text-warn"><i class="fa-solid fa-rotate-left"></i></span></div><p class="mt-3 text-3xl font-semibold" th:attr="data-count=${needsInfoApplications}" th:text="${needsInfoApplications}">0</p></div>
+        <div class="reveal card p-5" style="--i:3"><div class="flex items-center justify-between text-sm text-muted">Quoted / Payment<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-info-soft text-info"><i class="fa-solid fa-file-invoice"></i></span></div><p class="mt-3 text-3xl font-semibold" th:attr="data-count=${quotedApplications}" th:text="${quotedApplications}">0</p></div>
+        <div class="reveal card p-5" style="--i:4"><div class="flex items-center justify-between text-sm text-muted">Paid / Closed<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-ok-soft text-ok"><i class="fa-solid fa-circle-check"></i></span></div><p class="mt-3 text-3xl font-semibold" th:attr="data-count=${paidApplications}" th:text="${paidApplications}">0</p></div>
     </section>
-    <section class="mt-8 rounded-3xl border border-yellow-400/25 bg-[#111] p-6">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <p class="text-xs uppercase tracking-[0.25em] text-white/45">Consultation requests</p>
-                <h2 class="mt-2 text-2xl font-semibold text-yellow-300">People wanting to speak to an advisor</h2>
+
+    <div class="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[1.6fr,1fr]">
+        <section class="reveal card min-w-0 overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3 p-5">
+                <h2 class="text-lg font-semibold">Applications</h2>
+                <div class="flex flex-wrap rounded-full bg-cream p-1 text-xs font-medium" id="status-filter">
+                    <button type="button" class="rounded-full bg-white px-3 py-1.5 shadow-card" data-f="">All</button>
+                    <button type="button" class="rounded-full px-3 py-1.5 text-muted" data-f="SUBMITTED UNDER_REVIEW">To review</button>
+                    <button type="button" class="rounded-full px-3 py-1.5 text-muted" data-f="NEEDS_INFO">Needs info</button>
+                    <button type="button" class="rounded-full px-3 py-1.5 text-muted" data-f="QUOTED PAYMENT_PENDING">Quoted</button>
+                    <button type="button" class="rounded-full px-3 py-1.5 text-muted" data-f="PAID CLOSED">Paid</button>
+                </div>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="w-fit rounded-full border border-yellow-400/25 bg-yellow-400/10 px-4 py-2 text-sm font-semibold text-yellow-200">
-                    <span th:text="${newInquiries}">0</span> new
-                </span>
-                <a href="/admin/consultations" class="w-fit rounded-full bg-yellow-400 px-5 py-2 text-sm font-semibold text-zinc-950 hover:bg-yellow-300">Manage all</a>
+            <div th:if="${#lists.isEmpty(applications)}" class="border-t border-cream-line p-12 text-center text-muted">No applications yet. New customer submissions will appear here.</div>
+            <div th:if="${!#lists.isEmpty(applications)}" class="overflow-x-auto">
+                <table class="mobile-card-table w-full text-sm">
+                    <thead class="table-head"><tr><th class="px-5 py-3 font-medium">Customer</th><th class="px-5 py-3 font-medium">Product</th><th class="px-5 py-3 font-medium">Status</th><th class="px-5 py-3 font-medium">Created</th><th class="px-5 py-3"></th></tr></thead>
+                    <tbody class="divide-y divide-cream-line">
+                        <tr th:each="app : ${applications}" class="app-row row-hover" th:attr="data-status=${app.status},data-search=${#strings.toLowerCase(app.applicantFullName + ' ' + app.email + ' ' + app.product.name)}">
+                            <td class="px-5 py-4" data-label="Customer"><div class="min-w-0"><p class="font-medium" th:text="${app.applicantFullName}">Applicant</p><p class="truncate text-xs text-muted" th:text="${app.email}">Email</p></div></td>
+                            <td class="px-5 py-4" data-label="Product" th:text="${app.product.name}">Product</td>
+                            <td class="px-5 py-4" data-label="Status"><span class="status-badge" th:classappend="'status-' + ${#strings.toLowerCase(app.status)}" th:text="${app.status}">SUBMITTED</span></td>
+                            <td class="whitespace-nowrap px-5 py-4 text-muted" data-label="Created" th:text="${#temporals.format(app.createdAt, 'd MMM yyyy')}">Date</td>
+                            <td class="px-5 py-4 text-right"><a th:href="@{/admin/applications/{id}(id=${app.id})}" class="btn btn-sm" th:classappend="${app.status.name() == 'SUBMITTED' or app.status.name() == 'UNDER_REVIEW'} ? 'btn-ink' : 'btn-outline'">Review</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p id="no-match" class="hidden border-t border-cream-line p-8 text-center text-sm text-muted">No applications match this filter.</p>
             </div>
-        </div>
-        <div th:if="${#lists.isEmpty(recentInquiries)}" class="mt-6 rounded-2xl border border-yellow-400/10 bg-black p-6 text-white/60">
-            No contact enquiries yet. Public contact form submissions will appear here.
-        </div>
-        <div th:if="${!#lists.isEmpty(recentInquiries)}" class="mt-6 grid gap-3">
-            <article th:each="inquiry : ${recentInquiries}" class="grid gap-4 rounded-2xl border border-yellow-400/10 bg-black p-4 lg:grid-cols-[1fr,1.3fr,.7fr] lg:items-center">
-                <div>
-                    <p class="font-semibold text-white" th:text="${inquiry.fullName}">Name</p>
-                    <p class="mt-1 text-sm text-white/55">
-                        <span th:text="${inquiry.email}">email@example.com</span>
-                        <span th:if="${inquiry.phoneNumber != null && !#strings.isEmpty(inquiry.phoneNumber)}"> · <span th:text="${inquiry.phoneNumber}">phone</span></span>
-                    </p>
-                    <p class="mt-1 text-xs text-white/40" th:text="${#temporals.format(inquiry.createdAt, 'yyyy-MM-dd HH:mm')}">date</p>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-yellow-200" th:text="${inquiry.subject}">Subject</p>
-                    <p class="mt-1 text-sm leading-6 text-white/65" th:text="${inquiry.message}">Message</p>
-                    <p class="mt-2 text-xs text-white/40" th:text="${inquiry.deliverySummary}">Delivery</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2 lg:flex-col lg:items-end">
-                    <span class="rounded-full border border-yellow-400/30 bg-yellow-400/10 px-3 py-1 text-xs font-semibold text-yellow-200" th:text="${inquiry.status}">NEW</span>
-                    <a th:href="@{/admin/consultations/{id}(id=${inquiry.id})}" class="rounded-full bg-yellow-400 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-yellow-300"><i class="fa-solid fa-arrow-right mr-1"></i>Manage</a>
-                </div>
-            </article>
-        </div>
-    </section>
-    <section class="mt-8 overflow-hidden rounded-3xl border border-yellow-400/25 bg-[#111]">
-        <div class="hidden grid-cols-[.9fr,1.1fr,1.2fr,.9fr,.8fr] border-b border-yellow-400/15 px-5 py-4 text-xs font-semibold uppercase tracking-wide text-white/60 md:grid">
-            <span>Date</span><span>Customer</span><span>Product</span><span>Status</span><span>Action</span>
-        </div>
-        <div th:if="${#lists.isEmpty(applications)}" class="p-12 text-center text-white/65">
-            No applications yet. New customer submissions will appear here.
-        </div>
-        <article th:each="app : ${applications}" class="grid gap-3 border-b border-yellow-400/10 p-5 last:border-b-0 md:grid-cols-[.9fr,1.1fr,1.2fr,.9fr,.8fr] md:items-center">
-            <p class="text-sm text-white/65" th:text="${#temporals.format(app.createdAt, 'yyyy-MM-dd HH:mm')}">Date</p>
-            <div><p class="font-semibold" th:text="${app.applicantFullName}">Applicant</p><p class="text-xs text-white/50" th:text="${app.email}">Email</p></div>
-            <p th:text="${app.product.name}">Product</p>
-            <span class="status-badge w-fit rounded-full px-3 py-1 text-xs font-semibold" th:classappend="'status-' + ${#strings.toLowerCase(app.status)}" th:text="${app.status}">SUBMITTED</span>
-            <a th:href="@{/admin/applications/{id}(id=${app.id})}" class="rounded-full bg-yellow-400 px-4 py-2 text-center text-sm font-semibold text-zinc-950 hover:bg-yellow-300">Review</a>
-        </article>
-    </section>
+        </section>
+
+        <section class="reveal card min-w-0 p-5" style="--i:1">
+            <div class="flex items-center justify-between gap-3">
+                <div><p class="eyebrow">Consultation requests</p><h2 class="mt-1 text-lg font-semibold">People wanting to speak to an advisor</h2></div>
+                <span class="chip chip-gold shrink-0"><span th:text="${newInquiries}">0</span> new</span>
+            </div>
+            <div th:if="${#lists.isEmpty(recentInquiries)}" class="mt-5 rounded-2xl bg-cream p-6 text-sm text-muted">No contact enquiries yet. Public contact form submissions will appear here.</div>
+            <ul class="mt-4 space-y-3">
+                <li th:each="inquiry : ${recentInquiries}">
+                    <a th:href="@{/admin/consultations/{id}(id=${inquiry.id})}" class="flex items-start gap-3 rounded-2xl bg-cream p-3 transition hover:bg-gold-soft">
+                        <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-xs font-semibold text-gold-deep shadow-card" th:text="${#strings.toUpperCase(#strings.substring(inquiry.fullName, 0, 1))}">A</span>
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-sm font-medium" th:text="${inquiry.fullName}">Name</p>
+                            <p class="truncate text-xs text-muted" th:text="${inquiry.subject}">Subject</p>
+                        </div>
+                        <span class="status-badge !text-[10px]" th:classappend="'status-' + ${#strings.toLowerCase(inquiry.status)}" th:text="${inquiry.status}">NEW</span>
+                    </a>
+                </li>
+            </ul>
+            <a href="/admin/consultations" class="btn btn-outline btn-sm mt-4 w-full">Manage all consultations</a>
+        </section>
+    </div>
 </main>
 <script>
-document.querySelectorAll('.page-menu-open').forEach((button) => button.addEventListener('click', () => {
-    const menu = document.querySelector('.page-mobile-menu');
-    menu.classList.toggle('hidden');
-    document.body.classList.toggle('overflow-hidden', !menu.classList.contains('hidden'));
-}));
+    (function () {
+        const rows = Array.from(document.querySelectorAll('.app-row'));
+        const search = document.getElementById('app-search'), none = document.getElementById('no-match');
+        let statuses = '';
+        function apply() {
+            const q = (search.value || '').trim().toLowerCase();
+            let shown = 0;
+            rows.forEach(function (r) {
+                const ok = (!statuses || statuses.split(' ').includes(r.dataset.status)) && (!q || r.dataset.search.includes(q));
+                r.classList.toggle('hidden', !ok); if (ok) shown++;
+            });
+            if (none) none.classList.toggle('hidden', shown > 0 || rows.length === 0);
+        }
+        document.querySelectorAll('#status-filter button').forEach(function (b) {
+            b.addEventListener('click', function () {
+                statuses = b.dataset.f;
+                document.querySelectorAll('#status-filter button').forEach(function (x) { x.classList.toggle('bg-white', x === b); x.classList.toggle('shadow-card', x === b); x.classList.toggle('text-muted', x !== b); });
+                apply();
+            });
+        });
+        search.addEventListener('input', apply);
+    })();
 </script>
 </body>
 </html>
